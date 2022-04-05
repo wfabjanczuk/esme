@@ -1,0 +1,15 @@
+{
+  "name": "esme_frontend",
+  "version": "0.0.1",
+  "description": "Frontend monorepo for ESME project (Emergency Service for Mass Events)",
+  "author": "Wojciech Fabjanczuk",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "participant": "yarn workspace participant start",
+    "support": "yarn workspace support start"
+  }
+}
