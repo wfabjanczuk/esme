@@ -1,5 +1,6 @@
 {
-  "name": "esme_frontend",
+  "private": true,
+  "name": "@esme_frontend/monorepo",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
