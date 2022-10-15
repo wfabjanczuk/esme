@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "references": [
+    {
+      "path": "../../packages/common"
+    }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src/",
+    "outDir": "./build/"
+  }
+}
