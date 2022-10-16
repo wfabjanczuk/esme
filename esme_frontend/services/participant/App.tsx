@@ -1,21 +1,24 @@
 import React from 'react'
-import { StatusBar } from 'expo-status-bar'
-import { StyleSheet, Text, View } from 'react-native'
-import { projectName } from '@esme_frontend/common'
+import { StatusBar } from 'react-native'
+import { Provider as PaperProvider } from 'react-native-paper'
+import { ThemeProvider } from 'styled-components/native'
+import { paperTheme } from './App.styles'
+import { Navigation } from './src/navigation'
+import { MockContextProvider } from './src/shared/services/mock/mock.context'
+import { theme as globalTheme } from './src/theme'
 
-export const App = (): JSX.Element => (
-  <View style={styles.container}>
-    <Text>Project name: {projectName}</Text>
-    <Text>Open up App.tsx to start working on your app!</Text>
-    <StatusBar style="auto"/>
-  </View>
-)
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-})
+export const App = (): JSX.Element => {
+  return (
+    <ThemeProvider theme={globalTheme}>
+      <PaperProvider theme={paperTheme}>
+        <MockContextProvider>
+          <StatusBar
+            backgroundColor={globalTheme.colors.bg.primary}
+            barStyle="dark-content"
+          />
+          <Navigation />
+        </MockContextProvider>
+      </PaperProvider>
+    </ThemeProvider>
+  )
+}
