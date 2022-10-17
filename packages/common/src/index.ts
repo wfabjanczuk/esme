@@ -1,0 +1,1 @@
+export const projectName = 'Emergency Service for Mass Events';

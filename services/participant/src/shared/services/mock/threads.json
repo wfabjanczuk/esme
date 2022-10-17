@@ -1,0 +1,26 @@
+[
+  {
+    "updated": 1649343117,
+    "type": "conversation",
+    "event": "Rock Band Concert",
+    "unread": true
+  },
+  {
+    "updated": 1649245443,
+    "type": "conversation",
+    "event": "Metal Band Concert",
+    "unread": true
+  },
+  {
+    "updated": 1649155421,
+    "type": "announcement",
+    "event": "Rap Band Concert",
+    "unread": false
+  },
+  {
+    "updated": 1614595421,
+    "type": "conversation",
+    "event": "Country Band Concert",
+    "unread": false
+  }
+]

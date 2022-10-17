@@ -1,6 +1,13 @@
 {
-  "name": "common",
+  "private": true,
+  "name": "@esme_frontend/common",
   "version": "1.0.0",
-  "main": "index.js",
-  "private": true
+  "description": "",
+  "main": "./build/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
