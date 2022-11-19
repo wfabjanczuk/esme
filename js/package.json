@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@esme_frontend/monorepo",
+  "name": "@esme/monorepo",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,6 +12,6 @@
   "license": "ISC",
   "workspaces": [
     "packages/common",
-    "services/participant"
+    "frontends/participant"
   ]
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Checkbox } from 'react-native-paper'
-import { projectName } from '@esme_frontend/common'
+import { projectName } from '@esme/common'
 import { StyledText } from '../../../shared/components/typography/styled-text.component'
 import { SafeArea } from '../../../shared/containers/safe-area.component'
 import {

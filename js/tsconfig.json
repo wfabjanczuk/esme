@@ -5,7 +5,7 @@
       "path": "./packages/common"
     },
     {
-      "path": "./services/participant"
+      "path": "./frontends/participant"
     }
   ]
 }

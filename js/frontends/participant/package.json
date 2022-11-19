@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@esme_frontend/participant",
+  "name": "@esme/participant",
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@esme_frontend/common": "^1.0.0",
+    "@esme/common": "^1.0.0",
     "@react-navigation/bottom-tabs": "^6.4.0",
     "@react-navigation/native": "^6.0.13",
     "@react-navigation/native-stack": "^6.9.1",

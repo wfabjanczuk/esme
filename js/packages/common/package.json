@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@esme_frontend/common",
+  "name": "@esme/common",
   "version": "1.0.0",
   "description": "",
   "main": "./build/index.js",
