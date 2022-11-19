@@ -1,6 +1,9 @@
 import styled from 'styled-components/native'
 import { colors } from '../../../../theme/colors'
 import { PaperIconButton } from '../../../../shared/components/overrides'
+import { Platform } from 'react-native'
+
+const isIos = Platform.OS === 'ios'
 
 export const ChatInputContainer = styled.View`
   flex-direction: row;
@@ -42,6 +45,6 @@ export const ChatTextInput = styled.TextInput.attrs({
   border-radius: 8px;
   flex-grow: 1;
   padding: 5px 10px;
-  margin: 8px 46px;
+  margin: ${isIos ? '13px' : '8px'} 46px;
   max-height: 100px;
 `

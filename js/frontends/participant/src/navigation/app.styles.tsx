@@ -2,8 +2,11 @@ import React from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { theme as globalTheme } from '../theme'
 import { RouteProp } from '@react-navigation/core/lib/typescript/src/types'
+import { Platform } from 'react-native'
 
 type routeName = keyof typeof icons
+
+const isIos = Platform.OS === 'ios'
 
 const icons = {
   Help: 'medkit',
@@ -14,8 +17,8 @@ const icons = {
 
 const styles = {
   iconSize: 25,
-  tabBarHeight: 56,
-  tabBarItemMargin: 6,
+  tabBarHeight: isIos ? 98 : 70,
+  tabBarItemMargin: isIos ? 6 : 10,
   tabBarLabelFontSize: 10
 }
 
