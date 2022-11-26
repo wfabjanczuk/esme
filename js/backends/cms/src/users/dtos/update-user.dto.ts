@@ -3,14 +3,14 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto {
   @IsString()
-  @IsOptional()
   @MaxLength(100)
+  @IsOptional()
   @ApiProperty({ example: 'Jan' })
   firstName?: string;
 
   @IsString()
-  @IsOptional()
   @MaxLength(100)
+  @IsOptional()
   @ApiProperty({ example: 'Kowalski' })
   lastName?: string;
 }

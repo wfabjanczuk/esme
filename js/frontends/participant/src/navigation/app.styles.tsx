@@ -11,7 +11,7 @@ const isIos = Platform.OS === 'ios'
 const icons = {
   Help: 'medkit',
   Messages: 'chatbubble-ellipses',
-  Events: 'musical-notes',
+  Events: 'star',
   Settings: 'settings'
 }
 

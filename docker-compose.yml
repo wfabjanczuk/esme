@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  esme_database:
+    image: postgres:15
+    hostname: esme_database
+    container_name: esme_database
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: esme
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+    ports:
+      - "54321:5432"
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+
+  esme_cms:
+    image: node:18
+    hostname: esme_cms
+    container_name: esme_cms
+    working_dir: /usr/src/app
+    entrypoint: [ "bash", "-c" ]
+    command:
+      - |
+        npm install
+        cd ./backends/cms
+        npm run start:dev
+    volumes:
+      - ./js/:/usr/src/app:rw
+    ports:
+      - "9000:3000"
+    depends_on:
+      - esme_database

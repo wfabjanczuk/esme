@@ -10,7 +10,8 @@ async function bootstrap() {
     .setTitle('ESME CMS API')
     .setDescription(projectName)
     .setVersion('1.0')
-    .addTag('users')
+    .addTag('Users')
+    .addTag('Event agencies')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

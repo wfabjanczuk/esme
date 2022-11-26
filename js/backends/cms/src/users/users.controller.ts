@@ -14,9 +14,6 @@ import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { AuthGuard } from '../guards/auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
-import { SigninUserDto } from './dtos/signin-user.dto';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -24,9 +21,10 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { CreateUserDto, SigninUserDto, UpdateUserDto } from './dtos';
 
 @ApiBearerAuth()
-@ApiTags('users')
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
@@ -110,7 +108,7 @@ export class UsersController {
       },
     },
   })
-  findUser(@Param('id') id: string) {
+  findUserById(@Param('id') id: string) {
     return this.usersService.findOne(parseInt(id));
   }
 

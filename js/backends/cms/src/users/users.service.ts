@@ -6,32 +6,29 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
+import { CreateUserDto, UpdateUserDto } from './dtos';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>,
-  ) {}
+  constructor(@InjectRepository(User) private repository: Repository<User>) {}
 
   async create(props: CreateUserDto) {
-    const [existingUser] = await this.usersRepository.find({
+    const [existingUser] = await this.repository.find({
       where: [{ email: props.email }, { phoneNumber: props.phoneNumber }],
     });
     if (existingUser) {
       throw new BadRequestException(`Email or phone number is already taken`);
     }
-    const user = this.usersRepository.create(props);
-    return this.usersRepository.save(user);
+    const user = this.repository.create(props);
+    return this.repository.save(user);
   }
 
   findAll() {
-    return this.usersRepository.find();
+    return this.repository.find();
   }
 
   async findByEmail(email: string) {
-    const [user] = await this.usersRepository.find({ where: { email } });
+    const [user] = await this.repository.find({ where: { email } });
     if (!user) {
       throw new NotFoundException(`User with email ${email} not found`);
     }
@@ -39,7 +36,7 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user = await this.repository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
@@ -49,11 +46,11 @@ export class UsersService {
   async update(id: number, props: UpdateUserDto) {
     const user = await this.findOne(id);
     Object.assign(user, props);
-    return this.usersRepository.save(user);
+    return this.repository.save(user);
   }
 
   async remove(id: number) {
     const user = await this.findOne(id);
-    return this.usersRepository.remove(user);
+    return this.repository.remove(user);
   }
 }

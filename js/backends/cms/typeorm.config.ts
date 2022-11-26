@@ -1,47 +1,51 @@
-import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
-import { DataSource, DataSourceOptions } from 'typeorm';
+import {
+  TypeOrmModuleAsyncOptions,
+  TypeOrmModuleOptions,
+} from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-let dynamicOrmConfig: DataSourceOptions;
-
-switch (process.env.NODE_ENV) {
-  case 'production':
-    dynamicOrmConfig = {
-      type: 'postgres',
-      database: 'esme',
-      url: process.env.DATABASE_URL,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-      entities: ['**/*.entity.js'],
-      synchronize: false,
-      migrations: [__dirname + '/src/migrations/prod/*.js'],
-      migrationsRun: true,
-    };
-    break;
-  case 'dev':
-    dynamicOrmConfig = {
-      type: 'sqlite',
-      database: 'esme.dev.sqlite',
-      entities: ['**/*.entity.js'],
-      synchronize: true,
-    };
-    break;
-  case 'test':
-    dynamicOrmConfig = {
-      type: 'sqlite',
-      database: 'esme.test.sqlite',
-      entities: ['**/*.entity.ts'],
-      synchronize: true,
-    };
-    break;
-  default:
-    throw new Error('Environment unknown for TypeOrm');
-}
-
-const ormConfig: DataSourceOptions = dynamicOrmConfig;
-
-export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
-  useFactory: async () => ormConfig,
+const typeOrmModuleFactory = (
+  configService: ConfigService,
+): TypeOrmModuleOptions => {
+  switch (process.env.NODE_ENV) {
+    case 'production':
+      return {
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        entities: ['**/*.entity.js'],
+        synchronize: false,
+        migrations: [__dirname + '/src/migrations/prod/*.js'],
+        migrationsRun: true,
+      };
+    case 'dev':
+      return {
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        entities: ['**/*.entity.js'],
+        synchronize: true,
+      };
+    case 'test':
+      return {
+        type: 'sqlite',
+        database: 'esme.test.sqlite',
+        entities: ['**/*.entity.ts'],
+        synchronize: true,
+      };
+    default:
+      throw new Error('Environment unknown for TypeOrm');
+  }
 };
 
-export default new DataSource(ormConfig);
+export const typeOrmModuleAsyncOptions: TypeOrmModuleAsyncOptions = {
+  imports: [ConfigModule],
+  inject: [ConfigService],
+  useFactory: typeOrmModuleFactory,
+};
