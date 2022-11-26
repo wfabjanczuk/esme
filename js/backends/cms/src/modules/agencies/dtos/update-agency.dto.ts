@@ -1,7 +1,13 @@
-import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsUrl,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateEventAgencyDto {
+export class UpdateAgencyDto {
   @IsString()
   @MaxLength(200)
   @IsOptional()
@@ -20,4 +26,9 @@ export class UpdateEventAgencyDto {
   @IsOptional()
   @ApiProperty({ example: 'https://live-concert-agency.com' })
   website: string;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty({ example: false })
+  approved: boolean;
 }

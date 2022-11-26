@@ -11,7 +11,8 @@ async function bootstrap() {
     .setDescription(projectName)
     .setVersion('1.0')
     .addTag('Users')
-    .addTag('Event agencies')
+    .addTag('Agencies')
+    .addTag('Events')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

@@ -5,26 +5,22 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EventAgency } from './event-agency.entity';
-import {
-  CreateEventAgencyDto,
-  UpdateEventAgencyDto,
-  VerifyAgentAgencyDto,
-} from './dtos';
+import { Agency } from './agency.entity';
+import { CreateAgencyDto } from './dtos/create-agency.dto';
+import { UpdateAgencyDto } from './dtos/update-agency.dto';
 
 @Injectable()
-export class EventAgenciesService {
+export class AgenciesService {
   constructor(
-    @InjectRepository(EventAgency)
-    private repository: Repository<EventAgency>,
+    @InjectRepository(Agency) private repository: Repository<Agency>,
   ) {}
 
-  async create(props: CreateEventAgencyDto) {
+  async create(props: CreateAgencyDto) {
     const [existingAgency] = await this.repository.find({
       where: [{ name: props.name }],
     });
     if (existingAgency) {
-      throw new BadRequestException(`Name is already taken`);
+      throw new BadRequestException('Name is already taken');
     }
     const agency = this.repository.create(props);
     return this.repository.save(agency);
@@ -33,7 +29,7 @@ export class EventAgenciesService {
   async findOne(id: number) {
     const agency = await this.repository.findOneBy({ id });
     if (!agency) {
-      throw new NotFoundException(`Event agency with id ${id} not found`);
+      throw new NotFoundException(`Agency with id ${id} not found`);
     }
     return agency;
   }
@@ -42,13 +38,7 @@ export class EventAgenciesService {
     return this.repository.find();
   }
 
-  async update(id: number, props: UpdateEventAgencyDto) {
-    const agency = await this.findOne(id);
-    Object.assign(agency, props);
-    return this.repository.save(agency);
-  }
-
-  async verify(id: number, props: VerifyAgentAgencyDto) {
+  async update(id: number, props: UpdateAgencyDto) {
     const agency = await this.findOne(id);
     Object.assign(agency, props);
     return this.repository.save(agency);

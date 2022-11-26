@@ -1,11 +1,11 @@
 import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './modules/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmModuleAsyncOptions } from '../typeorm.config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
-import { EventsModule } from './events/events.module';
-import { EventAgenciesModule } from './event-agencies/event-agencies.module';
+import { EventsModule } from './modules/events/events.module';
+import { AgenciesModule } from './modules/agencies/agencies.module';
 
 const cookieSession = require('cookie-session');
 
@@ -17,7 +17,7 @@ const cookieSession = require('cookie-session');
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleAsyncOptions),
     UsersModule,
-    EventAgenciesModule,
+    AgenciesModule,
     EventsModule,
   ],
   providers: [

@@ -12,8 +12,8 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
-import { AuthGuard } from '../guards/auth.guard';
-import { CurrentUser } from './decorators/current-user.decorator';
+import { AuthGuard } from '../../guards/auth.guard';
+import { CurrentUser } from '../../decorators/current-user.decorator';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -21,7 +21,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateUserDto, SigninUserDto, UpdateUserDto } from './dtos';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { SigninUserDto } from './dtos/signin-user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 
 @ApiBearerAuth()
 @ApiTags('Users')

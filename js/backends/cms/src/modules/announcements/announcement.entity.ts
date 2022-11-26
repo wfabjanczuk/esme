@@ -1,9 +1,9 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { Event } from './event.entity';
+import { Event } from '../events/event.entity';
 
 @Entity()
-export class EventAnnouncement {
+export class Announcement {
   @PrimaryGeneratedColumn()
   @ApiProperty({ example: 1 })
   id: number;

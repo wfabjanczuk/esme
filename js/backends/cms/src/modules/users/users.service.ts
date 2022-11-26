@@ -6,7 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDto, UpdateUserDto } from './dtos';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -17,7 +18,7 @@ export class UsersService {
       where: [{ email: props.email }, { phoneNumber: props.phoneNumber }],
     });
     if (existingUser) {
-      throw new BadRequestException(`Email or phone number is already taken`);
+      throw new BadRequestException('Email or phone number is already taken');
     }
     const user = this.repository.create(props);
     return this.repository.save(user);

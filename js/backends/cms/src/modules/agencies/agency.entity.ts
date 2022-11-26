@@ -3,7 +3,7 @@ import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Event } from '../events/event.entity';
 
 @Entity()
-export class EventAgency {
+export class Agency {
   @PrimaryGeneratedColumn()
   @ApiProperty({ example: 1 })
   id: number;

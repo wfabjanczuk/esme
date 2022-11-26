@@ -1,7 +1,7 @@
 import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateEventAgencyDto {
+export class CreateAgencyDto {
   @IsString()
   @MaxLength(200)
   @ApiProperty({ example: 'Live Concert Agency' })
