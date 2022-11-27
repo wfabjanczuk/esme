@@ -21,6 +21,7 @@ import {
 import { CreateAgencyDto } from './dtos/create-agency.dto';
 import { UpdateAgencyDto } from './dtos/update-agency.dto';
 import { EventsService } from '../events/events.service';
+import { CurrentUser } from '../../decorators/current-user.decorator';
 
 @Controller('agencies')
 @ApiTags('Agencies')
@@ -45,8 +46,8 @@ export class AgenciesController {
       },
     },
   })
-  createAgency(@Body() body: CreateAgencyDto) {
-    return this.agenciesService.create(body);
+  createAgency(@CurrentUser() currentUser, @Body() body: CreateAgencyDto) {
+    return this.agenciesService.create(body, currentUser);
   }
 
   @Get(':id')
@@ -90,8 +91,12 @@ export class AgenciesController {
       },
     },
   })
-  updateAgency(@Param('id') id: string, @Body() body: UpdateAgencyDto) {
-    return this.agenciesService.update(parseInt(id), body);
+  updateAgency(
+    @CurrentUser() currentUser,
+    @Param('id') id: string,
+    @Body() body: UpdateAgencyDto,
+  ) {
+    return this.agenciesService.update(parseInt(id), body, currentUser);
   }
 
   @Delete(':id')
@@ -109,13 +114,11 @@ export class AgenciesController {
       },
     },
   })
-  async removeAgency(@Param('id') paramId: string) {
-    const agencyEventsCount = this.eventsService.countAll(paramId);
+  async removeAgency(@CurrentUser() currentUser, @Param('id') id: string) {
+    const agencyEventsCount = await this.eventsService.countAll(id);
     if (agencyEventsCount) {
       throw new BadRequestException('Agency has existing events');
     }
-    const id = parseInt(paramId);
-    const removedAgency = await this.agenciesService.remove(id);
-    return Object.assign(removedAgency, { id });
+    return this.agenciesService.remove(parseInt(id), currentUser);
   }
 }

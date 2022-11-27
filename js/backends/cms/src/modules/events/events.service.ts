@@ -9,25 +9,18 @@ import { Repository } from 'typeorm';
 import { CreateEventDto } from './dtos/create-event.dto';
 import { UpdateEventDto } from './dtos/update-event.dto';
 import { Agency } from '../agencies/agency.entity';
+import { LoggingEntityManager } from '../changelogs/logging-entity-manager';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class EventsService {
-  constructor(@InjectRepository(Event) private repository: Repository<Event>) {}
-
-  async create(props: CreateEventDto, agency: Agency) {
-    const [existingEvent] = await this.repository.find({
-      where: [{ name: props.name }],
-    });
-    if (existingEvent) {
-      throw new BadRequestException('Name is already taken');
-    }
-    const event = this.repository.create(props);
-    event.agency = agency;
-    return this.repository.save(event);
-  }
+  constructor(
+    private lem: LoggingEntityManager,
+    @InjectRepository(Event) private repo: Repository<Event>,
+  ) {}
 
   async findOne(id: number) {
-    const event = await this.repository.findOneBy({ id });
+    const event = await this.repo.findOneBy({ id });
     if (!event) {
       throw new NotFoundException(`Event with id ${id} not found`);
     }
@@ -36,9 +29,9 @@ export class EventsService {
 
   findAll(agencyId?: string) {
     if (!agencyId) {
-      return this.repository.find();
+      return this.repo.find();
     }
-    return this.repository.find({
+    return this.repo.find({
       where: {
         agency: {
           id: parseInt(agencyId),
@@ -49,9 +42,9 @@ export class EventsService {
 
   countAll(agencyId?: string) {
     if (!agencyId) {
-      return this.repository.count();
+      return this.repo.count();
     }
-    return this.repository.count({
+    return this.repo.count({
       where: {
         agency: {
           id: parseInt(agencyId),
@@ -60,14 +53,26 @@ export class EventsService {
     });
   }
 
-  async update(id: number, props: UpdateEventDto) {
-    const event = await this.findOne(id);
-    Object.assign(event, props);
-    return this.repository.save(event);
+  async create(props: CreateEventDto, agency: Agency, createdBy?: User) {
+    const [existingEvent] = await this.repo.find({
+      where: [{ name: props.name }],
+    });
+    if (existingEvent) {
+      throw new BadRequestException('Name is already taken');
+    }
+    const event = this.repo.create(props);
+    event.agency = agency;
+    return this.lem.create(this.repo, event, createdBy);
   }
 
-  async remove(id: number) {
+  async update(id: number, props: UpdateEventDto, updatedBy?: User) {
     const event = await this.findOne(id);
-    return this.repository.remove(event);
+    Object.assign(event, props);
+    return this.lem.update(this.repo, event, updatedBy);
+  }
+
+  async remove(id: number, deletedBy?: User) {
+    const event = await this.findOne(id);
+    return this.lem.remove(this.repo, event, deletedBy);
   }
 }

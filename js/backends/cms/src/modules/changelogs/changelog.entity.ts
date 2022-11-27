@@ -32,10 +32,6 @@ export class Changelog {
 
   @Column({ type: 'json', nullable: true })
   @ApiProperty({ example: 'insert' })
-  before?: string;
-
-  @Column({ type: 'json', nullable: true })
-  @ApiProperty({ example: 'insert' })
   after?: string;
 
   @ManyToOne(() => User, (user) => user.changelogs, { onDelete: 'SET NULL' })

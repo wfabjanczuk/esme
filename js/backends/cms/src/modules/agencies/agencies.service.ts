@@ -8,26 +8,18 @@ import { Repository } from 'typeorm';
 import { Agency } from './agency.entity';
 import { CreateAgencyDto } from './dtos/create-agency.dto';
 import { UpdateAgencyDto } from './dtos/update-agency.dto';
+import { LoggingEntityManager } from '../changelogs/logging-entity-manager';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class AgenciesService {
   constructor(
-    @InjectRepository(Agency) private repository: Repository<Agency>,
+    private lem: LoggingEntityManager,
+    @InjectRepository(Agency) private repo: Repository<Agency>,
   ) {}
 
-  async create(props: CreateAgencyDto) {
-    const [existingAgency] = await this.repository.find({
-      where: [{ name: props.name }],
-    });
-    if (existingAgency) {
-      throw new BadRequestException('Name is already taken');
-    }
-    const agency = this.repository.create(props);
-    return this.repository.save(agency);
-  }
-
   async findOne(id: number) {
-    const agency = await this.repository.findOneBy({ id });
+    const agency = await this.repo.findOneBy({ id });
     if (!agency) {
       throw new NotFoundException(`Agency with id ${id} not found`);
     }
@@ -35,17 +27,27 @@ export class AgenciesService {
   }
 
   findAll() {
-    return this.repository.find();
+    return this.repo.find();
   }
 
-  async update(id: number, props: UpdateAgencyDto) {
-    const agency = await this.findOne(id);
-    Object.assign(agency, props);
-    return this.repository.save(agency);
+  async create(props: CreateAgencyDto, createdBy?: User) {
+    const [existingAgency] = await this.repo.find({
+      where: [{ name: props.name }],
+    });
+    if (existingAgency) {
+      throw new BadRequestException('Name is already taken');
+    }
+    const agency = this.repo.create(props);
+    return this.lem.create(this.repo, agency, createdBy);
   }
 
-  async remove(id: number) {
+  async update(id: number, props: UpdateAgencyDto, updatedBy?: User) {
+    const agency = Object.assign(await this.findOne(id), props);
+    return this.lem.update(this.repo, agency, updatedBy);
+  }
+
+  async remove(id: number, deletedBy?: User) {
     const agency = await this.findOne(id);
-    return this.repository.remove(agency);
+    return this.lem.remove(this.repo, agency, deletedBy);
   }
 }

@@ -1,12 +1,12 @@
 import { Global, Module } from '@nestjs/common';
-import { ChangelogsService } from './changelogs.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Changelog } from './changelog.entity';
+import { LoggingEntityManager } from './logging-entity-manager';
 
 @Global()
 @Module({
   imports: [TypeOrmModule.forFeature([Changelog])],
-  providers: [ChangelogsService],
-  exports: [ChangelogsService],
+  providers: [LoggingEntityManager],
+  exports: [LoggingEntityManager],
 })
 export class ChangelogsModule {}

@@ -22,6 +22,7 @@ import { Event } from './event.entity';
 import { CreateEventDto } from './dtos/create-event.dto';
 import { UpdateEventDto } from './dtos/update-event.dto';
 import { AgenciesService } from '../agencies/agencies.service';
+import { CurrentUser } from '../../decorators/current-user.decorator';
 
 @Controller('events')
 @ApiTags('Events')
@@ -46,12 +47,12 @@ export class EventsController {
       },
     },
   })
-  async createEvent(@Body() body: CreateEventDto) {
+  async createEvent(@CurrentUser() currentUser, @Body() body: CreateEventDto) {
     const agency = await this.agenciesService.findOne(body.agencyId);
     if (!agency.approved) {
       throw new BadRequestException('Agency is not approved by administrators');
     }
-    return this.eventsService.create(body, agency);
+    return this.eventsService.create(body, agency, currentUser);
   }
 
   @Get(':id')
@@ -95,8 +96,12 @@ export class EventsController {
       },
     },
   })
-  updateEvent(@Param('id') id: string, @Body() body: UpdateEventDto) {
-    return this.eventsService.update(parseInt(id), body);
+  updateEvent(
+    @CurrentUser() currentUser,
+    @Param('id') id: string,
+    @Body() body: UpdateEventDto,
+  ) {
+    return this.eventsService.update(parseInt(id), body, currentUser);
   }
 
   @Delete(':id')
@@ -114,9 +119,7 @@ export class EventsController {
       },
     },
   })
-  async removeAgency(@Param('id') paramId: string) {
-    const id = parseInt(paramId);
-    const removedEvent = await this.eventsService.remove(id);
-    return Object.assign(removedEvent, { id });
+  async removeEvent(@CurrentUser() currentUser, @Param('id') id: string) {
+    return this.eventsService.remove(parseInt(id), currentUser);
   }
 }
