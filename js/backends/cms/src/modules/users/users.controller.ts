@@ -46,10 +46,11 @@ export class UsersController {
     },
   })
   async createUser(
+    @CurrentUser() currentUser: User,
     @Body() body: CreateUserDto,
     @Session() session: any,
   ): Promise<User> {
-    const user = await this.usersService.create(body);
+    const user = await this.usersService.create(body, currentUser);
     session.userId = user.id;
     return user;
   }
@@ -91,8 +92,8 @@ export class UsersController {
     status: 200,
     type: User,
   })
-  whoAmI(@CurrentUser() user: User) {
-    return user;
+  whoAmI(@CurrentUser() currentUser: User) {
+    return currentUser;
   }
 
   @Get(':id')
@@ -139,8 +140,12 @@ export class UsersController {
       },
     },
   })
-  updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
-    return this.usersService.update(parseInt(id), body);
+  async updateUser(
+    @CurrentUser() currentUser: User,
+    @Param('id') id: string,
+    @Body() body: UpdateUserDto,
+  ) {
+    return await this.usersService.update(parseInt(id), body, currentUser);
   }
 
   @Delete(':id')
@@ -158,12 +163,18 @@ export class UsersController {
       },
     },
   })
-  async removeUser(@Session() session: any, @Param('id') paramId: string) {
+  async removeUser(
+    @CurrentUser() currentUser: User,
+    @Session() session: any,
+    @Param('id') paramId: string,
+  ) {
     const id = parseInt(paramId);
-    const removedUser = await this.usersService.remove(id);
-    if (id === session.userId) {
-      session.userId = undefined;
+    if (id !== session.userId) {
+      return await this.usersService.remove(id, currentUser);
     }
-    return Object.assign(removedUser, { id });
+
+    const removedUser = await this.usersService.remove(id, undefined);
+    session.userId = undefined;
+    return removedUser;
   }
 }

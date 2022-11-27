@@ -8,21 +8,14 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { ChangelogsService } from '../changelogs/changelogs.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private repository: Repository<User>) {}
-
-  async create(props: CreateUserDto) {
-    const [existingUser] = await this.repository.find({
-      where: [{ email: props.email }, { phoneNumber: props.phoneNumber }],
-    });
-    if (existingUser) {
-      throw new BadRequestException('Email or phone number is already taken');
-    }
-    const user = this.repository.create(props);
-    return this.repository.save(user);
-  }
+  constructor(
+    @InjectRepository(User) private repository: Repository<User>,
+    private changelogsService: ChangelogsService,
+  ) {}
 
   findAll() {
     return this.repository.find();
@@ -44,14 +37,44 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, props: UpdateUserDto) {
-    const user = await this.findOne(id);
-    Object.assign(user, props);
-    return this.repository.save(user);
+  async create(props: CreateUserDto, author?: User) {
+    const [existingUser] = await this.repository.find({
+      where: [{ email: props.email }, { phoneNumber: props.phoneNumber }],
+    });
+    if (existingUser) {
+      throw new BadRequestException('Email or phone number is already taken');
+    }
+    let user = this.repository.create(props);
+    await this.repository.manager.transaction(async (em) => {
+      user = await em.save(user);
+      await em.save(this.changelogsService.createInsert(user, author));
+    });
+    return user;
   }
 
-  async remove(id: number) {
-    const user = await this.findOne(id);
-    return this.repository.remove(user);
+  async update(id: number, props: UpdateUserDto, author: User) {
+    const userBefore = await this.findOne(id);
+    const jsonBefore = JSON.stringify(userBefore);
+    const userAfter = Object.assign(userBefore, props);
+    const changelog = this.changelogsService.createUpdate(
+      jsonBefore,
+      userAfter,
+      author,
+    );
+    await this.repository.manager.transaction(async (em) => {
+      await em.save(userAfter);
+      await em.save(changelog);
+    });
+    return userAfter;
+  }
+
+  async remove(id: number, author?: User) {
+    const removedUser = await this.findOne(id);
+    const changelog = this.changelogsService.createDelete(removedUser, author);
+    await this.repository.manager.transaction(async (em) => {
+      await em.remove(removedUser);
+      await em.save(changelog);
+    });
+    return Object.assign(removedUser, { id });
   }
 }

@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 import { EventsModule } from './modules/events/events.module';
 import { AgenciesModule } from './modules/agencies/agencies.module';
+import { ChangelogsModule } from './modules/changelogs/changelogs.module';
 
 const cookieSession = require('cookie-session');
 
@@ -16,6 +17,7 @@ const cookieSession = require('cookie-session');
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleAsyncOptions),
+    ChangelogsModule,
     UsersModule,
     AgenciesModule,
     EventsModule,

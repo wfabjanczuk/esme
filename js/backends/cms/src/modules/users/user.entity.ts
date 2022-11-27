@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { Changelog } from '../changelogs/changelog.entity';
 
 @Entity()
 export class User {
@@ -22,4 +23,8 @@ export class User {
   @Column({ length: 30, nullable: true, unique: true })
   @ApiProperty({ example: '+48123456789' })
   phoneNumber: string;
+
+  @ManyToOne(() => Changelog, (changelog) => changelog.author)
+  @ApiHideProperty()
+  changelogs: Changelog[];
 }
