@@ -23,7 +23,7 @@ export class Changelog {
   entityClass: string;
 
   @Column({ length: 200 })
-  @ApiProperty({ example: 'insert' })
+  @ApiProperty({ example: 'update' })
   type: ChangeType;
 
   @Column({ type: 'timestamptz' })
@@ -31,7 +31,10 @@ export class Changelog {
   time: Date;
 
   @Column({ type: 'json', nullable: true })
-  @ApiProperty({ example: 'insert' })
+  @ApiProperty({
+    example:
+      '{"id":1,"name":"Live Concert Agency","address":"Concert Street 1, Warsaw 01-234, Poland","website":"https://live-concert-agency.com","approved":true}',
+  })
   after?: string;
 
   @ManyToOne(() => User, (user) => user.changelogs, { onDelete: 'SET NULL' })
