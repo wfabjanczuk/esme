@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/common"
+    },
+    {
+      "path": "./backends/cms"
+    },
+    {
+      "path": "./frontends/participant"
+    }
+  ]
+}
