@@ -50,7 +50,7 @@ export class LoggingEntityManager {
     await repo.manager.transaction(async (em) => {
       entity = await em.remove(entity);
       Object.assign(entity, { id });
-      await this.logUpdate(em, entity, deletedBy);
+      await this.logDelete(em, entity, deletedBy);
     });
     return entity;
   }

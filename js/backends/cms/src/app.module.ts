@@ -8,6 +8,7 @@ import { EventsModule } from './modules/events/events.module';
 import { AgenciesModule } from './modules/agencies/agencies.module';
 import { ChangelogsModule } from './modules/changelogs/changelogs.module';
 import { AnnouncementsModule } from './modules/announcements/announcements.module';
+import { ContactsModule } from './modules/contacts/contacts.module';
 
 const cookieSession = require('cookie-session');
 
@@ -22,6 +23,7 @@ const cookieSession = require('cookie-session');
     UsersModule,
     AgenciesModule,
     EventsModule,
+    ContactsModule,
     AnnouncementsModule,
   ],
   providers: [

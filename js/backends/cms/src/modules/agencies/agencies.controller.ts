@@ -100,7 +100,6 @@ export class AgenciesController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
   @ApiResponse({
     status: 200,
     type: Agency,

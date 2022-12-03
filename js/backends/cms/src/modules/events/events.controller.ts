@@ -105,7 +105,6 @@ export class EventsController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
   @ApiResponse({
     status: 200,
     type: Event,
