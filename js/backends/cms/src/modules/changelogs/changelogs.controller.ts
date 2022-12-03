@@ -15,7 +15,7 @@ export class ChangelogsController {
     status: 200,
     type: [Changelog],
   })
-  findAllAgencies() {
+  findAll() {
     return this.changelogsService.findAll();
   }
 }

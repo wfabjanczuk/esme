@@ -27,14 +27,14 @@ export class EventsService {
     return event;
   }
 
-  findAll(agencyId?: string) {
-    if (!agencyId) {
+  findAll(agency?: Agency) {
+    if (!agency) {
       return this.repo.find();
     }
     return this.repo.find({
       where: {
         agency: {
-          id: parseInt(agencyId),
+          id: agency.id,
         },
       },
     });

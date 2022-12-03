@@ -11,81 +11,81 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../../guards/auth.guard';
-import { EventsService } from '../events/events.service';
-import { ContactsService } from './contacts.service';
+import { IssuesService } from '../issues/issues.service';
+import { CommentsService } from './comments.service';
 import { CurrentUser } from '../../decorators/current-user.decorator';
-import { CreateContactDto } from './dtos/create-contact.dto';
-import { Contact } from './contact.entity';
-import { UpdateContactDto } from './dtos/update-contact.dto';
+import { CreateCommentDto } from './dtos/create-comment.dto';
+import { Comment } from './comment.entity';
+import { UpdateCommentDto } from './dtos/update-comment.dto';
 
-@Controller('contacts')
-@ApiTags('Contacts')
+@Controller('comments')
+@ApiTags('Comments')
 @UseGuards(AuthGuard)
-export class ContactsController {
+export class CommentsController {
   constructor(
-    private eventsService: EventsService,
-    private contactsService: ContactsService,
+    private issuesService: IssuesService,
+    private commentsService: CommentsService,
   ) {}
 
   @Post('')
   @ApiResponse({
     status: 201,
-    type: Contact,
+    type: Comment,
   })
   @ApiNotFoundResponse({
     schema: {
       example: {
         statusCode: 404,
-        message: 'Event with id 1 not found',
+        message: 'Issue with id 1 not found',
         error: 'Not Found',
       },
     },
   })
-  async create(@CurrentUser() currentUser, @Body() body: CreateContactDto) {
-    const event = await this.eventsService.findOne(body.eventId);
-    return this.contactsService.create(body, event, currentUser);
+  async create(@CurrentUser() currentUser, @Body() body: CreateCommentDto) {
+    const issue = await this.issuesService.findOne(body.issueId);
+    return this.commentsService.create(body, issue, currentUser);
   }
 
   @Get(':id')
   @ApiResponse({
     status: 200,
-    type: Contact,
+    type: Comment,
   })
   @ApiNotFoundResponse({
     schema: {
       example: {
         statusCode: 404,
-        message: 'Contact with id 1 not found',
+        message: 'Comment with id 1 not found',
         error: 'Not Found',
       },
     },
   })
   findOne(@Param('id') id: string) {
-    return this.contactsService.findOne(parseInt(id));
+    return this.commentsService.findOne(parseInt(id));
   }
 
   @Get('')
   @ApiResponse({
     status: 200,
-    type: [Contact],
+    type: [Comment],
   })
-  async findAll(@Query('eventId') eventId?: string) {
-    const event = eventId
-      ? await this.eventsService.findOne(parseInt(eventId))
+  async findAll(@Query('issueId') issueId?: string) {
+    const issue = issueId
+      ? await this.issuesService.findOne(parseInt(issueId))
       : null;
-    return this.contactsService.findAll(event);
+    return this.commentsService.findAll(issue);
   }
 
   @Patch(':id')
   @ApiResponse({
     status: 200,
-    type: Contact,
+    type: Comment,
   })
   @ApiNotFoundResponse({
     schema: {
       example: {
         statusCode: 404,
-        message: 'Contact with id 1 not found',
+        message: 'Comment with id 1 not found',
         error: 'Not Found',
       },
     },
@@ -93,26 +93,26 @@ export class ContactsController {
   update(
     @CurrentUser() currentUser,
     @Param('id') id: string,
-    @Body() body: UpdateContactDto,
+    @Body() body: UpdateCommentDto,
   ) {
-    return this.contactsService.update(parseInt(id), body, currentUser);
+    return this.commentsService.update(parseInt(id), body, currentUser);
   }
 
   @Delete(':id')
   @ApiResponse({
     status: 200,
-    type: Contact,
+    type: Comment,
   })
   @ApiNotFoundResponse({
     schema: {
       example: {
         statusCode: 404,
-        message: 'Contact with id 1 not found',
+        message: 'Comment with id 1 not found',
         error: 'Not Found',
       },
     },
   })
   async remove(@CurrentUser() currentUser, @Param('id') id: string) {
-    return this.contactsService.remove(parseInt(id), currentUser);
+    return this.commentsService.remove(parseInt(id), currentUser);
   }
 }

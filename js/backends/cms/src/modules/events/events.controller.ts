@@ -47,7 +47,7 @@ export class EventsController {
       },
     },
   })
-  async createEvent(@CurrentUser() currentUser, @Body() body: CreateEventDto) {
+  async create(@CurrentUser() currentUser, @Body() body: CreateEventDto) {
     const agency = await this.agenciesService.findOne(body.agencyId);
     if (!agency.approved) {
       throw new BadRequestException('Agency is not approved by administrators');
@@ -69,7 +69,7 @@ export class EventsController {
       },
     },
   })
-  findEventById(@Param('id') id: string) {
+  findOne(@Param('id') id: string) {
     return this.eventsService.findOne(parseInt(id));
   }
 
@@ -78,8 +78,11 @@ export class EventsController {
     status: 200,
     type: [Event],
   })
-  findAllEvents(@Query('agencyId') agencyId?: string) {
-    return this.eventsService.findAll(agencyId);
+  async findAll(@Query('agencyId') agencyId?: string) {
+    const agency = agencyId
+      ? await this.agenciesService.findOne(parseInt(agencyId))
+      : null;
+    return this.eventsService.findAll(agency);
   }
 
   @Patch(':id')
@@ -96,7 +99,7 @@ export class EventsController {
       },
     },
   })
-  updateEvent(
+  update(
     @CurrentUser() currentUser,
     @Param('id') id: string,
     @Body() body: UpdateEventDto,
@@ -118,7 +121,7 @@ export class EventsController {
       },
     },
   })
-  async removeEvent(@CurrentUser() currentUser, @Param('id') id: string) {
+  async remove(@CurrentUser() currentUser, @Param('id') id: string) {
     return this.eventsService.remove(parseInt(id), currentUser);
   }
 }

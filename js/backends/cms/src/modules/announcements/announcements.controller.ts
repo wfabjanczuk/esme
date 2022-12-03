@@ -41,7 +41,7 @@ export class AnnouncementsController {
       },
     },
   })
-  async createAnnouncement(
+  async create(
     @CurrentUser() currentUser,
     @Body() body: CreateAnnouncementDto,
   ) {
@@ -63,7 +63,7 @@ export class AnnouncementsController {
       },
     },
   })
-  findAnnouncementById(@Param('id') id: string) {
+  findOne(@Param('id') id: string) {
     return this.announcementsService.findOne(parseInt(id));
   }
 
@@ -72,8 +72,11 @@ export class AnnouncementsController {
     status: 200,
     type: [Announcement],
   })
-  findAllAnnouncements(@Query('eventId') eventId?: string) {
-    return this.announcementsService.findAll(eventId);
+  async findAll(@Query('eventId') eventId?: string) {
+    const event = eventId
+      ? await this.eventsService.findOne(parseInt(eventId))
+      : null;
+    return this.announcementsService.findAll(event);
   }
 
   @Patch(':id')
@@ -90,7 +93,7 @@ export class AnnouncementsController {
       },
     },
   })
-  updateAnnouncement(
+  update(
     @CurrentUser() currentUser,
     @Param('id') id: string,
     @Body() body: UpdateAnnouncementDto,
@@ -112,10 +115,7 @@ export class AnnouncementsController {
       },
     },
   })
-  async removeAnnouncement(
-    @CurrentUser() currentUser,
-    @Param('id') id: string,
-  ) {
+  async remove(@CurrentUser() currentUser, @Param('id') id: string) {
     return this.announcementsService.remove(parseInt(id), currentUser);
   }
 }

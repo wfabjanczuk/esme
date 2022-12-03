@@ -1,12 +1,10 @@
 import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateAnnouncementDto {
+export class UpdateCommentDto {
   @IsOptional()
   @IsString()
   @MaxLength(2000)
-  @ApiProperty({
-    example: "Dear All, we've stopped the concert for 10 minutes.",
-  })
+  @ApiProperty({ example: 'The ambulance is on the way.' })
   content: string;
 }

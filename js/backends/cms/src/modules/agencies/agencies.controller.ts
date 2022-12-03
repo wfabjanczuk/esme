@@ -46,7 +46,7 @@ export class AgenciesController {
       },
     },
   })
-  createAgency(@CurrentUser() currentUser, @Body() body: CreateAgencyDto) {
+  create(@CurrentUser() currentUser, @Body() body: CreateAgencyDto) {
     return this.agenciesService.create(body, currentUser);
   }
 
@@ -64,7 +64,7 @@ export class AgenciesController {
       },
     },
   })
-  findAgencyById(@Param('id') id: string) {
+  findOne(@Param('id') id: string) {
     return this.agenciesService.findOne(parseInt(id));
   }
 
@@ -73,7 +73,7 @@ export class AgenciesController {
     status: 200,
     type: [Agency],
   })
-  findAllAgencies() {
+  findAll() {
     return this.agenciesService.findAll();
   }
 
@@ -91,7 +91,7 @@ export class AgenciesController {
       },
     },
   })
-  updateAgency(
+  update(
     @CurrentUser() currentUser,
     @Param('id') id: string,
     @Body() body: UpdateAgencyDto,
@@ -113,7 +113,7 @@ export class AgenciesController {
       },
     },
   })
-  async removeAgency(@CurrentUser() currentUser, @Param('id') id: string) {
+  async remove(@CurrentUser() currentUser, @Param('id') id: string) {
     const agencyEventsCount = await this.eventsService.countAll(id);
     if (agencyEventsCount) {
       throw new BadRequestException('Agency has existing events');

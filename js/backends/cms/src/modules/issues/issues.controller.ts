@@ -12,25 +12,25 @@ import {
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../../guards/auth.guard';
 import { EventsService } from '../events/events.service';
-import { ContactsService } from './contacts.service';
+import { IssuesService } from './issues.service';
 import { CurrentUser } from '../../decorators/current-user.decorator';
-import { CreateContactDto } from './dtos/create-contact.dto';
-import { Contact } from './contact.entity';
-import { UpdateContactDto } from './dtos/update-contact.dto';
+import { Issue } from './issue.entity';
+import { CreateIssueDto } from './dtos/create-issue.dto';
+import { UpdateIssueDto } from './dtos/update-issue.dto';
 
-@Controller('contacts')
-@ApiTags('Contacts')
+@Controller('issues')
+@ApiTags('Issues')
 @UseGuards(AuthGuard)
-export class ContactsController {
+export class IssuesController {
   constructor(
     private eventsService: EventsService,
-    private contactsService: ContactsService,
+    private issuesService: IssuesService,
   ) {}
 
   @Post('')
   @ApiResponse({
     status: 201,
-    type: Contact,
+    type: Issue,
   })
   @ApiNotFoundResponse({
     schema: {
@@ -41,51 +41,51 @@ export class ContactsController {
       },
     },
   })
-  async create(@CurrentUser() currentUser, @Body() body: CreateContactDto) {
+  async create(@CurrentUser() currentUser, @Body() body: CreateIssueDto) {
     const event = await this.eventsService.findOne(body.eventId);
-    return this.contactsService.create(body, event, currentUser);
+    return this.issuesService.create(body, event, currentUser);
   }
 
   @Get(':id')
   @ApiResponse({
     status: 200,
-    type: Contact,
+    type: Issue,
   })
   @ApiNotFoundResponse({
     schema: {
       example: {
         statusCode: 404,
-        message: 'Contact with id 1 not found',
+        message: 'Issue with id 1 not found',
         error: 'Not Found',
       },
     },
   })
   findOne(@Param('id') id: string) {
-    return this.contactsService.findOne(parseInt(id));
+    return this.issuesService.findOne(parseInt(id));
   }
 
   @Get('')
   @ApiResponse({
     status: 200,
-    type: [Contact],
+    type: [Issue],
   })
   async findAll(@Query('eventId') eventId?: string) {
     const event = eventId
       ? await this.eventsService.findOne(parseInt(eventId))
       : null;
-    return this.contactsService.findAll(event);
+    return this.issuesService.findAll(event);
   }
 
   @Patch(':id')
   @ApiResponse({
     status: 200,
-    type: Contact,
+    type: Issue,
   })
   @ApiNotFoundResponse({
     schema: {
       example: {
         statusCode: 404,
-        message: 'Contact with id 1 not found',
+        message: 'Issue with id 1 not found',
         error: 'Not Found',
       },
     },
@@ -93,26 +93,26 @@ export class ContactsController {
   update(
     @CurrentUser() currentUser,
     @Param('id') id: string,
-    @Body() body: UpdateContactDto,
+    @Body() body: UpdateIssueDto,
   ) {
-    return this.contactsService.update(parseInt(id), body, currentUser);
+    return this.issuesService.update(parseInt(id), body, currentUser);
   }
 
   @Delete(':id')
   @ApiResponse({
     status: 200,
-    type: Contact,
+    type: Issue,
   })
   @ApiNotFoundResponse({
     schema: {
       example: {
         statusCode: 404,
-        message: 'Contact with id 1 not found',
+        message: 'Issue with id 1 not found',
         error: 'Not Found',
       },
     },
   })
   async remove(@CurrentUser() currentUser, @Param('id') id: string) {
-    return this.contactsService.remove(parseInt(id), currentUser);
+    return this.issuesService.remove(parseInt(id), currentUser);
   }
 }

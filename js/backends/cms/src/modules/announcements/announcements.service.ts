@@ -23,14 +23,14 @@ export class AnnouncementsService {
     return announcement;
   }
 
-  findAll(eventId?: string) {
-    if (!eventId) {
+  findAll(event?: Event) {
+    if (!event) {
       return this.repo.find();
     }
     return this.repo.find({
       where: {
         event: {
-          id: parseInt(eventId),
+          id: event.id,
         },
       },
     });

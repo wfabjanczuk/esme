@@ -45,7 +45,7 @@ export class UsersController {
       },
     },
   })
-  async createUser(
+  async create(
     @CurrentUser() currentUser: User,
     @Body() body: CreateUserDto,
     @Session() session: any,
@@ -111,7 +111,7 @@ export class UsersController {
       },
     },
   })
-  findUserById(@Param('id') id: string) {
+  findOne(@Param('id') id: string) {
     return this.usersService.findOne(parseInt(id));
   }
 
@@ -121,7 +121,7 @@ export class UsersController {
     status: 200,
     type: [User],
   })
-  findAllUsers() {
+  findAll() {
     return this.usersService.findAll();
   }
 
@@ -140,7 +140,7 @@ export class UsersController {
       },
     },
   })
-  async updateUser(
+  async update(
     @CurrentUser() currentUser: User,
     @Param('id') id: string,
     @Body() body: UpdateUserDto,
@@ -163,7 +163,7 @@ export class UsersController {
       },
     },
   })
-  async removeUser(
+  async remove(
     @CurrentUser() currentUser: User,
     @Session() session: any,
     @Param('id') paramId: string,

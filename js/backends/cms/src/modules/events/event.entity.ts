@@ -9,6 +9,7 @@ import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Contact } from '../contacts/contact.entity';
 import { Agency } from '../agencies/agency.entity';
 import { Announcement } from '../announcements/announcement.entity';
+import { Issue } from '../issues/issue.entity';
 
 @Entity()
 export class Event {
@@ -55,4 +56,8 @@ export class Event {
   @OneToMany(() => Announcement, (announcement) => announcement.event)
   @ApiHideProperty()
   announcements: Announcement[];
+
+  @OneToMany(() => Issue, (issue) => issue.event)
+  @ApiHideProperty()
+  issues: Issue[];
 }
