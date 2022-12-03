@@ -24,7 +24,7 @@ export class Agency {
   @ApiProperty({ example: false })
   approved: boolean;
 
-  @ApiHideProperty()
   @OneToMany(() => Event, (event) => event.agency)
+  @ApiHideProperty()
   events: Event[];
 }

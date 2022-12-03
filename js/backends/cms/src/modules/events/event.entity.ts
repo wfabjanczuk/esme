@@ -44,15 +44,15 @@ export class Event {
   @ApiProperty({ example: '2022-11-27T18:47:02.541Z' })
   timeEnd: Date;
 
-  @ApiHideProperty()
   @ManyToOne(() => Agency, (agency) => agency.events)
+  @ApiHideProperty()
   agency: Agency;
 
-  @ApiHideProperty()
   @OneToMany(() => Contact, (contact) => contact.event)
+  @ApiHideProperty()
   contacts: Contact[];
 
-  @ApiHideProperty()
   @OneToMany(() => Announcement, (announcement) => announcement.event)
+  @ApiHideProperty()
   announcements: Announcement[];
 }

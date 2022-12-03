@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Event } from '../events/event.entity';
 
 @Entity()
@@ -28,6 +28,9 @@ export class Contact {
   @ApiProperty({ example: 'Available 24/7' })
   additionalNotes: string;
 
-  @ManyToOne(() => Event, (event) => event.contacts)
+  @ManyToOne(() => Event, (event) => event.contacts, {
+    onDelete: 'CASCADE',
+  })
+  @ApiHideProperty()
   event: Event;
 }
