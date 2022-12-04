@@ -1,10 +1,10 @@
 version: '3'
 
 services:
-  esme_database:
+  esme_cms_database:
     image: postgres:15
-    hostname: esme_database
-    container_name: esme_database
+    hostname: esme_cms_database
+    container_name: esme_cms_database
     restart: unless-stopped
     environment:
       POSTGRES_DB: esme
@@ -17,20 +17,39 @@ services:
     volumes:
       - ./db/data:/var/lib/postgresql/data
 
-  esme_cms:
+  esme_cms_api:
     image: node:18
-    hostname: esme_cms
-    container_name: esme_cms
+    hostname: esme_cms_api
+    container_name: esme_cms_api
     working_dir: /usr/src/app
     entrypoint: [ "bash", "-c" ]
     command:
       - |
-        npm ci
+        npm install
         cd ./backends/cms
         npm run start:dev
     volumes:
       - ./js/:/usr/src/app:rw
     ports:
-      - "3000:3000"
+      - "8000:3000"
     depends_on:
-      - esme_database
+      - esme_cms_database
+
+  esme_messenger_api:
+    image: golang:1.18
+    hostname: esme_messenger_api
+    container_name: esme_messenger_api
+    working_dir: /usr/local/go/src/app
+    entrypoint: [ "bash", "-c" ]
+    command:
+      - |
+        go install github.com/githubnemo/CompileDaemon@latest
+        cd ./services/messenger
+        CompileDaemon -log-prefix=false -build='go build' -command='./messenger'
+    volumes:
+      - ./go:/usr/local/go/src/app:rw
+    ports:
+      - "8001:3000"
+    depends_on:
+      - esme_cms_database
+      - esme_cms_api
