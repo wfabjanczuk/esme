@@ -8,8 +8,8 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: esme
-      POSTGRES_USER: $POSTGRES_USER
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_USER: developer
+      POSTGRES_PASSWORD: dbPassword
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
     ports:
@@ -26,10 +26,9 @@ services:
     command:
       - |
         npm install
-        cd ./backends/cms
         npm run start:dev
     volumes:
-      - ./js/:/usr/src/app:rw
+      - ../../js/backends/cms:/usr/src/app:rw
     ports:
       - "8000:3000"
     depends_on:
@@ -47,7 +46,7 @@ services:
         cd ./services/messenger
         CompileDaemon -log-prefix=false -build='go build' -command='./messenger'
     volumes:
-      - ./go:/usr/local/go/src/app:rw
+      - ../../go:/usr/local/go/src/app:rw
     ports:
       - "8001:3000"
     depends_on:
