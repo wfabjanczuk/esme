@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Checkbox } from 'react-native-paper'
-import { projectName } from '@esme/common'
 import { StyledText } from '../../../shared/components/typography/styled-text.component'
 import { SafeArea } from '../../../shared/containers/safe-area.component'
 import {
@@ -16,7 +15,7 @@ export const HelpScreen = (): JSX.Element => {
   return (
     <SafeArea>
       <Spacer size="large" position="top">
-        <StyledText variant="placeholder">{projectName}</StyledText>
+        <StyledText variant="placeholder">Emergency Service for Mass Events</StyledText>
       </Spacer>
       <StyledText variant="title">Request help</StyledText>
       <HelpFormInput label="Event" />

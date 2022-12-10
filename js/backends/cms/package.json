@@ -23,7 +23,6 @@
     "typeorm:prod": "cross-env NODE_ENV=production typeorm-ts-node-esm -d typeorm.config.ts"
   },
   "dependencies": {
-    "@esme/common": "^1.0.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",
