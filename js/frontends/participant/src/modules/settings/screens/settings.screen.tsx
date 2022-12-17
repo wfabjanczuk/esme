@@ -15,7 +15,7 @@ export const SettingsScreen = (): JSX.Element => (
   <SafeArea>
     <AvatarContainer>
       <AvatarPlaceholder />
-      <Spacer size="extraLarge" position="top">
+      <Spacer size='extraLarge' position='top'>
         <StyledText>participant@gmail.com</StyledText>
       </Spacer>
     </AvatarContainer>
@@ -24,21 +24,21 @@ export const SettingsScreen = (): JSX.Element => (
         <Divider />
         <SettingsItem
           title={<StyledText>Change password</StyledText>}
-          left={props => <SettingsItemIcon {...props} icon="security" />}
+          left={props => <SettingsItemIcon {...props} icon='security' />}
           onPress={() => null}
         />
         <Divider />
         <SettingsItem
           title={<StyledText>Edit profile data</StyledText>}
           left={props => (
-            <SettingsItemIcon {...props} icon="square-edit-outline" />
+            <SettingsItemIcon {...props} icon='square-edit-outline' />
           )}
           onPress={() => null}
         />
         <Divider />
         <SettingsItem
           title={<StyledText>Logout</StyledText>}
-          left={props => <SettingsItemIcon {...props} icon="door" />}
+          left={props => <SettingsItemIcon {...props} icon='door' />}
           onPress={() => null}
         />
         <Divider />

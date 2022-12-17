@@ -12,7 +12,7 @@ interface ChatHistoryProps {
 export const ChatHistory = ({ conversation }: ChatHistoryProps): JSX.Element => (
   <ScrollView>
     {conversation.map(c => (
-      <Spacer key={c.sent} position="top" size="medium">
+      <Spacer key={c.sent} position='top' size='medium'>
         <ChatBubble isOwn={c.isOwn} content={c.content}/>
       </Spacer>
     ))}

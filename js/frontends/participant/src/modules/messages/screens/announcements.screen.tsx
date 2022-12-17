@@ -12,10 +12,10 @@ export const AnnouncementsScreen = (): JSX.Element => {
     <SafeArea>
       <ChatHistory conversation={announcements} />
       <InputPlaceholderContainer>
-        <StyledText variant="placeholder">
+        <StyledText variant='placeholder'>
           Announcement does not support replies.
         </StyledText>
-        <StyledText variant="placeholder">
+        <StyledText variant='placeholder'>
           If you need help, use the Help tab.
         </StyledText>
       </InputPlaceholderContainer>

@@ -14,25 +14,25 @@ const MainTabs = createBottomTabNavigator()
 
 const MainNavigator = (): JSX.Element => (
   <MainTabs.Navigator
-    initialRouteName="Events"
+    initialRouteName='Events'
     screenOptions={getScreenOptions}>
-    <MainTabs.Screen name="Help" component={HelpScreen} />
-    <MainTabs.Screen name="Messages" component={ThreadsScreen} />
-    <MainTabs.Screen name="Events" component={EventsScreen} />
-    <MainTabs.Screen name="Settings" component={SettingsScreen} />
+    <MainTabs.Screen name='Help' component={HelpScreen} />
+    <MainTabs.Screen name='Messages' component={ThreadsScreen} />
+    <MainTabs.Screen name='Events' component={EventsScreen} />
+    <MainTabs.Screen name='Settings' component={SettingsScreen} />
   </MainTabs.Navigator>
 )
 
 export const AppNavigator = (): JSX.Element => (
   <FrontStack.Navigator screenOptions={getScreenOptions}>
-    <FrontStack.Screen name="Main" component={MainNavigator} />
+    <FrontStack.Screen name='Main' component={MainNavigator} />
     <FrontStack.Screen
-      name="Conversation"
+      name='Conversation'
       component={ConversationScreen}
       options={{ headerShown: true }}
     />
     <FrontStack.Screen
-      name="Announcements"
+      name='Announcements'
       component={AnnouncementsScreen}
       options={{ headerShown: true }}
     />

@@ -14,7 +14,7 @@ export const App = (): JSX.Element => {
         <MockContextProvider>
           <StatusBar
             backgroundColor={globalTheme.colors.bg.primary}
-            barStyle="dark-content"
+            barStyle='dark-content'
           />
           <Navigation />
         </MockContextProvider>

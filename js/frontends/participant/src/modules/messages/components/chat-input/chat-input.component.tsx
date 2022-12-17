@@ -26,7 +26,7 @@ export const ChatInput = ({ addMessage }: ChatInputProps): JSX.Element => {
     <ChatInputContainer>
       <ChatAttachmentButton onPress={() => null} />
       <ChatTextInput
-        placeholder="Enter your message"
+        placeholder='Enter your message'
         value={message}
         onChangeText={setMessage}
       />
