@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
-import { AgenciesService } from './agencies.service';
 import { Agency } from './agency.entity';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { ApiBadRequestResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -8,11 +7,12 @@ import { UpdateAgencyDto } from './dtos/update-agency.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AgencyOwnerGuard } from '../../common/guards/agency-owner.guard';
 import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
+import { AgencyService } from './agency.service';
 
 @Controller('agency')
 @ApiTags('2. Agency')
 export class AgencyController {
-  constructor(private agenciesService: AgenciesService) {}
+  constructor(private agencyService: AgencyService) {}
 
   @Post()
   @ApiResponse({
@@ -38,7 +38,7 @@ export class AgencyController {
     },
   })
   register(@CurrentUser() currentUser, @Body() body: RegisterAgencyDto) {
-    return this.agenciesService.register(body);
+    return this.agencyService.register(body);
   }
 
   @Get()
@@ -58,6 +58,6 @@ export class AgencyController {
     type: Agency,
   })
   update(@CurrentUser() currentUser, @Body() body: UpdateAgencyDto) {
-    return this.agenciesService.update(currentUser.agencyId, body, currentUser);
+    return this.agencyService.update(body, currentUser);
   }
 }

@@ -18,9 +18,10 @@ import { CreateContactDto } from './dtos/create-contact.dto';
 import { Contact } from './contact.entity';
 import { UpdateContactDto } from './dtos/update-contact.dto';
 import { IdDto } from '../../common/dtos/id.dto';
+import { AdminGuard } from '../../common/guards/admin.guard';
 
 @Controller('contacts')
-@UseGuards(AuthenticationGuard)
+@UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: contacts')
 export class ContactsController {
   constructor(

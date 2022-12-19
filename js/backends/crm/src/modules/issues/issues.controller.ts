@@ -18,9 +18,10 @@ import { Issue } from './issue.entity';
 import { CreateIssueDto } from './dtos/create-issue.dto';
 import { UpdateIssueDto } from './dtos/update-issue.dto';
 import { IdDto } from '../../common/dtos/id.dto';
+import { AdminGuard } from '../../common/guards/admin.guard';
 
 @Controller('issues')
-@UseGuards(AuthenticationGuard)
+@UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: issues')
 export class IssuesController {
   constructor(

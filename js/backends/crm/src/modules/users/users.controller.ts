@@ -17,9 +17,10 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PublicUserDto } from './dtos/public-user.dto';
+import { AdminGuard } from '../../common/guards/admin.guard';
 
 @Controller('users')
-@UseGuards(AuthenticationGuard)
+@UseGuards(AuthenticationGuard, AdminGuard)
 @Serialize(PublicUserDto)
 @ApiTags('1. Admin: users')
 export class UsersController {

@@ -17,6 +17,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AdminGuard } from '../../common/guards/admin.guard';
 import { VerifyAgencyDto } from './dtos/verify-agency.dto';
 import { IdDto } from '../../common/dtos/id.dto';
+import { UpdateAgencyDto } from './dtos/update-agency.dto';
 
 @Controller('agencies')
 @UseGuards(AuthenticationGuard, AdminGuard)
@@ -36,7 +37,16 @@ export class AgenciesController {
     return this.agenciesService.findAll();
   }
 
-  @Patch(':agencyId/verify')
+  @Patch()
+  @ApiResponse({
+    status: 200,
+    type: Agency,
+  })
+  update(@CurrentUser() currentUser, @Body() body: UpdateAgencyDto) {
+    return this.agenciesService.update(currentUser.agencyId, body, currentUser);
+  }
+
+  @Patch(':id/verify')
   @ApiResponse({
     status: 200,
     type: Agency,
@@ -58,7 +68,7 @@ export class AgenciesController {
     return this.agenciesService.verify(id, body, currentUser);
   }
 
-  @Delete(':agencyId')
+  @Delete(':id')
   @ApiResponse({
     status: 200,
     type: Agency,

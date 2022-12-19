@@ -6,6 +6,7 @@ import { AgenciesService } from './agencies.service';
 import { EventsModule } from '../events/events.module';
 import { User } from '../users/user.entity';
 import { AgencyController } from './agency.controller';
+import { AgencyService } from './agency.service';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { AgencyController } from './agency.controller';
     forwardRef(() => EventsModule),
   ],
   controllers: [AgencyController, AgenciesController],
-  providers: [AgenciesService],
+  providers: [AgenciesService, AgencyService],
   exports: [AgenciesService],
 })
 export class AgenciesModule {}

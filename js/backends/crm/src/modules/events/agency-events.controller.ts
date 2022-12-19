@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -17,25 +16,24 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
-import { EventsService } from './events.service';
 import { Event } from './event.entity';
 import { CreateEventDto } from './dtos/create-event.dto';
 import { UpdateEventDto } from './dtos/update-event.dto';
-import { AgenciesService } from '../agencies/agencies.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { IdDto } from '../../common/dtos/id.dto';
-import { AdminGuard } from '../../common/guards/admin.guard';
+import { AgencyManagerGuard } from '../../common/guards/agency-manager.guard';
+import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
+import { AgencyEventsService } from './agency-events.service';
+import { CreateAgencyEventDto } from './dtos/create-agency-event.dto';
 
-@Controller('events')
-@UseGuards(AuthenticationGuard, AdminGuard)
-@ApiTags('1. Admin: events')
-export class EventsController {
-  constructor(
-    private eventsService: EventsService,
-    private agenciesService: AgenciesService,
-  ) {}
+@Controller('agency/events')
+@UseGuards(AuthenticationGuard)
+@ApiTags('2. Agency: events')
+export class AgencyEventsController {
+  constructor(private agencyEventsService: AgencyEventsService) {}
 
   @Post()
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 201,
     type: Event,
@@ -49,15 +47,12 @@ export class EventsController {
       },
     },
   })
-  async create(@CurrentUser() currentUser, @Body() body: CreateEventDto) {
-    const agency = await this.agenciesService.findOne(body.agencyId);
-    if (!agency.approved) {
-      throw new BadRequestException('Agency is not approved by administrators');
-    }
-    return this.eventsService.create(body, agency, currentUser);
+  async create(@CurrentUser() currentUser, @Body() body: CreateAgencyEventDto) {
+    return this.agencyEventsService.create(body, currentUser);
   }
 
   @Get(':id')
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: Event,
@@ -71,23 +66,22 @@ export class EventsController {
       },
     },
   })
-  findOne(@Param() { id }: IdDto) {
-    return this.eventsService.findOne(id);
+  findOne(@CurrentUser() currentUser, @Param() { id }: IdDto) {
+    return this.agencyEventsService.findOne(id, currentUser.agencyId);
   }
 
   @Get()
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: [Event],
   })
-  async findAll(@Query('agencyId') agencyId?: string) {
-    const agency = agencyId
-      ? await this.agenciesService.findOne(parseInt(agencyId))
-      : null;
-    return this.eventsService.findAll(agency);
+  async findAll(@CurrentUser() currentUser) {
+    return this.agencyEventsService.findAll(currentUser.agencyId);
   }
 
   @Patch(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: Event,
@@ -106,10 +100,11 @@ export class EventsController {
     @Param() { id }: IdDto,
     @Body() body: UpdateEventDto,
   ) {
-    return this.eventsService.update(id, body, currentUser);
+    return this.agencyEventsService.update(id, body, currentUser);
   }
 
   @Delete(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: Event,
@@ -124,6 +119,6 @@ export class EventsController {
     },
   })
   async remove(@CurrentUser() currentUser, @Param() { id }: IdDto) {
-    return this.eventsService.remove(id, currentUser);
+    return this.agencyEventsService.remove(id, currentUser);
   }
 }

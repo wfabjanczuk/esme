@@ -18,9 +18,10 @@ import { CreateCommentDto } from './dtos/create-comment.dto';
 import { Comment } from './comment.entity';
 import { UpdateCommentDto } from './dtos/update-comment.dto';
 import { IdDto } from '../../common/dtos/id.dto';
+import { AdminGuard } from '../../common/guards/admin.guard';
 
 @Controller('comments')
-@UseGuards(AuthenticationGuard)
+@UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: comments')
 export class CommentsController {
   constructor(

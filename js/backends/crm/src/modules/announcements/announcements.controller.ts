@@ -18,9 +18,10 @@ import { CreateAnnouncementDto } from './dtos/create-announcement.dto';
 import { Announcement } from './announcement.entity';
 import { UpdateAnnouncementDto } from './dtos/update-announcement.dto';
 import { IdDto } from '../../common/dtos/id.dto';
+import { AdminGuard } from '../../common/guards/admin.guard';
 
 @Controller('announcements')
-@UseGuards(AuthenticationGuard)
+@UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: announcements')
 export class AnnouncementsController {
   constructor(
