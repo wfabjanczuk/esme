@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Session,
   UseGuards,
 } from '@nestjs/common';
@@ -12,12 +13,18 @@ import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PublicUserDto } from './dtos/public-user.dto';
 import { AdminGuard } from '../../common/guards/admin.guard';
+import { CreateUserDto } from './dtos/create-user.dto';
 
 @Controller('users')
 @UseGuards(AuthenticationGuard, AdminGuard)
@@ -51,6 +58,24 @@ export class UsersController {
   })
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Post()
+  @ApiResponse({
+    status: 201,
+    type: User,
+  })
+  @ApiBadRequestResponse({
+    schema: {
+      example: {
+        statusCode: 400,
+        message: 'Email is already taken',
+        error: 'Bad Request',
+      },
+    },
+  })
+  async create(@CurrentUser() currentUser, @Body() body: CreateUserDto) {
+    return this.usersService.create(body, currentUser);
   }
 
   @Patch(':id')

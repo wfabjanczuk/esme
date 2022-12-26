@@ -26,12 +26,6 @@ export class AuthenticationService implements OnModuleInit {
     return user;
   }
 
-  async deleteAccount(user: User) {
-    const { id } = user;
-    await this.repo.remove(user);
-    return Object.assign(user, { id });
-  }
-
   async onModuleInit() {
     const existingSuperAdmin = await this.repo.findOne({
       where: {

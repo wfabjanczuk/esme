@@ -11,11 +11,11 @@ import { Changelog } from '../changelogs/changelog.entity';
 import { Agency } from '../agencies/agency.entity';
 
 export enum UserRole {
-  superAdmin = 'super_admin',
-  admin = 'admin',
-  agencyOwner = 'agency_owner',
-  agencyManager = 'agency_manager',
-  agencySupport = 'agency_support',
+  superAdmin,
+  admin,
+  agencyOwner,
+  agencyManager,
+  agencySupport,
 }
 
 @Entity()
@@ -44,7 +44,7 @@ export class User {
   @ApiProperty({ example: '+48123456789' })
   phoneNumber: string;
 
-  @Column({ length: 50 })
+  @Column()
   @ApiProperty({ example: UserRole.agencyOwner })
   role: UserRole;
 
@@ -57,7 +57,7 @@ export class User {
   @ApiHideProperty()
   agency?: Agency;
 
-  @OneToMany(() => Changelog, (changelog) => changelog.author)
+  @OneToMany(() => Changelog, (changelog) => changelog.user)
   @ApiHideProperty()
   changelogs: Changelog[];
 }

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -51,9 +50,6 @@ export class EventsController {
   })
   async create(@CurrentUser() currentUser, @Body() body: CreateEventDto) {
     const agency = await this.agenciesService.findOne(body.agencyId);
-    if (!agency.approved) {
-      throw new BadRequestException('Agency is not approved by administrators');
-    }
     return this.eventsService.create(body, agency, currentUser);
   }
 

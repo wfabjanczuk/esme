@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -17,7 +16,6 @@ import {
 } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { Event } from './event.entity';
-import { CreateEventDto } from './dtos/create-event.dto';
 import { UpdateEventDto } from './dtos/update-event.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { IdDto } from '../../common/dtos/id.dto';

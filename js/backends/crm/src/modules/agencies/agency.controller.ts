@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Agency } from './agency.entity';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { ApiBadRequestResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -59,5 +67,15 @@ export class AgencyController {
   })
   update(@CurrentUser() currentUser, @Body() body: UpdateAgencyDto) {
     return this.agencyService.update(body, currentUser);
+  }
+
+  @Delete()
+  @UseGuards(AuthenticationGuard, AgencyOwnerGuard)
+  @ApiResponse({
+    status: 200,
+    type: Agency,
+  })
+  async remove(@CurrentUser() currentUser) {
+    return this.agencyService.remove(currentUser);
   }
 }

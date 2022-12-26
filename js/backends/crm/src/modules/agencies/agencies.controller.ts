@@ -32,6 +32,24 @@ export class AgenciesController {
     return this.agenciesService.findAll();
   }
 
+  @Get(':id')
+  @ApiResponse({
+    status: 200,
+    type: Agency,
+  })
+  @ApiNotFoundResponse({
+    schema: {
+      example: {
+        statusCode: 404,
+        message: 'Agency with id 1 not found',
+        error: 'Not Found',
+      },
+    },
+  })
+  findOne(@Param() { id }: IdDto) {
+    return this.agenciesService.findOne(id);
+  }
+
   @Patch(':id')
   @ApiResponse({
     status: 200,

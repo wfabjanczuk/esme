@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Event } from '../events/event.entity';
 import { User } from '../users/user.entity';
+import { Changelog } from '../changelogs/changelog.entity';
 
 @Entity()
 export class Agency {
@@ -32,4 +33,8 @@ export class Agency {
   @OneToMany(() => Event, (event) => event.agency)
   @ApiHideProperty()
   events: Event[];
+
+  @OneToMany(() => Changelog, (changelog) => changelog.userAgency)
+  @ApiHideProperty()
+  changelogs: Changelog[];
 }

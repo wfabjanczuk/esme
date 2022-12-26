@@ -1,4 +1,4 @@
-import { IsNumber, IsString, MaxLength } from 'class-validator';
+import { IsInt, IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateAnnouncementDto {
@@ -9,7 +9,7 @@ export class CreateAnnouncementDto {
   })
   content: string;
 
-  @IsNumber()
+  @IsInt()
   @ApiProperty({ example: 1 })
   eventId: number;
 }

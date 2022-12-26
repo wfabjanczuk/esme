@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsInt, IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IssuePriority, IssueStatus } from '../issue.entity';
 
@@ -23,7 +23,7 @@ export class CreateIssueDto {
   @ApiProperty({ example: IssuePriority.medium })
   priority: IssuePriority;
 
-  @IsNumber()
+  @IsInt()
   @ApiProperty({ example: 1 })
   eventId: number;
 }

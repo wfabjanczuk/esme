@@ -1,8 +1,6 @@
 import {
-  BadRequestException,
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   Post,
@@ -10,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { User, UserRole } from './user.entity';
+import { User } from './user.entity';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { SignInDto } from './dtos/sign-in.dto';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
@@ -66,28 +64,5 @@ export class AuthenticationController {
   })
   whoAmI(@CurrentUser() currentUser: User) {
     return currentUser;
-  }
-
-  @Delete('delete-account')
-  @UseGuards(AuthenticationGuard)
-  @ApiResponse({
-    status: 200,
-    type: User,
-  })
-  async deleteAccount(
-    @CurrentUser() currentUser: User,
-    @Session() session: any,
-  ) {
-    if (currentUser.role === UserRole.agencyOwner) {
-      throw new BadRequestException(
-        'Cannot remove just an agency owner. Delete whole agency instead',
-      );
-    }
-
-    const removedUser = await this.authenticationService.deleteAccount(
-      currentUser,
-    );
-    session.userId = undefined;
-    return removedUser;
   }
 }

@@ -3,10 +3,7 @@ import { UserRole } from '../../modules/users/user.entity';
 
 export class AdminGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest();
-
-    return [UserRole.admin, UserRole.superAdmin].includes(
-      request.currentUser.role,
-    );
+    const { role } = context.switchToHttp().getRequest().currentUser;
+    return role <= UserRole.admin;
   }
 }

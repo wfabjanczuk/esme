@@ -1,4 +1,4 @@
-import { IsNumber, IsString, MaxLength } from 'class-validator';
+import { IsInt, IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCommentDto {
@@ -7,7 +7,7 @@ export class CreateCommentDto {
   @ApiProperty({ example: 'The ambulance is on the way.' })
   content: string;
 
-  @IsNumber()
+  @IsInt()
   @ApiProperty({ example: 1 })
   issueId: number;
 }

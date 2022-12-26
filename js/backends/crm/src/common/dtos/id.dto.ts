@@ -1,6 +1,8 @@
-import { IsNumberString } from 'class-validator';
+import { IsInt } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class IdDto {
-  @IsNumberString()
+  @IsInt()
+  @Transform(({ value }) => parseInt(value, 10))
   id: number;
 }

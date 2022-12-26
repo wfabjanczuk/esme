@@ -3,14 +3,12 @@ import { CanActivate, ExecutionContext } from '@nestjs/common';
 export class AuthenticationGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-
-    if (!request.session.userId) {
+    if (!request.currentUser) {
       return false;
     }
-    const agency = request.currentUser.agency;
-    if (agency) {
-      return agency.approved;
+    if (!request.currentUser.agency) {
+      return true;
     }
-    return true;
+    return request.currentUser.agency.approved;
   }
 }

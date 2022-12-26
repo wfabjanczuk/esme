@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
-  IsNumber,
+  IsInt,
   IsPhoneNumber,
   IsString,
   MaxLength,
@@ -33,7 +33,7 @@ export class CreateContactDto {
   @ApiProperty({ example: 'Available 24/7' })
   additionalNotes: string;
 
-  @IsNumber()
+  @IsInt()
   @ApiProperty({ example: 1 })
   eventId: number;
 }

@@ -48,4 +48,10 @@ export class AgencyService {
     const agency = Object.assign(updatedBy.agency, props);
     return this.lem.update(this.agenciesRepo, agency, updatedBy);
   }
+
+  async remove(deletedBy: User) {
+    const { id } = deletedBy.agency;
+    await this.agenciesRepo.remove(deletedBy.agency);
+    return Object.assign(deletedBy.agency, { id });
+  }
 }
