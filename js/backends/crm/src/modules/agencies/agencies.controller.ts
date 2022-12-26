@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -12,7 +11,6 @@ import { AgenciesService } from './agencies.service';
 import { Agency } from './agency.entity';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { EventsService } from '../events/events.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AdminGuard } from '../../common/guards/admin.guard';
 import { VerifyAgencyDto } from './dtos/verify-agency.dto';
@@ -23,10 +21,7 @@ import { UpdateAgencyDto } from './dtos/update-agency.dto';
 @UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: agencies')
 export class AgenciesController {
-  constructor(
-    private agenciesService: AgenciesService,
-    private eventsService: EventsService,
-  ) {}
+  constructor(private agenciesService: AgenciesService) {}
 
   @Get()
   @ApiResponse({
@@ -37,13 +32,17 @@ export class AgenciesController {
     return this.agenciesService.findAll();
   }
 
-  @Patch()
+  @Patch(':id')
   @ApiResponse({
     status: 200,
     type: Agency,
   })
-  update(@CurrentUser() currentUser, @Body() body: UpdateAgencyDto) {
-    return this.agenciesService.update(currentUser.agencyId, body, currentUser);
+  update(
+    @CurrentUser() currentUser,
+    @Param() { id }: IdDto,
+    @Body() body: UpdateAgencyDto,
+  ) {
+    return this.agenciesService.update(id, body, currentUser);
   }
 
   @Patch(':id/verify')
@@ -83,10 +82,6 @@ export class AgenciesController {
     },
   })
   async remove(@CurrentUser() currentUser, @Param() { id }: IdDto) {
-    const agencyEventsCount = await this.eventsService.countAll(id);
-    if (agencyEventsCount) {
-      throw new BadRequestException('Agency has existing events');
-    }
     return this.agenciesService.remove(id, currentUser);
   }
 }

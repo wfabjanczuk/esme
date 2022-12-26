@@ -69,7 +69,7 @@ export class UsersController {
   })
   async update(
     @CurrentUser() currentUser: User,
-    @Param('id') id: number,
+    @Param() { id }: IdDto,
     @Body() body: UpdateUserDto,
   ) {
     return await this.usersService.update(id, body, currentUser);
@@ -92,14 +92,13 @@ export class UsersController {
   async remove(
     @CurrentUser() currentUser: User,
     @Session() session: any,
-    @Param('id') paramId: string,
+    @Param() { id }: IdDto,
   ) {
-    const id = parseInt(paramId);
     if (id !== session.userId) {
       return await this.usersService.remove(id, currentUser);
     }
 
-    const removedUser = await this.usersService.remove(id, undefined);
+    const removedUser = await this.usersService.remove(id, currentUser);
     session.userId = undefined;
     return removedUser;
   }

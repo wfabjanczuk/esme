@@ -5,6 +5,10 @@ export class AgencySupportGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
 
+    if (!request.currentUser.agency) {
+      return false;
+    }
+
     return [
       UserRole.agencySupport,
       UserRole.agencyManager,

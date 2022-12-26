@@ -45,7 +45,7 @@ export class Event {
   @ApiProperty({ example: '2022-11-27T18:47:02.541Z' })
   timeEnd: Date;
 
-  @ManyToOne(() => Agency, (agency) => agency.events)
+  @ManyToOne(() => Agency, (agency) => agency.events, { onDelete: 'CASCADE' })
   @ApiHideProperty()
   agency: Agency;
 

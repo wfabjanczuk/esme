@@ -44,7 +44,7 @@ export class Changelog {
   })
   after?: string;
 
-  @ManyToOne(() => User, (user) => user.changelogs, { onDelete: 'RESTRICT' })
+  @ManyToOne(() => User, (user) => user.changelogs, { onDelete: 'CASCADE' })
   @ApiHideProperty()
   author: User;
 
@@ -52,7 +52,7 @@ export class Changelog {
   @ApiProperty({ example: 1 })
   agencyId?: number;
 
-  @ManyToOne(() => Agency, (agency) => agency.users)
+  @ManyToOne(() => Agency, (agency) => agency.users, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'agencyId' })
   @ApiHideProperty()
   agency?: Agency;

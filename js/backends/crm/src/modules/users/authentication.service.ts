@@ -14,19 +14,6 @@ export class AuthenticationService implements OnModuleInit {
     @InjectRepository(User) private repo: Repository<User>,
   ) {}
 
-  async onModuleInit() {
-    const existingSuperAdmin = await this.repo.findOne({
-      where: {
-        role: UserRole.superAdmin,
-      },
-    });
-    if (existingSuperAdmin) {
-      return;
-    }
-
-    await this.registerSuperAdmin();
-  }
-
   async authenticate(email: string, password: string) {
     const errorMessage = 'Invalid email or password';
     const [user] = await this.repo.find({ where: { email } });
@@ -39,17 +26,24 @@ export class AuthenticationService implements OnModuleInit {
     return user;
   }
 
-  // async register(props: SignUpDto, createdBy: User) {
-  //   const [existingUser] = await this.repo.find({
-  //     where: [{ email: props.email }, { phoneNumber: props.phoneNumber }],
-  //   });
-  //   if (existingUser) {
-  //     throw new BadRequestException('Email or phone number is already taken');
-  //   }
-  //   const user = this.repo.create(props);
-  //   user.password = hashSync(user.password, 12);
-  //   return this.lem.create(this.repo, user, createdBy);
-  // }
+  async deleteAccount(user: User) {
+    const { id } = user;
+    await this.repo.remove(user);
+    return Object.assign(user, { id });
+  }
+
+  async onModuleInit() {
+    const existingSuperAdmin = await this.repo.findOne({
+      where: {
+        role: UserRole.superAdmin,
+      },
+    });
+    if (existingSuperAdmin) {
+      return;
+    }
+
+    await this.registerSuperAdmin();
+  }
 
   async registerSuperAdmin() {
     const superAdmin = this.repo.create({

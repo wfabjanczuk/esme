@@ -40,16 +40,6 @@ export class EventsService {
     });
   }
 
-  countAll(agencyId: number) {
-    return this.repo.count({
-      where: {
-        agency: {
-          id: agencyId,
-        },
-      },
-    });
-  }
-
   async create(props: CreateEventDto, agency: Agency, createdBy: User) {
     const [existingEvent] = await this.repo.find({
       where: [{ name: props.name }],

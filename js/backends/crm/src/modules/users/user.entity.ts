@@ -52,7 +52,7 @@ export class User {
   @ApiProperty({ example: 1 })
   agencyId?: number;
 
-  @ManyToOne(() => Agency, (agency) => agency.users)
+  @ManyToOne(() => Agency, (agency) => agency.users, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'agencyId' })
   @ApiHideProperty()
   agency?: Agency;
