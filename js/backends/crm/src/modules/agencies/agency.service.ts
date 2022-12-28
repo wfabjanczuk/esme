@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { RegisterAgencyDto } from './dtos/register-agency.dto';
 import { hashSync } from 'bcrypt';
-import { User, UserRole } from '../users/user.entity';
+import { User } from '../users/user.entity';
 import { LoggingEntityManager } from '../changelogs/logging-entity-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Agency } from './agency.entity';
 import { Repository } from 'typeorm';
 import { UpdateAgencyDto } from './dtos/update-agency.dto';
+import { UserRole } from '../users/user-role.enum';
 
 @Injectable()
 export class AgencyService {

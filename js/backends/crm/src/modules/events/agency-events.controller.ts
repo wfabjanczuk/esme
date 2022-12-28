@@ -59,7 +59,7 @@ export class AgencyEventsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Event with id 1 not found',
+        message: 'Event with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -88,7 +88,7 @@ export class AgencyEventsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Event with id 1 not found',
+        message: 'Event with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -111,7 +111,7 @@ export class AgencyEventsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Event with id 1 not found',
+        message: 'Event with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },

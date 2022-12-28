@@ -6,11 +6,25 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CurrentUserMiddleware } from '../../common/middlewares/current-user.middleware';
 import { AuthenticationController } from './authentication.controller';
 import { AuthenticationService } from './authentication.service';
+import { AgencyUsersController } from './agency-users.controller';
+import { AgencyUsersService } from './agency-users.service';
+import { ProfileService } from './profile.service';
+import { ProfileController } from './profile.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  controllers: [AuthenticationController, UsersController],
-  providers: [AuthenticationService, UsersService],
+  controllers: [
+    AuthenticationController,
+    ProfileController,
+    UsersController,
+    AgencyUsersController,
+  ],
+  providers: [
+    AuthenticationService,
+    ProfileService,
+    UsersService,
+    AgencyUsersService,
+  ],
 })
 export class UsersModule {
   configure(consumer: MiddlewareConsumer) {

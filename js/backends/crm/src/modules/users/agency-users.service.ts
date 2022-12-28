@@ -9,33 +9,46 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { LoggingEntityManager } from '../changelogs/logging-entity-manager';
-import { CreateUserDto } from './dtos/create-user.dto';
 import { UserRole } from './user-role.enum';
 import { hashSync } from 'bcrypt';
+import { CreateAgencyUserDto } from './dtos/create-agency-user.dto';
 
 @Injectable()
-export class UsersService {
+export class AgencyUsersService {
   constructor(
     private lem: LoggingEntityManager,
     @InjectRepository(User) private repo: Repository<User>,
   ) {}
 
-  findAll() {
-    return this.repo.find();
+  findAll(agencyId: number) {
+    return this.repo.find({
+      where: {
+        agency: {
+          id: agencyId,
+        },
+      },
+    });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, agencyId: number) {
     const user = await this.repo.findOne({
-      where: { id },
+      where: {
+        id,
+        agency: {
+          id: agencyId,
+        },
+      },
       relations: { agency: true },
     });
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      throw new NotFoundException(
+        `User with id ${id} not found in agency ${agencyId}`,
+      );
     }
     return user;
   }
 
-  async create(props: CreateUserDto, createdBy: User) {
+  async create(props: CreateAgencyUserDto, createdBy: User) {
     const [existingUser] = await this.repo.find({
       where: [{ email: props.email }],
     });
@@ -43,6 +56,7 @@ export class UsersService {
       throw new BadRequestException('Email is already taken');
     }
     const user = this.repo.create(props);
+    user.agencyId = createdBy.agencyId;
     validateRole('create', user, createdBy);
     validateAgency(user);
     user.password = hashSync(user.password, 12);
@@ -50,13 +64,16 @@ export class UsersService {
   }
 
   async update(id: number, props: UpdateUserDto, updatedBy: User) {
-    const user = Object.assign(await this.findOne(id), props);
+    const user = Object.assign(
+      await this.findOne(id, updatedBy.agencyId),
+      props,
+    );
     validateRole('update', user, updatedBy);
     return this.lem.update(this.repo, user, updatedBy);
   }
 
   async remove(id: number, deletedBy: User) {
-    const user = await this.findOne(id);
+    const user = await this.findOne(id, deletedBy.agencyId);
     validateRole('delete', user, deletedBy);
     return this.lem.remove(this.repo, user, deletedBy);
   }

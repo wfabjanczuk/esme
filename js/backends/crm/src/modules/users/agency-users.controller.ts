@@ -10,7 +10,6 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -24,27 +23,28 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PublicUserDto } from './dtos/public-user.dto';
-import { AdminGuard } from '../../common/guards/admin.guard';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { AdminRoles } from './user-role.enum';
+import { AgencyRoles } from './user-role.enum';
+import { AgencyManagerGuard } from '../../common/guards/agency-manager.guard';
+import { AgencyUsersService } from './agency-users.service';
+import { CreateAgencyUserDto } from './dtos/create-agency-user.dto';
 
-@Controller('users')
-@UseGuards(AuthenticationGuard, AdminGuard)
+@Controller('agency/users')
+@UseGuards(AuthenticationGuard, AgencyManagerGuard)
 @Serialize(PublicUserDto)
-@ApiTags('1. Admin: users')
-export class UsersController {
-  constructor(private usersService: UsersService) {}
+@ApiTags('2. Agency: users')
+export class AgencyUsersController {
+  constructor(private agencyUsersService: AgencyUsersService) {}
 
   @Get('roles')
   @Header('Content-Type', 'application/json; charset=utf-8')
   @ApiResponse({
     status: 200,
     schema: {
-      example: JSON.stringify(AdminRoles),
+      example: JSON.stringify(AgencyRoles),
     },
   })
   getAdminRoles() {
-    return JSON.stringify(AdminRoles);
+    return JSON.stringify(AgencyRoles);
   }
 
   @Get(':id')
@@ -56,13 +56,13 @@ export class UsersController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'User with id 1 not found',
+        message: 'User with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
-  findOne(@Param() { id }: IdDto) {
-    return this.usersService.findOne(id);
+  findOne(@CurrentUser() currentUser, @Param() { id }: IdDto) {
+    return this.agencyUsersService.findOne(id, currentUser.agencyId);
   }
 
   @Get()
@@ -70,8 +70,8 @@ export class UsersController {
     status: 200,
     type: [User],
   })
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@CurrentUser() currentUser) {
+    return this.agencyUsersService.findAll(currentUser.agencyId);
   }
 
   @Post()
@@ -88,8 +88,8 @@ export class UsersController {
       },
     },
   })
-  async create(@CurrentUser() currentUser, @Body() body: CreateUserDto) {
-    return this.usersService.create(body, currentUser);
+  async create(@CurrentUser() currentUser, @Body() body: CreateAgencyUserDto) {
+    return this.agencyUsersService.create(body, currentUser);
   }
 
   @Patch(':id')
@@ -101,7 +101,7 @@ export class UsersController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'User with id 1 not found',
+        message: 'User with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -111,7 +111,7 @@ export class UsersController {
     @Param() { id }: IdDto,
     @Body() body: UpdateUserDto,
   ) {
-    return await this.usersService.update(id, body, currentUser);
+    return await this.agencyUsersService.update(id, body, currentUser);
   }
 
   @Delete(':id')
@@ -123,7 +123,7 @@ export class UsersController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'User with id 1 not found',
+        message: 'User with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -133,7 +133,7 @@ export class UsersController {
     @Session() session: any,
     @Param() { id }: IdDto,
   ) {
-    const removedUser = await this.usersService.remove(id, currentUser);
+    const removedUser = await this.agencyUsersService.remove(id, currentUser);
     if (id === session.userId) {
       session.userId = undefined;
     }

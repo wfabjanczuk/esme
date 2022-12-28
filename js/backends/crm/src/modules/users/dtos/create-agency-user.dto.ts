@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from '../user.entity';
 import {
   IsEmail,
   IsEnum,
@@ -9,6 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Match } from '../../../common/decorators/match.decorator';
+import { UserRole } from '../user-role.enum';
 
 export class CreateAgencyUserDto {
   @IsEmail()

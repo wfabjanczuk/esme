@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   Post,
   Session,
@@ -9,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './user.entity';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { SignInDto } from './dtos/sign-in.dto';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { AuthenticationService } from './authentication.service';
@@ -54,15 +52,5 @@ export class AuthenticationController {
   })
   signOut(@Session() session: any) {
     session.userId = undefined;
-  }
-
-  @Get('who-am-i')
-  @UseGuards(AuthenticationGuard)
-  @ApiResponse({
-    status: 200,
-    type: User,
-  })
-  whoAmI(@CurrentUser() currentUser: User) {
-    return currentUser;
   }
 }

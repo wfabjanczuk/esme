@@ -9,14 +9,7 @@ import {
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Changelog } from '../changelogs/changelog.entity';
 import { Agency } from '../agencies/agency.entity';
-
-export enum UserRole {
-  superAdmin,
-  admin,
-  agencyOwner,
-  agencyManager,
-  agencySupport,
-}
+import { UserRole } from './user-role.enum';
 
 @Entity()
 export class User {
@@ -40,7 +33,7 @@ export class User {
   @ApiProperty({ example: 'Kowalski' })
   lastName: string;
 
-  @Column({ length: 30, nullable: true })
+  @Column({ length: 30 })
   @ApiProperty({ example: '+48123456789' })
   phoneNumber: string;
 

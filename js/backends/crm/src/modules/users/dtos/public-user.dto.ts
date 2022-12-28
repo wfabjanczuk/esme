@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { UserRole } from '../user.entity';
+import { UserRole } from '../user-role.enum';
 
 export class PublicUserDto {
   @Expose()

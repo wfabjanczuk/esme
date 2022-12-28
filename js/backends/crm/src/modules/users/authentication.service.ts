@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
-import { User, UserRole } from './user.entity';
+import { User } from './user.entity';
 import { compareSync, hashSync } from 'bcrypt';
 import { LoggingEntityManager } from '../changelogs/logging-entity-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
+import { UserRole } from './user-role.enum';
 
 @Injectable()
 export class AuthenticationService implements OnModuleInit {
@@ -35,7 +36,6 @@ export class AuthenticationService implements OnModuleInit {
     if (existingSuperAdmin) {
       return;
     }
-
     await this.registerSuperAdmin();
   }
 
