@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
-import { EventsService } from '../events/events.service';
 import { IssuesService } from './issues.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Issue } from './issue.entity';
@@ -19,15 +18,13 @@ import { CreateIssueDto } from './dtos/create-issue.dto';
 import { UpdateIssueDto } from './dtos/update-issue.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { AdminGuard } from '../../common/guards/admin.guard';
+import { FindIssuesOptionsDto } from './dtos/find-issues-options.dto';
 
 @Controller('issues')
 @UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: issues')
 export class IssuesController {
-  constructor(
-    private eventsService: EventsService,
-    private issuesService: IssuesService,
-  ) {}
+  constructor(private issuesService: IssuesService) {}
 
   @Post()
   @ApiResponse({
@@ -44,8 +41,7 @@ export class IssuesController {
     },
   })
   async create(@CurrentUser() currentUser, @Body() body: CreateIssueDto) {
-    const event = await this.eventsService.findOne(body.eventId);
-    return this.issuesService.create(body, event, currentUser);
+    return this.issuesService.create(body, currentUser);
   }
 
   @Get(':id')
@@ -71,11 +67,8 @@ export class IssuesController {
     status: 200,
     type: [Issue],
   })
-  async findAll(@Query('eventId') eventId?: string) {
-    const event = eventId
-      ? await this.eventsService.findOne(parseInt(eventId))
-      : null;
-    return this.issuesService.findAll(event);
+  async findAll(@Query() options: FindIssuesOptionsDto) {
+    return this.issuesService.findAll(options);
   }
 
   @Patch(':id')

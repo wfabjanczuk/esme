@@ -1,15 +1,12 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Contact } from '../contacts/contact.entity';
 import { Agency } from '../agencies/agency.entity';
-import { Announcement } from '../announcements/announcement.entity';
-import { Issue } from '../issues/issue.entity';
 
 @Entity()
 export class Event {
@@ -45,19 +42,12 @@ export class Event {
   @ApiProperty({ example: '2022-11-27T18:47:02.541Z' })
   timeEnd: Date;
 
-  @ManyToOne(() => Agency, (agency) => agency.events, { onDelete: 'CASCADE' })
+  @Column()
+  @ApiProperty({ example: 1 })
+  agencyId: number;
+
+  @ManyToOne(() => Agency, null, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'agencyId' })
   @ApiHideProperty()
   agency: Agency;
-
-  @OneToMany(() => Contact, (contact) => contact.event)
-  @ApiHideProperty()
-  contacts: Contact[];
-
-  @OneToMany(() => Announcement, (announcement) => announcement.event)
-  @ApiHideProperty()
-  announcements: Announcement[];
-
-  @OneToMany(() => Issue, (issue) => issue.event)
-  @ApiHideProperty()
-  issues: Issue[];
 }

@@ -1,8 +1,5 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Event } from '../events/event.entity';
-import { User } from '../users/user.entity';
-import { Changelog } from '../changelogs/changelog.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Agency {
@@ -25,16 +22,4 @@ export class Agency {
   @Column({ type: 'boolean', default: false })
   @ApiProperty({ example: false })
   approved: boolean;
-
-  @OneToMany(() => User, (user) => user.agency)
-  @ApiHideProperty()
-  users: User[];
-
-  @OneToMany(() => Event, (event) => event.agency)
-  @ApiHideProperty()
-  events: Event[];
-
-  @OneToMany(() => Changelog, (changelog) => changelog.userAgency)
-  @ApiHideProperty()
-  changelogs: Changelog[];
 }

@@ -1,13 +1,13 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Event } from '../events/event.entity';
-import { Comment } from '../comments/comment.entity';
+import { Agency } from '../agencies/agency.entity';
 
 export enum IssueStatus {
   toDo = 'to_do',
@@ -44,13 +44,25 @@ export class Issue {
   @ApiProperty({ example: 'medium' })
   priority: IssuePriority;
 
-  @OneToMany(() => Comment, (comment) => comment.issue)
-  @ApiHideProperty()
-  comments: Comment[];
+  @Column()
+  @ApiProperty({ example: 1 })
+  eventId: number;
 
-  @ManyToOne(() => Event, (event) => event.issues, {
+  @ManyToOne(() => Event, null, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'eventId' })
   @ApiHideProperty()
   event: Event;
+
+  @Column()
+  @ApiProperty({ example: 1 })
+  agencyId: number;
+
+  @ManyToOne(() => Agency, null, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'agencyId' })
+  @ApiHideProperty()
+  agency: Agency;
 }

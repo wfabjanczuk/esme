@@ -8,9 +8,9 @@ import { Event } from './event.entity';
 import { Repository } from 'typeorm';
 import { CreateEventDto } from './dtos/create-event.dto';
 import { UpdateEventDto } from './dtos/update-event.dto';
-import { Agency } from '../agencies/agency.entity';
 import { LoggingEntityManager } from '../changelogs/logging-entity-manager';
 import { User } from '../users/user.entity';
+import { FindEventsOptionsDto } from './dtos/find-events-options.dto';
 
 @Injectable()
 export class EventsService {
@@ -27,20 +27,11 @@ export class EventsService {
     return event;
   }
 
-  findAll(agency?: Agency) {
-    if (!agency) {
-      return this.repo.find();
-    }
-    return this.repo.find({
-      where: {
-        agency: {
-          id: agency.id,
-        },
-      },
-    });
+  findAll(options: FindEventsOptionsDto) {
+    return this.repo.find({ where: options });
   }
 
-  async create(props: CreateEventDto, agency: Agency, createdBy: User) {
+  async create(props: CreateEventDto, createdBy: User) {
     const [existingEvent] = await this.repo.find({
       where: [{ name: props.name }],
     });
@@ -48,7 +39,6 @@ export class EventsService {
       throw new BadRequestException('Name is already taken');
     }
     const event = this.repo.create(props);
-    event.agency = agency;
     return this.lem.create(this.repo, event, createdBy);
   }
 

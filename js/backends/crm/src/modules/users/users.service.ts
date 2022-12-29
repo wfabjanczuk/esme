@@ -45,6 +45,7 @@ export class UsersService {
     const user = this.repo.create(props);
     validateRole('create', user, createdBy);
     validateAgency(user);
+
     user.password = hashSync(user.password, 12);
     return this.lem.create(this.repo, user, createdBy);
   }

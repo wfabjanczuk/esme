@@ -20,19 +20,16 @@ import { EventsService } from './events.service';
 import { Event } from './event.entity';
 import { CreateEventDto } from './dtos/create-event.dto';
 import { UpdateEventDto } from './dtos/update-event.dto';
-import { AgenciesService } from '../agencies/agencies.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { IdDto } from '../../common/dtos/id.dto';
 import { AdminGuard } from '../../common/guards/admin.guard';
+import { FindEventsOptionsDto } from './dtos/find-events-options.dto';
 
 @Controller('events')
 @UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: events')
 export class EventsController {
-  constructor(
-    private eventsService: EventsService,
-    private agenciesService: AgenciesService,
-  ) {}
+  constructor(private eventsService: EventsService) {}
 
   @Post()
   @ApiResponse({
@@ -49,8 +46,7 @@ export class EventsController {
     },
   })
   async create(@CurrentUser() currentUser, @Body() body: CreateEventDto) {
-    const agency = await this.agenciesService.findOne(body.agencyId);
-    return this.eventsService.create(body, agency, currentUser);
+    return this.eventsService.create(body, currentUser);
   }
 
   @Get(':id')
@@ -76,11 +72,8 @@ export class EventsController {
     status: 200,
     type: [Event],
   })
-  async findAll(@Query('agencyId') agencyId?: string) {
-    const agency = agencyId
-      ? await this.agenciesService.findOne(parseInt(agencyId))
-      : null;
-    return this.eventsService.findAll(agency);
+  async findAll(@Query() options: FindEventsOptionsDto) {
+    return this.eventsService.findAll(options);
   }
 
   @Patch(':id')

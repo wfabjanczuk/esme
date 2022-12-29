@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
-import { EventsService } from '../events/events.service';
 import { ContactsService } from './contacts.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { CreateContactDto } from './dtos/create-contact.dto';
@@ -19,15 +18,13 @@ import { Contact } from './contact.entity';
 import { UpdateContactDto } from './dtos/update-contact.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { AdminGuard } from '../../common/guards/admin.guard';
+import { FindContactsOptionsDto } from './dtos/find-contacts-options.dto';
 
 @Controller('contacts')
 @UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: contacts')
 export class ContactsController {
-  constructor(
-    private eventsService: EventsService,
-    private contactsService: ContactsService,
-  ) {}
+  constructor(private contactsService: ContactsService) {}
 
   @Post()
   @ApiResponse({
@@ -44,8 +41,7 @@ export class ContactsController {
     },
   })
   async create(@CurrentUser() currentUser, @Body() body: CreateContactDto) {
-    const event = await this.eventsService.findOne(body.eventId);
-    return this.contactsService.create(body, event, currentUser);
+    return this.contactsService.create(body, currentUser);
   }
 
   @Get(':id')
@@ -71,11 +67,8 @@ export class ContactsController {
     status: 200,
     type: [Contact],
   })
-  async findAll(@Query('eventId') eventId?: string) {
-    const event = eventId
-      ? await this.eventsService.findOne(parseInt(eventId))
-      : null;
-    return this.contactsService.findAll(event);
+  async findAll(@Query() options: FindContactsOptionsDto) {
+    return this.contactsService.findAll(options);
   }
 
   @Patch(':id')

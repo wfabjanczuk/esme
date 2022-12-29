@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
-import { EventsService } from '../events/events.service';
 import { AnnouncementsService } from './announcements.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { CreateAnnouncementDto } from './dtos/create-announcement.dto';
@@ -19,15 +18,13 @@ import { Announcement } from './announcement.entity';
 import { UpdateAnnouncementDto } from './dtos/update-announcement.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { AdminGuard } from '../../common/guards/admin.guard';
+import { FindAnnouncementsOptionsDto } from './dtos/find-announcements-options.dto';
 
 @Controller('announcements')
 @UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: announcements')
 export class AnnouncementsController {
-  constructor(
-    private eventsService: EventsService,
-    private announcementsService: AnnouncementsService,
-  ) {}
+  constructor(private announcementsService: AnnouncementsService) {}
 
   @Post()
   @ApiResponse({
@@ -47,8 +44,7 @@ export class AnnouncementsController {
     @CurrentUser() currentUser,
     @Body() body: CreateAnnouncementDto,
   ) {
-    const event = await this.eventsService.findOne(body.eventId);
-    return this.announcementsService.create(body, event, currentUser);
+    return this.announcementsService.create(body, currentUser);
   }
 
   @Get(':id')
@@ -74,11 +70,8 @@ export class AnnouncementsController {
     status: 200,
     type: [Announcement],
   })
-  async findAll(@Query('eventId') eventId?: string) {
-    const event = eventId
-      ? await this.eventsService.findOne(parseInt(eventId))
-      : null;
-    return this.announcementsService.findAll(event);
+  async findAll(@Query() options: FindAnnouncementsOptionsDto) {
+    return this.announcementsService.findAll(options);
   }
 
   @Patch(':id')

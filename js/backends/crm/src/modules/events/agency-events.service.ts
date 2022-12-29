@@ -19,12 +19,7 @@ export class AgencyEventsService {
   ) {}
 
   async findOne(id: number, agencyId: number) {
-    const event = await this.repo.findOneBy({
-      id,
-      agency: {
-        id: agencyId,
-      },
-    });
+    const event = await this.repo.findOneBy({ id, agencyId });
     if (!event) {
       throw new NotFoundException(
         `Event with id ${id} not found in agency ${agencyId}`,
@@ -34,13 +29,7 @@ export class AgencyEventsService {
   }
 
   findAll(agencyId: number) {
-    return this.repo.find({
-      where: {
-        agency: {
-          id: agencyId,
-        },
-      },
-    });
+    return this.repo.find({ where: { agencyId } });
   }
 
   async create(props: CreateAgencyEventDto, createdBy: User) {

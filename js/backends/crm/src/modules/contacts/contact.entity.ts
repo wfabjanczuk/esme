@@ -1,6 +1,13 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Event } from '../events/event.entity';
+import { Agency } from '../agencies/agency.entity';
 
 @Entity()
 export class Contact {
@@ -28,9 +35,25 @@ export class Contact {
   @ApiProperty({ example: 'Available 24/7' })
   additionalNotes: string;
 
-  @ManyToOne(() => Event, (event) => event.contacts, {
+  @Column()
+  @ApiProperty({ example: 1 })
+  eventId: number;
+
+  @ManyToOne(() => Event, null, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'eventId' })
   @ApiHideProperty()
   event: Event;
+
+  @Column()
+  @ApiProperty({ example: 1 })
+  agencyId: number;
+
+  @ManyToOne(() => Agency, null, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'agencyId' })
+  @ApiHideProperty()
+  agency: Agency;
 }

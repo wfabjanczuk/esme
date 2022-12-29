@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
-import { IssuesService } from '../issues/issues.service';
 import { CommentsService } from './comments.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { CreateCommentDto } from './dtos/create-comment.dto';
@@ -19,15 +18,13 @@ import { Comment } from './comment.entity';
 import { UpdateCommentDto } from './dtos/update-comment.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { AdminGuard } from '../../common/guards/admin.guard';
+import { FindCommentsOptionsDto } from './dtos/find-comments-options.dto';
 
 @Controller('comments')
 @UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: comments')
 export class CommentsController {
-  constructor(
-    private issuesService: IssuesService,
-    private commentsService: CommentsService,
-  ) {}
+  constructor(private commentsService: CommentsService) {}
 
   @Post()
   @ApiResponse({
@@ -44,8 +41,7 @@ export class CommentsController {
     },
   })
   async create(@CurrentUser() currentUser, @Body() body: CreateCommentDto) {
-    const issue = await this.issuesService.findOne(body.issueId);
-    return this.commentsService.create(body, issue, currentUser);
+    return this.commentsService.create(body, currentUser);
   }
 
   @Get(':id')
@@ -71,11 +67,8 @@ export class CommentsController {
     status: 200,
     type: [Comment],
   })
-  async findAll(@Query('issueId') issueId?: string) {
-    const issue = issueId
-      ? await this.issuesService.findOne(parseInt(issueId))
-      : null;
-    return this.commentsService.findAll(issue);
+  async findAll(@Query() options: FindCommentsOptionsDto) {
+    return this.commentsService.findAll(options);
   }
 
   @Patch(':id')

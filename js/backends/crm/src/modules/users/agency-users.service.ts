@@ -9,7 +9,6 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { LoggingEntityManager } from '../changelogs/logging-entity-manager';
-import { UserRole } from './user-role.enum';
 import { hashSync } from 'bcrypt';
 import { CreateAgencyUserDto } from './dtos/create-agency-user.dto';
 
@@ -21,23 +20,12 @@ export class AgencyUsersService {
   ) {}
 
   findAll(agencyId: number) {
-    return this.repo.find({
-      where: {
-        agency: {
-          id: agencyId,
-        },
-      },
-    });
+    return this.repo.find({ where: { agencyId } });
   }
 
   async findOne(id: number, agencyId: number) {
     const user = await this.repo.findOne({
-      where: {
-        id,
-        agency: {
-          id: agencyId,
-        },
-      },
+      where: { id, agencyId },
       relations: { agency: true },
     });
     if (!user) {
@@ -56,9 +44,9 @@ export class AgencyUsersService {
       throw new BadRequestException('Email is already taken');
     }
     const user = this.repo.create(props);
-    user.agencyId = createdBy.agencyId;
     validateRole('create', user, createdBy);
-    validateAgency(user);
+
+    user.agencyId = createdBy.agencyId;
     user.password = hashSync(user.password, 12);
     return this.lem.create(this.repo, user, createdBy);
   }
@@ -83,17 +71,6 @@ const validateRole = (action: string, user: User, changedBy: User) => {
   if (user.role <= changedBy.role) {
     throw new ForbiddenException(
       `Not allowed to ${action} user with same role or senior`,
-    );
-  }
-};
-
-const validateAgency = (user: User) => {
-  if (user.role < UserRole.agencyOwner) {
-    return;
-  }
-  if (!user.agencyId) {
-    throw new BadRequestException(
-      `User with agency scoped role must have agency id assigned`,
     );
   }
 };

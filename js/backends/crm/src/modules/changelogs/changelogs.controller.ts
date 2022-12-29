@@ -1,9 +1,10 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { Changelog } from './changelog.entity';
 import { ChangelogsService } from './changelogs.service';
 import { AdminGuard } from '../../common/guards/admin.guard';
+import { FindChangelogsOptionsDto } from './dtos/find-changelogs-options.dto';
 
 @Controller('changelogs')
 @UseGuards(AuthenticationGuard, AdminGuard)
@@ -16,7 +17,7 @@ export class ChangelogsController {
     status: 200,
     type: [Changelog],
   })
-  findAll() {
-    return this.changelogsService.findAll();
+  findAll(@Query() options: FindChangelogsOptionsDto) {
+    return this.changelogsService.findAll(options);
   }
 }

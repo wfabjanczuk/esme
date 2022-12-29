@@ -3,11 +3,9 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Changelog } from '../changelogs/changelog.entity';
 import { Agency } from '../agencies/agency.entity';
 import { UserRole } from './user-role.enum';
 
@@ -45,12 +43,8 @@ export class User {
   @ApiProperty({ example: 1 })
   agencyId?: number;
 
-  @ManyToOne(() => Agency, (agency) => agency.users, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Agency, null, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'agencyId' })
   @ApiHideProperty()
   agency?: Agency;
-
-  @OneToMany(() => Changelog, (changelog) => changelog.user)
-  @ApiHideProperty()
-  changelogs: Changelog[];
 }

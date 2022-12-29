@@ -3,52 +3,50 @@ import { LoggingEntityManager } from '../changelogs/logging-entity-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Contact } from './contact.entity';
-import { Event } from '../events/event.entity';
 import { User } from '../users/user.entity';
 import { CreateContactDto } from './dtos/create-contact.dto';
 import { UpdateContactDto } from './dtos/update-contact.dto';
+import { FindContactsOptionsDto } from './dtos/find-contacts-options.dto';
+import { Event } from '../events/event.entity';
 
 @Injectable()
 export class ContactsService {
   constructor(
     private lem: LoggingEntityManager,
-    @InjectRepository(Contact) private repo: Repository<Contact>,
+    @InjectRepository(Contact) private contactsRepo: Repository<Contact>,
+    @InjectRepository(Event) private eventsRepo: Repository<Event>,
   ) {}
 
   async findOne(id: number) {
-    const contact = await this.repo.findOneBy({ id });
+    const contact = await this.contactsRepo.findOneBy({ id });
     if (!contact) {
       throw new NotFoundException(`Contact with id ${id} not found`);
     }
     return contact;
   }
 
-  findAll(event?: Event) {
-    if (!event) {
-      return this.repo.find();
-    }
-    return this.repo.find({
-      where: {
-        event: {
-          id: event.id,
-        },
-      },
-    });
+  findAll(options: FindContactsOptionsDto) {
+    return this.contactsRepo.find({ where: options });
   }
 
-  async create(props: CreateContactDto, event: Event, createdBy: User) {
-    const contact = this.repo.create(props);
-    contact.event = event;
-    return this.lem.create(this.repo, contact, createdBy);
+  async create(props: CreateContactDto, createdBy: User) {
+    const event = await this.eventsRepo.findOneBy({ id: props.eventId });
+    if (!event) {
+      throw new NotFoundException(`Event with id ${props.eventId} not found`);
+    }
+
+    const contact = this.contactsRepo.create(props);
+    contact.agencyId = event.agencyId;
+    return this.lem.create(this.contactsRepo, contact, createdBy);
   }
 
   async update(id: number, props: UpdateContactDto, updatedBy: User) {
     const contact = Object.assign(await this.findOne(id), props);
-    return this.lem.update(this.repo, contact, updatedBy);
+    return this.lem.update(this.contactsRepo, contact, updatedBy);
   }
 
   async remove(id: number, deletedBy: User) {
     const contact = await this.findOne(id);
-    return this.lem.remove(this.repo, contact, deletedBy);
+    return this.lem.remove(this.contactsRepo, contact, deletedBy);
   }
 }

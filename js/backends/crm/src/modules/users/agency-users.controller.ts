@@ -27,9 +27,10 @@ import { AgencyRoles } from './user-role.enum';
 import { AgencyManagerGuard } from '../../common/guards/agency-manager.guard';
 import { AgencyUsersService } from './agency-users.service';
 import { CreateAgencyUserDto } from './dtos/create-agency-user.dto';
+import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
 
 @Controller('agency/users')
-@UseGuards(AuthenticationGuard, AgencyManagerGuard)
+@UseGuards(AuthenticationGuard)
 @Serialize(PublicUserDto)
 @ApiTags('2. Agency: users')
 export class AgencyUsersController {
@@ -37,6 +38,7 @@ export class AgencyUsersController {
 
   @Get('roles')
   @Header('Content-Type', 'application/json; charset=utf-8')
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     schema: {
@@ -48,6 +50,7 @@ export class AgencyUsersController {
   }
 
   @Get(':id')
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: User,
@@ -66,6 +69,7 @@ export class AgencyUsersController {
   }
 
   @Get()
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: [User],
@@ -75,6 +79,7 @@ export class AgencyUsersController {
   }
 
   @Post()
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 201,
     type: User,
@@ -93,6 +98,7 @@ export class AgencyUsersController {
   }
 
   @Patch(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: User,
@@ -115,6 +121,7 @@ export class AgencyUsersController {
   }
 
   @Delete(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: User,
