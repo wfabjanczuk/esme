@@ -39,8 +39,9 @@ export class AgencyService {
 
     await this.agenciesRepo.manager.transaction(async (em) => {
       await em.save(agency);
-      user.agency = agency;
+      user.agencyId = agency.id;
       await em.save(user);
+      await this.lem.logInsert(em, agency, user);
     });
     return agency;
   }

@@ -19,6 +19,7 @@ import { UpdateIssueDto } from './dtos/update-issue.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { AdminGuard } from '../../common/guards/admin.guard';
 import { FindIssuesOptionsDto } from './dtos/find-issues-options.dto';
+import { User } from '../users/user.entity';
 
 @Controller('issues')
 @UseGuards(AuthenticationGuard, AdminGuard)
@@ -40,7 +41,7 @@ export class IssuesController {
       },
     },
   })
-  async create(@CurrentUser() currentUser, @Body() body: CreateIssueDto) {
+  async create(@CurrentUser() currentUser: User, @Body() body: CreateIssueDto) {
     return this.issuesService.create(body, currentUser);
   }
 
@@ -86,7 +87,7 @@ export class IssuesController {
     },
   })
   update(
-    @CurrentUser() currentUser,
+    @CurrentUser() currentUser: User,
     @Param() { id }: IdDto,
     @Body() body: UpdateIssueDto,
   ) {
@@ -107,7 +108,7 @@ export class IssuesController {
       },
     },
   })
-  async remove(@CurrentUser() currentUser, @Param() { id }: IdDto) {
+  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.issuesService.remove(id, currentUser);
   }
 }

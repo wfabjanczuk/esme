@@ -29,9 +29,7 @@ export class Announcement {
   @ApiProperty({ example: 1 })
   eventId: number;
 
-  @ManyToOne(() => Event, null, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => Event, null, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'eventId' })
   @ApiHideProperty()
   event: Event;
@@ -40,9 +38,7 @@ export class Announcement {
   @ApiProperty({ example: 1 })
   agencyId: number;
 
-  @ManyToOne(() => Agency, null, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => Agency, null, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'agencyId' })
   @ApiHideProperty()
   agency: Agency;

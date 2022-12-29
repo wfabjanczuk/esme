@@ -40,7 +40,7 @@ export class AgencyEventsService {
       throw new BadRequestException('Name is already taken');
     }
     const event = this.repo.create(props);
-    event.agency = createdBy.agency;
+    event.agencyId = createdBy.agencyId;
     return this.lem.create(this.repo, event, createdBy);
   }
 

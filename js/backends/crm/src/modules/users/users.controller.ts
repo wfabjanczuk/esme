@@ -88,7 +88,7 @@ export class UsersController {
       },
     },
   })
-  async create(@CurrentUser() currentUser, @Body() body: CreateUserDto) {
+  async create(@CurrentUser() currentUser: User, @Body() body: CreateUserDto) {
     return this.usersService.create(body, currentUser);
   }
 

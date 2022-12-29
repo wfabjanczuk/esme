@@ -11,23 +11,25 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
-import { AnnouncementsService } from './announcements.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { CreateAnnouncementDto } from './dtos/create-announcement.dto';
 import { Announcement } from './announcement.entity';
 import { UpdateAnnouncementDto } from './dtos/update-announcement.dto';
 import { IdDto } from '../../common/dtos/id.dto';
-import { AdminGuard } from '../../common/guards/admin.guard';
-import { FindAnnouncementsOptionsDto } from './dtos/find-announcements-options.dto';
+import { AgencyAnnouncementsService } from './agency-announcements.service';
 import { User } from '../users/user.entity';
+import { FindAgencyAnnouncementsOptionsDto } from './dtos/find-agency-announcements-options.dto';
+import { AgencyManagerGuard } from '../../common/guards/agency-manager.guard';
+import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
 
-@Controller('announcements')
-@UseGuards(AuthenticationGuard, AdminGuard)
-@ApiTags('1. Admin: announcements')
-export class AnnouncementsController {
-  constructor(private announcementsService: AnnouncementsService) {}
+@Controller('agency/announcements')
+@UseGuards(AuthenticationGuard)
+@ApiTags('2. Agency: announcements')
+export class AgencyAnnouncementsController {
+  constructor(private agencyAnnouncementsService: AgencyAnnouncementsService) {}
 
   @Post()
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 201,
     type: Announcement,
@@ -45,10 +47,11 @@ export class AnnouncementsController {
     @CurrentUser() currentUser: User,
     @Body() body: CreateAnnouncementDto,
   ) {
-    return this.announcementsService.create(body, currentUser);
+    return this.agencyAnnouncementsService.create(body, currentUser);
   }
 
   @Get(':id')
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: Announcement,
@@ -57,25 +60,30 @@ export class AnnouncementsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Announcement with id 1 not found',
+        message: 'Announcement with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
-  findOne(@Param() { id }: IdDto) {
-    return this.announcementsService.findOne(id);
+  findOne(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
+    return this.agencyAnnouncementsService.findOne(id, currentUser.agencyId);
   }
 
   @Get()
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: [Announcement],
   })
-  async findAll(@Query() options: FindAnnouncementsOptionsDto) {
-    return this.announcementsService.findAll(options);
+  async findAll(
+    @CurrentUser() { agencyId }: User,
+    @Query() options: FindAgencyAnnouncementsOptionsDto,
+  ) {
+    return this.agencyAnnouncementsService.findAll({ ...options, agencyId });
   }
 
   @Patch(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: Announcement,
@@ -94,10 +102,11 @@ export class AnnouncementsController {
     @Param() { id }: IdDto,
     @Body() body: UpdateAnnouncementDto,
   ) {
-    return this.announcementsService.update(id, body, currentUser);
+    return this.agencyAnnouncementsService.update(id, body, currentUser);
   }
 
   @Delete(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: Announcement,
@@ -112,6 +121,6 @@ export class AnnouncementsController {
     },
   })
   async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
-    return this.announcementsService.remove(id, currentUser);
+    return this.agencyAnnouncementsService.remove(id, currentUser);
   }
 }

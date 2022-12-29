@@ -24,6 +24,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { IdDto } from '../../common/dtos/id.dto';
 import { AdminGuard } from '../../common/guards/admin.guard';
 import { FindEventsOptionsDto } from './dtos/find-events-options.dto';
+import { User } from '../users/user.entity';
 
 @Controller('events')
 @UseGuards(AuthenticationGuard, AdminGuard)
@@ -45,7 +46,7 @@ export class EventsController {
       },
     },
   })
-  async create(@CurrentUser() currentUser, @Body() body: CreateEventDto) {
+  async create(@CurrentUser() currentUser: User, @Body() body: CreateEventDto) {
     return this.eventsService.create(body, currentUser);
   }
 
@@ -91,7 +92,7 @@ export class EventsController {
     },
   })
   update(
-    @CurrentUser() currentUser,
+    @CurrentUser() currentUser: User,
     @Param() { id }: IdDto,
     @Body() body: UpdateEventDto,
   ) {
@@ -112,7 +113,7 @@ export class EventsController {
       },
     },
   })
-  async remove(@CurrentUser() currentUser, @Param() { id }: IdDto) {
+  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.eventsService.remove(id, currentUser);
   }
 }

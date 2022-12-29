@@ -19,6 +19,7 @@ import { UpdateCommentDto } from './dtos/update-comment.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { AdminGuard } from '../../common/guards/admin.guard';
 import { FindCommentsOptionsDto } from './dtos/find-comments-options.dto';
+import { User } from '../users/user.entity';
 
 @Controller('comments')
 @UseGuards(AuthenticationGuard, AdminGuard)
@@ -40,7 +41,10 @@ export class CommentsController {
       },
     },
   })
-  async create(@CurrentUser() currentUser, @Body() body: CreateCommentDto) {
+  async create(
+    @CurrentUser() currentUser: User,
+    @Body() body: CreateCommentDto,
+  ) {
     return this.commentsService.create(body, currentUser);
   }
 
@@ -86,7 +90,7 @@ export class CommentsController {
     },
   })
   update(
-    @CurrentUser() currentUser,
+    @CurrentUser() currentUser: User,
     @Param() { id }: IdDto,
     @Body() body: UpdateCommentDto,
   ) {
@@ -107,7 +111,7 @@ export class CommentsController {
       },
     },
   })
-  async remove(@CurrentUser() currentUser, @Param() { id }: IdDto) {
+  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.commentsService.remove(id, currentUser);
   }
 }

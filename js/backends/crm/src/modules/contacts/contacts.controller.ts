@@ -19,6 +19,7 @@ import { UpdateContactDto } from './dtos/update-contact.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { AdminGuard } from '../../common/guards/admin.guard';
 import { FindContactsOptionsDto } from './dtos/find-contacts-options.dto';
+import { User } from '../users/user.entity';
 
 @Controller('contacts')
 @UseGuards(AuthenticationGuard, AdminGuard)
@@ -40,7 +41,10 @@ export class ContactsController {
       },
     },
   })
-  async create(@CurrentUser() currentUser, @Body() body: CreateContactDto) {
+  async create(
+    @CurrentUser() currentUser: User,
+    @Body() body: CreateContactDto,
+  ) {
     return this.contactsService.create(body, currentUser);
   }
 
@@ -86,7 +90,7 @@ export class ContactsController {
     },
   })
   update(
-    @CurrentUser() currentUser,
+    @CurrentUser() currentUser: User,
     @Param() { id }: IdDto,
     @Body() body: UpdateContactDto,
   ) {
@@ -107,7 +111,7 @@ export class ContactsController {
       },
     },
   })
-  async remove(@CurrentUser() currentUser, @Param() { id }: IdDto) {
+  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.contactsService.remove(id, currentUser);
   }
 }

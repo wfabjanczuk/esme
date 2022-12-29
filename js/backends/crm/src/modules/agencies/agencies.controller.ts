@@ -16,6 +16,7 @@ import { AdminGuard } from '../../common/guards/admin.guard';
 import { VerifyAgencyDto } from './dtos/verify-agency.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { UpdateAgencyDto } from './dtos/update-agency.dto';
+import { User } from '../users/user.entity';
 
 @Controller('agencies')
 @UseGuards(AuthenticationGuard, AdminGuard)
@@ -56,7 +57,7 @@ export class AgenciesController {
     type: Agency,
   })
   update(
-    @CurrentUser() currentUser,
+    @CurrentUser() currentUser: User,
     @Param() { id }: IdDto,
     @Body() body: UpdateAgencyDto,
   ) {
@@ -78,7 +79,7 @@ export class AgenciesController {
     },
   })
   verify(
-    @CurrentUser() currentUser,
+    @CurrentUser() currentUser: User,
     @Param() { id }: IdDto,
     @Body() body: VerifyAgencyDto,
   ) {
@@ -99,7 +100,7 @@ export class AgenciesController {
       },
     },
   })
-  async remove(@CurrentUser() currentUser, @Param() { id }: IdDto) {
+  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.agenciesService.remove(id, currentUser);
   }
 }

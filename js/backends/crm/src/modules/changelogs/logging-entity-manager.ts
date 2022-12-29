@@ -55,11 +55,7 @@ export class LoggingEntityManager {
     return entity;
   }
 
-  private async logInsert(
-    em: EntityManager,
-    entity: LoggableEntity,
-    createdBy: User,
-  ) {
+  async logInsert(em: EntityManager, entity: LoggableEntity, createdBy: User) {
     await em.save(
       this.repo.create({
         entityId: entity.id,
@@ -67,17 +63,13 @@ export class LoggingEntityManager {
         type: ChangeType.insert,
         time: new Date().toISOString(),
         after: JSON.stringify(entity),
-        user: createdBy,
-        userAgency: createdBy.agency,
+        userId: createdBy.id,
+        userAgencyId: createdBy.agencyId,
       }),
     );
   }
 
-  private async logUpdate(
-    em: EntityManager,
-    entity: LoggableEntity,
-    updatedBy: User,
-  ) {
+  async logUpdate(em: EntityManager, entity: LoggableEntity, updatedBy: User) {
     await em.save(
       this.repo.create({
         entityId: entity.id,
@@ -85,17 +77,13 @@ export class LoggingEntityManager {
         type: ChangeType.update,
         time: new Date().toISOString(),
         after: JSON.stringify(entity),
-        user: updatedBy,
-        userAgency: updatedBy.agency,
+        userId: updatedBy.id,
+        userAgencyId: updatedBy.agencyId,
       }),
     );
   }
 
-  private async logDelete(
-    em: EntityManager,
-    entity: LoggableEntity,
-    deletedBy: User,
-  ) {
+  async logDelete(em: EntityManager, entity: LoggableEntity, deletedBy: User) {
     await em.save(
       this.repo.create({
         entityId: entity.id,
@@ -103,8 +91,8 @@ export class LoggingEntityManager {
         type: ChangeType.delete,
         time: new Date().toISOString(),
         after: undefined,
-        user: deletedBy,
-        userAgency: deletedBy.agency,
+        userId: deletedBy.id,
+        userAgencyId: deletedBy.agencyId,
       }),
     );
   }

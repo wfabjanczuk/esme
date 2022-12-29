@@ -23,9 +23,7 @@ export class Comment {
   @ApiProperty({ example: 1 })
   issueId: number;
 
-  @ManyToOne(() => Issue, null, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => Issue, null, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'issueId' })
   @ApiHideProperty()
   issue: Issue;
@@ -34,9 +32,7 @@ export class Comment {
   @ApiProperty({ example: 1 })
   agencyId: number;
 
-  @ManyToOne(() => Agency, null, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => Agency, null, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'agencyId' })
   @ApiHideProperty()
   agency: Agency;

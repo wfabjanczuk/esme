@@ -16,6 +16,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AgencyOwnerGuard } from '../../common/guards/agency-owner.guard';
 import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
 import { AgencyService } from './agency.service';
+import { User } from '../users/user.entity';
 
 @Controller('agency')
 @ApiTags('2. Agency')
@@ -45,7 +46,7 @@ export class AgencyController {
       },
     },
   })
-  register(@CurrentUser() currentUser, @Body() body: RegisterAgencyDto) {
+  register(@Body() body: RegisterAgencyDto) {
     return this.agencyService.register(body);
   }
 
@@ -55,7 +56,7 @@ export class AgencyController {
     status: 200,
     type: Agency,
   })
-  get(@CurrentUser() currentUser) {
+  get(@CurrentUser() currentUser: User) {
     return currentUser.agency;
   }
 
@@ -65,7 +66,7 @@ export class AgencyController {
     status: 200,
     type: Agency,
   })
-  update(@CurrentUser() currentUser, @Body() body: UpdateAgencyDto) {
+  update(@CurrentUser() currentUser: User, @Body() body: UpdateAgencyDto) {
     return this.agencyService.update(body, currentUser);
   }
 
@@ -75,7 +76,7 @@ export class AgencyController {
     status: 200,
     type: Agency,
   })
-  async remove(@CurrentUser() currentUser) {
+  async remove(@CurrentUser() currentUser: User) {
     return this.agencyService.remove(currentUser);
   }
 }

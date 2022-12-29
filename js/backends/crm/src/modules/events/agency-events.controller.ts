@@ -23,6 +23,7 @@ import { AgencyManagerGuard } from '../../common/guards/agency-manager.guard';
 import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
 import { AgencyEventsService } from './agency-events.service';
 import { CreateAgencyEventDto } from './dtos/create-agency-event.dto';
+import { User } from '../users/user.entity';
 
 @Controller('agency/events')
 @UseGuards(AuthenticationGuard)
@@ -45,7 +46,10 @@ export class AgencyEventsController {
       },
     },
   })
-  async create(@CurrentUser() currentUser, @Body() body: CreateAgencyEventDto) {
+  async create(
+    @CurrentUser() currentUser: User,
+    @Body() body: CreateAgencyEventDto,
+  ) {
     return this.agencyEventsService.create(body, currentUser);
   }
 
@@ -64,7 +68,7 @@ export class AgencyEventsController {
       },
     },
   })
-  findOne(@CurrentUser() currentUser, @Param() { id }: IdDto) {
+  findOne(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.agencyEventsService.findOne(id, currentUser.agencyId);
   }
 
@@ -74,7 +78,7 @@ export class AgencyEventsController {
     status: 200,
     type: [Event],
   })
-  async findAll(@CurrentUser() currentUser) {
+  async findAll(@CurrentUser() currentUser: User) {
     return this.agencyEventsService.findAll(currentUser.agencyId);
   }
 
@@ -94,7 +98,7 @@ export class AgencyEventsController {
     },
   })
   update(
-    @CurrentUser() currentUser,
+    @CurrentUser() currentUser: User,
     @Param() { id }: IdDto,
     @Body() body: UpdateEventDto,
   ) {
@@ -116,7 +120,7 @@ export class AgencyEventsController {
       },
     },
   })
-  async remove(@CurrentUser() currentUser, @Param() { id }: IdDto) {
+  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.agencyEventsService.remove(id, currentUser);
   }
 }

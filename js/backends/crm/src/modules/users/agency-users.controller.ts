@@ -64,7 +64,7 @@ export class AgencyUsersController {
       },
     },
   })
-  findOne(@CurrentUser() currentUser, @Param() { id }: IdDto) {
+  findOne(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.agencyUsersService.findOne(id, currentUser.agencyId);
   }
 
@@ -74,7 +74,7 @@ export class AgencyUsersController {
     status: 200,
     type: [User],
   })
-  findAll(@CurrentUser() currentUser) {
+  findAll(@CurrentUser() currentUser: User) {
     return this.agencyUsersService.findAll(currentUser.agencyId);
   }
 
@@ -93,7 +93,10 @@ export class AgencyUsersController {
       },
     },
   })
-  async create(@CurrentUser() currentUser, @Body() body: CreateAgencyUserDto) {
+  async create(
+    @CurrentUser() currentUser: User,
+    @Body() body: CreateAgencyUserDto,
+  ) {
     return this.agencyUsersService.create(body, currentUser);
   }
 
