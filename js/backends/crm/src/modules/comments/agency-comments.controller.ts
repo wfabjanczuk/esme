@@ -11,21 +11,21 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
-import { CommentsService } from './comments.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { CreateCommentDto } from './dtos/create-comment.dto';
 import { Comment } from './comment.entity';
 import { UpdateCommentDto } from './dtos/update-comment.dto';
 import { IdDto } from '../../common/dtos/id.dto';
-import { AdminGuard } from '../../common/guards/admin.guard';
-import { FindCommentsOptionsDto } from './dtos/find-comments-options.dto';
 import { User } from '../users/user.entity';
+import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
+import { AgencyCommentsService } from './agency-comments.service';
+import { FindAgencyCommentsOptionsDto } from './dtos/find-agency-comments-options.dto';
 
-@Controller('comments')
-@UseGuards(AuthenticationGuard, AdminGuard)
-@ApiTags('1. Admin: comments')
-export class CommentsController {
-  constructor(private commentsService: CommentsService) {}
+@Controller('agency/comments')
+@UseGuards(AuthenticationGuard, AgencySupportGuard)
+@ApiTags('2. Agency: comments')
+export class AgencyCommentsController {
+  constructor(private agencyCommentsService: AgencyCommentsService) {}
 
   @Post()
   @ApiResponse({
@@ -36,13 +36,13 @@ export class CommentsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Issue with id 1 not found',
+        message: 'Issue with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
   create(@CurrentUser() currentUser: User, @Body() body: CreateCommentDto) {
-    return this.commentsService.create(body, currentUser);
+    return this.agencyCommentsService.create(body, currentUser);
   }
 
   @Get(':id')
@@ -54,13 +54,13 @@ export class CommentsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Comment with id 1 not found',
+        message: 'Comment with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
-  findOne(@Param() { id }: IdDto) {
-    return this.commentsService.findOne(id);
+  findOne(@CurrentUser() { agencyId }: User, @Param() { id }: IdDto) {
+    return this.agencyCommentsService.findOne(id, agencyId);
   }
 
   @Get()
@@ -68,8 +68,11 @@ export class CommentsController {
     status: 200,
     type: [Comment],
   })
-  findAll(@Query() options: FindCommentsOptionsDto) {
-    return this.commentsService.findAll(options);
+  findAll(
+    @CurrentUser() { agencyId }: User,
+    @Query() options: FindAgencyCommentsOptionsDto,
+  ) {
+    return this.agencyCommentsService.findAll({ ...options, agencyId });
   }
 
   @Patch(':id')
@@ -81,7 +84,7 @@ export class CommentsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Comment with id 1 not found',
+        message: 'Comment with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -91,7 +94,7 @@ export class CommentsController {
     @Param() { id }: IdDto,
     @Body() body: UpdateCommentDto,
   ) {
-    return this.commentsService.update(id, body, currentUser);
+    return this.agencyCommentsService.update(id, body, currentUser);
   }
 
   @Delete(':id')
@@ -103,12 +106,12 @@ export class CommentsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Comment with id 1 not found',
+        message: 'Comment with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
   remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
-    return this.commentsService.remove(id, currentUser);
+    return this.agencyCommentsService.remove(id, currentUser);
   }
 }

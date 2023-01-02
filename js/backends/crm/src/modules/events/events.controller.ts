@@ -46,7 +46,7 @@ export class EventsController {
       },
     },
   })
-  async create(@CurrentUser() currentUser: User, @Body() body: CreateEventDto) {
+  create(@CurrentUser() currentUser: User, @Body() body: CreateEventDto) {
     return this.eventsService.create(body, currentUser);
   }
 
@@ -73,7 +73,7 @@ export class EventsController {
     status: 200,
     type: [Event],
   })
-  async findAll(@Query() options: FindEventsOptionsDto) {
+  findAll(@Query() options: FindEventsOptionsDto) {
     return this.eventsService.findAll(options);
   }
 
@@ -113,7 +113,7 @@ export class EventsController {
       },
     },
   })
-  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
+  remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.eventsService.remove(id, currentUser);
   }
 }

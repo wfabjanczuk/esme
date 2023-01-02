@@ -64,8 +64,8 @@ export class AgencyUsersController {
       },
     },
   })
-  findOne(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
-    return this.agencyUsersService.findOne(id, currentUser.agencyId);
+  findOne(@CurrentUser() { agencyId }: User, @Param() { id }: IdDto) {
+    return this.agencyUsersService.findOne(id, agencyId);
   }
 
   @Get()
@@ -74,8 +74,8 @@ export class AgencyUsersController {
     status: 200,
     type: [User],
   })
-  findAll(@CurrentUser() currentUser: User) {
-    return this.agencyUsersService.findAll(currentUser.agencyId);
+  findAll(@CurrentUser() { agencyId }: User) {
+    return this.agencyUsersService.findAll(agencyId);
   }
 
   @Post()
@@ -93,10 +93,7 @@ export class AgencyUsersController {
       },
     },
   })
-  async create(
-    @CurrentUser() currentUser: User,
-    @Body() body: CreateAgencyUserDto,
-  ) {
+  create(@CurrentUser() currentUser: User, @Body() body: CreateAgencyUserDto) {
     return this.agencyUsersService.create(body, currentUser);
   }
 
@@ -115,12 +112,12 @@ export class AgencyUsersController {
       },
     },
   })
-  async update(
+  update(
     @CurrentUser() currentUser: User,
     @Param() { id }: IdDto,
     @Body() body: UpdateUserDto,
   ) {
-    return await this.agencyUsersService.update(id, body, currentUser);
+    return this.agencyUsersService.update(id, body, currentUser);
   }
 
   @Delete(':id')

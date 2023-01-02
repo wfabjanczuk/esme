@@ -88,7 +88,7 @@ export class UsersController {
       },
     },
   })
-  async create(@CurrentUser() currentUser: User, @Body() body: CreateUserDto) {
+  create(@CurrentUser() currentUser: User, @Body() body: CreateUserDto) {
     return this.usersService.create(body, currentUser);
   }
 
@@ -106,12 +106,12 @@ export class UsersController {
       },
     },
   })
-  async update(
+  update(
     @CurrentUser() currentUser: User,
     @Param() { id }: IdDto,
     @Body() body: UpdateUserDto,
   ) {
-    return await this.usersService.update(id, body, currentUser);
+    return this.usersService.update(id, body, currentUser);
   }
 
   @Delete(':id')

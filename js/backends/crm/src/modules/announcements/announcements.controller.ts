@@ -41,7 +41,7 @@ export class AnnouncementsController {
       },
     },
   })
-  async create(
+  create(
     @CurrentUser() currentUser: User,
     @Body() body: CreateAnnouncementDto,
   ) {
@@ -71,7 +71,7 @@ export class AnnouncementsController {
     status: 200,
     type: [Announcement],
   })
-  async findAll(@Query() options: FindAnnouncementsOptionsDto) {
+  findAll(@Query() options: FindAnnouncementsOptionsDto) {
     return this.announcementsService.findAll(options);
   }
 
@@ -111,7 +111,7 @@ export class AnnouncementsController {
       },
     },
   })
-  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
+  remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.announcementsService.remove(id, currentUser);
   }
 }

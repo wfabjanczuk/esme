@@ -76,7 +76,7 @@ export class AgencyController {
     status: 200,
     type: Agency,
   })
-  async remove(@CurrentUser() currentUser: User) {
+  remove(@CurrentUser() currentUser: User) {
     return this.agencyService.remove(currentUser);
   }
 }

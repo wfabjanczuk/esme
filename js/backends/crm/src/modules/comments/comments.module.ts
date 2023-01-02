@@ -3,12 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Comment } from './comment.entity';
 import { CommentsController } from './comments.controller';
 import { CommentsService } from './comments.service';
-import { IssuesModule } from '../issues/issues.module';
 import { Issue } from '../issues/issue.entity';
+import { AgencyCommentsController } from './agency-comments.controller';
+import { AgencyCommentsService } from './agency-comments.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Comment, Issue]), IssuesModule],
-  controllers: [CommentsController],
-  providers: [CommentsService],
+  imports: [TypeOrmModule.forFeature([Comment, Issue])],
+  controllers: [CommentsController, AgencyCommentsController],
+  providers: [CommentsService, AgencyCommentsService],
 })
 export class CommentsModule {}

@@ -100,7 +100,7 @@ export class AgenciesController {
       },
     },
   })
-  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
+  remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.agenciesService.remove(id, currentUser);
   }
 }

@@ -38,12 +38,12 @@ export class AgencyAnnouncementsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Event with id 1 not found',
+        message: 'Event with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
-  async create(
+  create(
     @CurrentUser() currentUser: User,
     @Body() body: CreateAnnouncementDto,
   ) {
@@ -65,8 +65,8 @@ export class AgencyAnnouncementsController {
       },
     },
   })
-  findOne(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
-    return this.agencyAnnouncementsService.findOne(id, currentUser.agencyId);
+  findOne(@CurrentUser() { agencyId }: User, @Param() { id }: IdDto) {
+    return this.agencyAnnouncementsService.findOne(id, agencyId);
   }
 
   @Get()
@@ -75,7 +75,7 @@ export class AgencyAnnouncementsController {
     status: 200,
     type: [Announcement],
   })
-  async findAll(
+  findAll(
     @CurrentUser() { agencyId }: User,
     @Query() options: FindAgencyAnnouncementsOptionsDto,
   ) {
@@ -92,7 +92,7 @@ export class AgencyAnnouncementsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Announcement with id 1 not found',
+        message: 'Announcement with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -115,12 +115,12 @@ export class AgencyAnnouncementsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Announcement with id 1 not found',
+        message: 'Announcement with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
-  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
+  remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.agencyAnnouncementsService.remove(id, currentUser);
   }
 }

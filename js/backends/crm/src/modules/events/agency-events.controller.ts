@@ -46,10 +46,7 @@ export class AgencyEventsController {
       },
     },
   })
-  async create(
-    @CurrentUser() currentUser: User,
-    @Body() body: CreateAgencyEventDto,
-  ) {
+  create(@CurrentUser() currentUser: User, @Body() body: CreateAgencyEventDto) {
     return this.agencyEventsService.create(body, currentUser);
   }
 
@@ -68,8 +65,8 @@ export class AgencyEventsController {
       },
     },
   })
-  findOne(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
-    return this.agencyEventsService.findOne(id, currentUser.agencyId);
+  findOne(@CurrentUser() { agencyId }: User, @Param() { id }: IdDto) {
+    return this.agencyEventsService.findOne(id, agencyId);
   }
 
   @Get()
@@ -78,8 +75,8 @@ export class AgencyEventsController {
     status: 200,
     type: [Event],
   })
-  async findAll(@CurrentUser() currentUser: User) {
-    return this.agencyEventsService.findAll(currentUser.agencyId);
+  findAll(@CurrentUser() { agencyId }: User) {
+    return this.agencyEventsService.findAll(agencyId);
   }
 
   @Patch(':id')
@@ -120,7 +117,7 @@ export class AgencyEventsController {
       },
     },
   })
-  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
+  remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
     return this.agencyEventsService.remove(id, currentUser);
   }
 }
