@@ -3,8 +3,8 @@ version: '3'
 services:
   esme_crm_db:
     image: postgres:15
-    hostname: esme_crm_database
-    container_name: esme_crm_database
+    hostname: esme_crm_db
+    container_name: esme_crm_db
     restart: unless-stopped
     environment:
       POSTGRES_DB: esme
@@ -17,22 +17,22 @@ services:
     volumes:
       - ./db/data:/var/lib/postgresql/data
 
-#  esme_crm_api:
-#    image: node:18
-#    hostname: esme_crm_api
-#    container_name: esme_crm_api
-#    working_dir: /usr/src/app
-#    entrypoint: [ "bash", "-c" ]
-#    command:
-#      - |
-#        npm install
-#        npm run start:dev
-#    volumes:
-#      - ../../js/backends/crm:/usr/src/app:rw
-#    ports:
-#      - "8000:3000"
-#    depends_on:
-#      - esme_crm_db
+  esme_crm_api:
+    image: node:18
+    hostname: esme_crm_api
+    container_name: esme_crm_api
+    working_dir: /usr/src/app
+    entrypoint: [ "bash", "-c" ]
+    command:
+      - |
+        npm install
+        npm run start:dev
+    volumes:
+      - ../../js/backends/crm:/usr/src/app:rw
+    ports:
+      - "8000:3000"
+    depends_on:
+      - esme_crm_db
 
   esme_messenger_api:
     image: golang:1.18
@@ -51,4 +51,4 @@ services:
       - "8001:3000"
     depends_on:
       - esme_crm_db
-#      - esme_crm_api
+      - esme_crm_api
