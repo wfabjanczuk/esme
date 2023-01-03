@@ -14,12 +14,12 @@ export const HelpScreen = (): JSX.Element => {
 
   return (
     <SafeArea>
-      <Spacer size="large" position="top">
-        <StyledText variant="placeholder">Emergency Service for Mass Events</StyledText>
+      <Spacer size='large' position='top'>
+        <StyledText variant='placeholder'>Emergency Service for Mass Events</StyledText>
       </Spacer>
-      <StyledText variant="title">Request help</StyledText>
-      <HelpFormInput label="Event" />
-      <HelpFormInput label="Problem description" />
+      <StyledText variant='title'>Request help</StyledText>
+      <HelpFormInput label='Event' />
+      <HelpFormInput label='Problem description' />
       <HelpFormCheckboxInputContainer>
         <Checkbox
           status={checked ? 'checked' : 'unchecked'}
@@ -27,11 +27,11 @@ export const HelpScreen = (): JSX.Element => {
             setChecked(!checked)
           }}
         />
-        <StyledText variant="checkboxLabel">
+        <StyledText variant='checkboxLabel'>
           Start conversation with support team
         </StyledText>
       </HelpFormCheckboxInputContainer>
-      <HelpFormButton icon="phone-outgoing" onPress={() => null}>
+      <HelpFormButton icon='phone-outgoing' onPress={() => null}>
         Request help
       </HelpFormButton>
     </SafeArea>

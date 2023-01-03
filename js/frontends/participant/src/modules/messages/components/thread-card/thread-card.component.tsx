@@ -27,7 +27,7 @@ export const ThreadCard = ({ thread, onPress }: ThreadCardProps): JSX.Element =>
         left={() => (
           <ThreadIcon threadType={thread.type} unread={thread.unread} />
         )}
-        right={() => thread.unread && <ThreadBadge content="UNREAD" />}
+        right={() => thread.unread && <ThreadBadge content='UNREAD' />}
       />
       <Divider inset />
     </TouchableOpacity>

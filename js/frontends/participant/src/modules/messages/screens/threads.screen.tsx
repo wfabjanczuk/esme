@@ -21,7 +21,7 @@ export const ThreadsScreen = ({ navigation }: ThreadsScreenProps): JSX.Element =
       <FlatList
         data={threads}
         renderItem={({ item }) => (
-          <Spacer position="top" size="medium">
+          <Spacer position='top' size='medium'>
             <ThreadCard thread={item} onPress={() => onCardPress(item)} />
           </Spacer>
         )}
