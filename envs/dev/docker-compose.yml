@@ -1,10 +1,10 @@
 version: '3'
 
 services:
-  esme_crm_db:
+  esme_organizer_db:
     image: postgres:15
-    hostname: esme_crm_db
-    container_name: esme_crm_db
+    hostname: esme_organizer_db
+    container_name: esme_organizer_db
     restart: unless-stopped
     environment:
       POSTGRES_DB: esme
@@ -15,12 +15,12 @@ services:
     ports:
       - "54321:5432"
     volumes:
-      - ./db/data:/var/lib/postgresql/data
+      - ./organizer-db/data:/var/lib/postgresql/data
 
-  esme_crm_api:
+  esme_organizer_api:
     image: node:18
-    hostname: esme_crm_api
-    container_name: esme_crm_api
+    hostname: esme_organizer_api
+    container_name: esme_organizer_api
     working_dir: /usr/src/app
     entrypoint: [ "bash", "-c" ]
     command:
@@ -28,57 +28,11 @@ services:
         npm install
         npm run start:dev
     volumes:
-      - ../../js/backends/crm:/usr/src/app:rw
+      - ../../js/backends/organizer-api:/usr/src/app:rw
     ports:
-      - "8000:3000"
+      - "8000:8080"
     depends_on:
-      - esme_crm_db
-
-  esme_messenger_api:
-    image: golang:1.18
-    hostname: esme_messenger_api
-    container_name: esme_messenger_api
-    working_dir: /usr/local/go/src/app
-    entrypoint: [ "bash", "-c" ]
-    command:
-      - |
-        go install github.com/githubnemo/CompileDaemon@latest
-        CompileDaemon -log-prefix=false -build='go build' -command='./messenger'
-    volumes:
-      - ../../go/services/messenger:/usr/local/go/src/app:rw
-    ports:
-      - "8001:8080"
-    depends_on:
-      - esme_crm_db
-      - esme_crm_api
-
-  esme_dispatcher_rabbit:
-    image: rabbitmq:3-management
-    hostname: esme_dispatcher_rabbit
-    container_name: esme_dispatcher_rabbit
-    environment:
-      RABBITMQ_DEFAULT_USER: rabbit
-      RABBITMQ_DEFAULT_PASS: rabbitPassword
-    ports:
-      - "8002:15672"
-      - "56721:5672"
-
-  esme_dispatcher_api:
-    image: golang:1.18
-    hostname: esme_dispatcher_api
-    container_name: esme_dispatcher_api
-    working_dir: /usr/local/go/src/app
-    entrypoint: [ "bash", "-c" ]
-    command:
-      - |
-        go install github.com/githubnemo/CompileDaemon@latest
-        CompileDaemon -log-prefix=false -build='go build' -command='./dispatcher'
-    volumes:
-      - ../../go/services/dispatcher:/usr/local/go/src/app:rw
-    ports:
-      - "8003:8080"
-    depends_on:
-      - esme_dispatcher_rabbit
+      - esme_organizer_db
 
   esme_participant_db:
     image: postgres:15
@@ -109,7 +63,52 @@ services:
     volumes:
       - ../../go/services/participant-api:/usr/local/go/src/app:rw
     ports:
-      - "8004:8080"
+      - "8100:8080"
     depends_on:
       - esme_participant_db
 
+  esme_dispatcher_queue:
+    image: rabbitmq:3-management
+    hostname: esme_dispatcher_queue
+    container_name: esme_dispatcher_queue
+    environment:
+      RABBITMQ_DEFAULT_USER: queue
+      RABBITMQ_DEFAULT_PASS: queuePassword
+    ports:
+      - "8201:15672"
+      - "56721:5672"
+
+  esme_dispatcher_api:
+    image: golang:1.18
+    hostname: esme_dispatcher_api
+    container_name: esme_dispatcher_api
+    working_dir: /usr/local/go/src/app
+    entrypoint: [ "bash", "-c" ]
+    command:
+      - |
+        go install github.com/githubnemo/CompileDaemon@latest
+        CompileDaemon -log-prefix=false -build='go build' -command='./dispatcher'
+    volumes:
+      - ../../go/services/dispatcher:/usr/local/go/src/app:rw
+    ports:
+      - "8200:8080"
+    depends_on:
+      - esme_dispatcher_queue
+
+  esme_messenger_api:
+    image: golang:1.18
+    hostname: esme_messenger_api
+    container_name: esme_messenger_api
+    working_dir: /usr/local/go/src/app
+    entrypoint: [ "bash", "-c" ]
+    command:
+      - |
+        go install github.com/githubnemo/CompileDaemon@latest
+        CompileDaemon -log-prefix=false -build='go build' -command='./messenger'
+    volumes:
+      - ../../go/services/messenger:/usr/local/go/src/app:rw
+    ports:
+      - "8300:8080"
+    depends_on:
+      - esme_organizer_db
+      - esme_organizer_api

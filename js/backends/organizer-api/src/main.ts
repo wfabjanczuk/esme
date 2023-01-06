@@ -11,8 +11,7 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('ESME CRM API')
-    .setDescription('Customer relationship management')
+    .setTitle('ESME ORGANIZER API')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
@@ -24,7 +23,7 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(process.env.PORT || 8080);
 }
 
 bootstrap();
