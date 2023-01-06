@@ -76,7 +76,40 @@ services:
     volumes:
       - ../../go/services/dispatcher:/usr/local/go/src/app:rw
     ports:
-      - "8003:3000"
+      - "8003:8080"
     depends_on:
-      - esme_crm_db
-      - esme_crm_api
+      - esme_dispatcher_rabbit
+
+  esme_participant_db:
+    image: postgres:15
+    hostname: esme_participant_db
+    container_name: esme_participant_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: esme
+      POSTGRES_USER: developer
+      POSTGRES_PASSWORD: dbPassword
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+    ports:
+      - "54322:5432"
+    volumes:
+      - ./participant-db/data:/var/lib/postgresql/data
+
+  esme_participant_api:
+    image: golang:1.18
+    hostname: esme_participant_api
+    container_name: esme_participant_api
+    working_dir: /usr/local/go/src/app
+    entrypoint: [ "bash", "-c" ]
+    command:
+      - |
+        go install github.com/githubnemo/CompileDaemon@latest
+        CompileDaemon -log-prefix=false -build='go build' -command='./participant-api'
+    volumes:
+      - ../../go/services/participant-api:/usr/local/go/src/app:rw
+    ports:
+      - "8004:8080"
+    depends_on:
+      - esme_participant_db
+
