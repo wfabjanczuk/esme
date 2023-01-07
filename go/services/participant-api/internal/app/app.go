@@ -6,18 +6,20 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"participant-api/internal/config"
+	"participant-api/internal/middlewares"
 	"participant-api/internal/modules/users"
 	"time"
 )
 
 type Application struct {
-	Config *Config
+	Config *config.Config
 	Logger *log.Logger
 }
 
 func NewApplication() *Application {
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Llongfile)
-	cfg := getConfigFromEnv(logger)
+	cfg := config.GetConfigFromEnv(logger)
 
 	return &Application{
 		Config: cfg,
@@ -27,11 +29,11 @@ func NewApplication() *Application {
 
 func (a *Application) Bootstrap() {
 	router := httprouter.New()
-	users.NewUsersModule(a.Logger, a.Config.ParticipantDSN, router)
+	users.NewUsersModule(a.Logger, a.Config, router)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", a.Config.Port),
-		Handler:      router,
+		Handler:      middlewares.EnableCors{Handler: router},
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,

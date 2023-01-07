@@ -1,4 +1,4 @@
-package app
+package config
 
 import (
 	"github.com/joho/godotenv"
@@ -14,7 +14,7 @@ type Config struct {
 	JwtSecret      string
 }
 
-func getConfigFromEnv(logger *log.Logger) *Config {
+func GetConfigFromEnv(logger *log.Logger) *Config {
 	cfg := &Config{}
 
 	err := godotenv.Load(".env.dev")

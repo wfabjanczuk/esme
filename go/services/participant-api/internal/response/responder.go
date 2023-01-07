@@ -49,7 +49,6 @@ func (r *Responder) WriteJson(w http.ResponseWriter, statusCode int, data interf
 	}
 
 	r.logger.Println(data)
-
 	return nil
 }
 
