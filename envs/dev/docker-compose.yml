@@ -17,22 +17,22 @@ services:
     volumes:
       - ./organizer-db/data:/var/lib/postgresql/data
 
-  esme_organizer_api:
-    image: node:18
-    hostname: esme_organizer_api
-    container_name: esme_organizer_api
-    working_dir: /usr/src/app
-    entrypoint: [ "bash", "-c" ]
-    command:
-      - |
-        npm install
-        npm run start:dev
-    volumes:
-      - ../../js/backends/organizer-api:/usr/src/app:rw
-    ports:
-      - "8000:8080"
-    depends_on:
-      - esme_organizer_db
+#  esme_organizer_api:
+#    image: node:18
+#    hostname: esme_organizer_api
+#    container_name: esme_organizer_api
+#    working_dir: /usr/src/app
+#    entrypoint: [ "bash", "-c" ]
+#    command:
+#      - |
+#        npm install
+#        npm run start:dev
+#    volumes:
+#      - ../../js/backends/organizer-api:/usr/src/app:rw
+#    ports:
+#      - "8000:8080"
+#    depends_on:
+#      - esme_organizer_db
 
   esme_participant_db:
     image: postgres:15
@@ -111,4 +111,4 @@ services:
       - "8300:8080"
     depends_on:
       - esme_organizer_db
-      - esme_organizer_api
+#      - esme_organizer_api

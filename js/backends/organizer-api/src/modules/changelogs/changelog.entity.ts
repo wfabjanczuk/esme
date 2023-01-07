@@ -35,14 +35,14 @@ export class Changelog {
 
   @Column({ type: 'timestamptz' })
   @ApiProperty({ example: '2022-11-26T18:47:02.541Z' })
-  time: Date;
+  changedAt: Date;
 
   @Column({ type: 'json', nullable: true })
   @ApiProperty({
     example:
       '{"id":1,"name":"Live Concert Agency","address":"Concert Street 1, Warsaw 01-234, Poland","website":"https://live-concert-agency.com","approved":true}',
   })
-  after?: string;
+  valueAfter?: string;
 
   @Column()
   @ApiProperty({ example: 1 })
@@ -55,10 +55,10 @@ export class Changelog {
 
   @Column({ nullable: true })
   @ApiProperty({ example: null })
-  userAgencyId?: number;
+  agencyId?: number;
 
   @ManyToOne(() => Agency, null, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userAgencyId' })
+  @JoinColumn({ name: 'agencyId' })
   @ApiHideProperty()
-  userAgency?: Agency;
+  agency?: Agency;
 }

@@ -6,25 +6,46 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { UserRole } from './user-role.enum';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload, OrganizerTokenPrefix } from './jwt.config';
+import { AuthenticatedUserDto } from './dtos/authenticated-user.dto';
+
+export const signInErrorMessage = 'Invalid email or password';
 
 @Injectable()
 export class AuthenticationService implements OnModuleInit {
   constructor(
     private configService: ConfigService,
+    private jwtService: JwtService,
     private lem: LoggingEntityManager,
     @InjectRepository(User) private repo: Repository<User>,
   ) {}
 
   async authenticate(email: string, password: string) {
-    const errorMessage = 'Invalid email or password';
     const [user] = await this.repo.find({ where: { email } });
     if (!user) {
-      throw new BadRequestException(errorMessage);
+      throw new BadRequestException(signInErrorMessage);
     }
     if (!compareSync(password, user.password)) {
-      throw new BadRequestException(errorMessage);
+      throw new BadRequestException(signInErrorMessage);
     }
-    return user;
+
+    const authenticatedUser: AuthenticatedUserDto = {
+      user,
+      token: this.generateToken(user.id),
+    };
+    return authenticatedUser;
+  }
+
+  async signOut(user: User) {
+    user.timeSignOut = new Date();
+    return await this.lem.update(this.repo, user, user);
+  }
+
+  generateToken(userId: number) {
+    const payload: Partial<JwtPayload> = { sub: userId };
+    const jwt = this.jwtService.sign(payload);
+    return `${OrganizerTokenPrefix}:${jwt}`;
   }
 
   async onModuleInit() {
@@ -46,6 +67,8 @@ export class AuthenticationService implements OnModuleInit {
       firstName: 'Super',
       lastName: 'Admin',
       phoneNumber: '+48123456789',
+      timeCreated: new Date(),
+      timeSignOut: new Date(),
       role: UserRole.superAdmin,
     });
     await this.repo.save(superAdmin);

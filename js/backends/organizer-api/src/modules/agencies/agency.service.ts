@@ -33,9 +33,13 @@ export class AgencyService {
     }
 
     const agency = this.agenciesRepo.create(props.agency);
-    const user = this.usersRepo.create(props.owner);
-    user.password = hashSync(user.password, 12);
-    user.role = UserRole.agencyOwner;
+    const user = this.usersRepo.create({
+      ...props.owner,
+      password: hashSync(props.owner.password, 12),
+      role: UserRole.agencyOwner,
+      timeCreated: new Date(),
+      timeSignOut: new Date(),
+    });
 
     await this.agenciesRepo.manager.transaction(async (em) => {
       await em.save(agency);

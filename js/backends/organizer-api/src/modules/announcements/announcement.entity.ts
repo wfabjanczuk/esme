@@ -23,7 +23,7 @@ export class Announcement {
 
   @Column({ type: 'timestamptz' })
   @ApiProperty({ example: '2022-12-03T12:42:03.856Z' })
-  timeSent: Date;
+  sentAt: Date;
 
   @Column()
   @ApiProperty({ example: 1 })

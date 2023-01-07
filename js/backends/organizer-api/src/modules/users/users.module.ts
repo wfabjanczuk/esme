@@ -10,9 +10,16 @@ import { AgencyUsersController } from './agency-users.controller';
 import { AgencyUsersService } from './agency-users.service';
 import { ProfileService } from './profile.service';
 import { ProfileController } from './profile.controller';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
+import { jwtModuleAsyncOptions } from './jwt.config';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    ConfigModule,
+    JwtModule.registerAsync(jwtModuleAsyncOptions),
+    TypeOrmModule.forFeature([User]),
+  ],
   controllers: [
     AuthenticationController,
     ProfileController,

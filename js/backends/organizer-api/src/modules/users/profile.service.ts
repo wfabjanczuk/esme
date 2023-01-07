@@ -21,6 +21,7 @@ export class ProfileService {
 
   changePassword(props: ChangePasswordDto, currentUser: User) {
     currentUser.password = hashSync(props.password, 12);
+    currentUser.timeSignOut = new Date();
     return this.lem.update(this.repo, currentUser, currentUser);
   }
 }

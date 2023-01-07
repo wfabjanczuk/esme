@@ -38,7 +38,7 @@ export class AnnouncementsService {
 
     const announcement = this.announcementsRepo.create(props);
     announcement.agencyId = event.agencyId;
-    announcement.timeSent = new Date();
+    announcement.sentAt = new Date();
     return this.lem.create(this.announcementsRepo, announcement, createdBy);
   }
 

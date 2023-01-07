@@ -61,10 +61,10 @@ export class LoggingEntityManager {
         entityId: entity.id,
         entityClass: entity.constructor.name,
         type: ChangeType.insert,
-        time: new Date().toISOString(),
-        after: JSON.stringify(entity),
+        changedAt: new Date(),
+        valueAfter: JSON.stringify(entity),
         userId: createdBy.id,
-        userAgencyId: createdBy.agencyId,
+        agencyId: createdBy.agencyId,
       }),
     );
   }
@@ -75,10 +75,10 @@ export class LoggingEntityManager {
         entityId: entity.id,
         entityClass: entity.constructor.name,
         type: ChangeType.update,
-        time: new Date().toISOString(),
-        after: JSON.stringify(entity),
+        changedAt: new Date(),
+        valueAfter: JSON.stringify(entity),
         userId: updatedBy.id,
-        userAgencyId: updatedBy.agencyId,
+        agencyId: updatedBy.agencyId,
       }),
     );
   }
@@ -89,10 +89,10 @@ export class LoggingEntityManager {
         entityId: entity.id,
         entityClass: entity.constructor.name,
         type: ChangeType.delete,
-        time: new Date().toISOString(),
-        after: undefined,
+        changedAt: new Date(),
+        valueAfter: undefined,
         userId: deletedBy.id,
-        userAgencyId: deletedBy.agencyId,
+        agencyId: deletedBy.agencyId,
       }),
     );
   }

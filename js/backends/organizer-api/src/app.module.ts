@@ -1,8 +1,8 @@
-import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { UsersModule } from './modules/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmModuleAsyncOptions } from '../typeorm.config';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 import { EventsModule } from './modules/events/events.module';
 import { AgenciesModule } from './modules/agencies/agencies.module';
@@ -11,8 +11,6 @@ import { AnnouncementsModule } from './modules/announcements/announcements.modul
 import { ContactsModule } from './modules/contacts/contacts.module';
 import { IssuesModule } from './modules/issues/issues.module';
 import { CommentsModule } from './modules/comments/comments.module';
-
-const cookieSession = require('cookie-session');
 
 @Module({
   imports: [
@@ -40,16 +38,4 @@ const cookieSession = require('cookie-session');
     },
   ],
 })
-export class AppModule {
-  constructor(private config: ConfigService) {}
-
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(
-        cookieSession({
-          keys: [this.config.get('COOKIE_KEY')],
-        }),
-      )
-      .forRoutes('*');
-  }
-}
+export class AppModule {}
