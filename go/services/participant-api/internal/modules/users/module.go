@@ -16,10 +16,10 @@ type UsersModule struct {
 
 func NewUsersModule(logger *log.Logger, config *config.Config, router *httprouter.Router) *UsersModule {
 	db := database.SetupConnection(config.ParticipantDSN, logger)
-	usersRepository := NewUsersRepository(logger, db)
+	usersRepository := newUsersRepository(logger, db)
 	authController := newAuthController(
 		usersRepository,
-		config,
+		config.JWTSecret,
 		logger,
 	)
 	profileController := newProfileController(
@@ -39,6 +39,7 @@ func NewUsersModule(logger *log.Logger, config *config.Config, router *httproute
 func (m *UsersModule) attachRoutes(router *httprouter.Router) {
 	router.HandlerFunc(http.MethodPost, "/auth/sign-up", m.authController.signUp)
 	router.HandlerFunc(http.MethodPost, "/auth/sign-in", m.authController.signIn)
+	router.HandlerFunc(http.MethodPost, "/auth/sign-out", m.AuthMiddleware(m.authController.signOut))
 
 	router.HandlerFunc(http.MethodGet, "/profile", m.AuthMiddleware(m.profileController.getProfile))
 	router.HandlerFunc(http.MethodPatch, "/profile", m.AuthMiddleware(m.profileController.updateProfile))

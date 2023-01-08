@@ -10,7 +10,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"participant-api/internal/config"
 	"participant-api/internal/middlewares"
 	"participant-api/internal/response"
 	"strconv"
@@ -18,31 +17,31 @@ import (
 	"time"
 )
 
-const ParticipantTokenPrefix = "participant"
-const TokenIssuer = "esme.com"
+const participantTokenPrefix = "participant"
+const tokenIssuer = "esme.com"
 
-var SignInError = errors.New("invalid email or password")
-var InvalidTokenError = errors.New("invalid token")
+var signInError = errors.New("invalid email or password")
+var invalidTokenError = errors.New("invalid token")
 
 type authController struct {
-	usersRepository *UsersRepository
+	usersRepository *usersRepository
 	responder       *response.Responder
 	jwtSecret       string
 	logger          *log.Logger
 }
 
-func newAuthController(usersRepository *UsersRepository, config *config.Config, logger *log.Logger) *authController {
+func newAuthController(usersRepository *usersRepository, jwtSecret string, logger *log.Logger) *authController {
 	return &authController{
 		usersRepository: usersRepository,
 		responder:       response.NewResponder(logger),
-		jwtSecret:       config.JwtSecret,
+		jwtSecret:       jwtSecret,
 		logger:          logger,
 	}
 }
 
 type authenticatedUser struct {
-	User *User  `json:"user"`
-	JWT  string `json:"jwt"`
+	User  *User  `json:"user"`
+	Token string `json:"token"`
 }
 
 func (c *authController) signUp(w http.ResponseWriter, r *http.Request) {
@@ -52,18 +51,18 @@ func (c *authController) signUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	signUpDTO := &SignUpDTO{}
+	signUpDTO := &signUpDTO{}
 	err = json.Unmarshal(body, signUpDTO)
 	if err != nil {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
-	if err = signUpDTO.Validate(); err != nil {
+	if err = signUpDTO.validate(); err != nil {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
 
-	user, err := c.usersRepository.InsertUser(signUpDTO)
+	user, err := c.usersRepository.insertUser(signUpDTO)
 	if err != nil {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
@@ -76,8 +75,8 @@ func (c *authController) signUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.responder.WriteJson(w, http.StatusCreated, authenticatedUser{
-		User: user,
-		JWT:  token,
+		User:  user,
+		Token: token,
 	})
 }
 
@@ -88,26 +87,26 @@ func (c *authController) signIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	signInDTO := &SignInDTO{}
+	signInDTO := &signInDTO{}
 	err = json.Unmarshal(body, signInDTO)
 	if err != nil {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
-	if err = signInDTO.Validate(); err != nil {
-		c.responder.WriteError(w, SignInError, http.StatusBadRequest)
+	if err = signInDTO.validate(); err != nil {
+		c.responder.WriteError(w, signInError, http.StatusBadRequest)
 		return
 	}
 
-	user, err := c.usersRepository.GetUserByEmail(signInDTO.Email)
+	user, err := c.usersRepository.getUserByEmail(signInDTO.Email)
 	if err != nil {
-		c.responder.WriteError(w, SignInError, http.StatusBadRequest)
+		c.responder.WriteError(w, signInError, http.StatusBadRequest)
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(signInDTO.Password))
 	if err != nil {
-		c.responder.WriteError(w, SignInError, http.StatusBadRequest)
+		c.responder.WriteError(w, signInError, http.StatusBadRequest)
 		return
 	}
 
@@ -118,9 +117,24 @@ func (c *authController) signIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.responder.WriteJson(w, http.StatusOK, authenticatedUser{
-		User: user,
-		JWT:  token,
+		User:  user,
+		Token: token,
 	})
+}
+
+func (c *authController) signOut(w http.ResponseWriter, r *http.Request) {
+	user, err := GetUserFromRequest(r)
+	if err != nil {
+		c.responder.WriteError(w, UnexpectedError, http.StatusInternalServerError)
+		return
+	}
+	err = c.usersRepository.signOut(user)
+	if err != nil {
+		c.responder.WriteError(w, UnexpectedError, http.StatusInternalServerError)
+		return
+	}
+
+	c.responder.WriteEmptyResponse(w, 200)
 }
 
 func (c *authController) generateJWT(user *User) (string, error) {
@@ -129,15 +143,15 @@ func (c *authController) generateJWT(user *User) (string, error) {
 	claims.Issued = jwt.NewNumericTime(time.Now())
 	claims.NotBefore = jwt.NewNumericTime(time.Now())
 	claims.Expires = jwt.NewNumericTime(time.Now().Add(24 * time.Hour))
-	claims.Issuer = TokenIssuer
-	claims.Audiences = []string{TokenIssuer}
+	claims.Issuer = tokenIssuer
+	claims.Audiences = []string{tokenIssuer}
 
-	jwtBytes, err := claims.HMACSign(jwt.HS256, []byte(c.jwtSecret))
+	JWTBytes, err := claims.HMACSign(jwt.HS256, []byte(c.jwtSecret))
 	if err != nil {
 		return "", err
 	}
 
-	return fmt.Sprintf("%s:%s", ParticipantTokenPrefix, string(jwtBytes)), nil
+	return fmt.Sprintf("%s:%s", participantTokenPrefix, string(JWTBytes)), nil
 }
 
 func (c *authController) getUserByAuthorizationHeader(authorizationHeader string) (*User, error) {
@@ -147,29 +161,29 @@ func (c *authController) getUserByAuthorizationHeader(authorizationHeader string
 	}
 
 	tokenParts := strings.Split(headerParts[1], ":")
-	if len(tokenParts) != 2 || tokenParts[0] != ParticipantTokenPrefix {
-		return nil, InvalidTokenError
+	if len(tokenParts) != 2 || tokenParts[0] != participantTokenPrefix {
+		return nil, invalidTokenError
 	}
 
 	jwtToken := tokenParts[1]
 	claims, err := jwt.HMACCheck([]byte(jwtToken), []byte(c.jwtSecret))
 	if err != nil ||
 		!claims.Valid(time.Now()) ||
-		!claims.AcceptAudience(TokenIssuer) ||
-		claims.Issuer != TokenIssuer {
-		return nil, InvalidTokenError
+		!claims.AcceptAudience(tokenIssuer) ||
+		claims.Issuer != tokenIssuer {
+		return nil, invalidTokenError
 	}
 
 	userId, err := strconv.ParseInt(claims.Subject, 10, 64)
 	if err != nil {
-		return nil, InvalidTokenError
+		return nil, invalidTokenError
 	}
-	user, err := c.usersRepository.GetUserByID(int(userId))
+	user, err := c.usersRepository.getUserByID(int(userId))
 	if err != nil {
-		return nil, InvalidTokenError
+		return nil, invalidTokenError
 	}
-	if claims.Issued.Time().Before(user.UpdatedPasswordAt) {
-		return nil, InvalidTokenError
+	if claims.Issued.Time().Before(user.TimeSignOut) {
+		return nil, invalidTokenError
 	}
 
 	return user, nil

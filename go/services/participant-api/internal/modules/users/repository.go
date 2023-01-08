@@ -11,29 +11,29 @@ import (
 
 const maxQueryTime = 3 * time.Second
 
-type UsersRepository struct {
+type usersRepository struct {
 	logger *log.Logger
-	DB     *sql.DB
+	db     *sql.DB
 }
 
-func NewUsersRepository(logger *log.Logger, db *sql.DB) *UsersRepository {
-	return &UsersRepository{
+func newUsersRepository(logger *log.Logger, db *sql.DB) *usersRepository {
+	return &usersRepository{
 		logger: logger,
-		DB:     db,
+		db:     db,
 	}
 }
 
-func (r *UsersRepository) GetUserByID(ID int) (*User, error) {
+func (r *usersRepository) getUserByID(ID int) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), maxQueryTime)
 	defer cancel()
 
 	user := &User{}
 
-	query := `select u.id, u.email, u.password, u."phoneNumber", u."createdAt", u."updatedPasswordAt"
+	query := `select u.id, u.email, u.password, u."phoneNumber", u."timeCreated", u."timeSignOut"
        from "user" u where u.id = $1`
 
-	err := r.DB.QueryRowContext(ctx, query, ID).Scan(
-		&user.ID, &user.Email, &user.Password, &user.PhoneNumber, &user.CreatedAt, &user.UpdatedPasswordAt,
+	err := r.db.QueryRowContext(ctx, query, ID).Scan(
+		&user.ID, &user.Email, &user.Password, &user.PhoneNumber, &user.TimeCreated, &user.TimeSignOut,
 	)
 
 	if err != nil {
@@ -42,17 +42,17 @@ func (r *UsersRepository) GetUserByID(ID int) (*User, error) {
 	return user, nil
 }
 
-func (r *UsersRepository) GetUserByEmail(email string) (*User, error) {
+func (r *usersRepository) getUserByEmail(email string) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), maxQueryTime)
 	defer cancel()
 
 	user := &User{}
 
-	query := `select u.id, u.email, u.password, u."phoneNumber", u."createdAt", u."updatedPasswordAt"
+	query := `select u.id, u.email, u.password, u."phoneNumber", u."timeCreated", u."timeSignOut"
        from "user" u where u.email = $1`
 
-	err := r.DB.QueryRowContext(ctx, query, email).Scan(
-		&user.ID, &user.Email, &user.Password, &user.PhoneNumber, &user.CreatedAt, &user.UpdatedPasswordAt,
+	err := r.db.QueryRowContext(ctx, query, email).Scan(
+		&user.ID, &user.Email, &user.Password, &user.PhoneNumber, &user.TimeCreated, &user.TimeSignOut,
 	)
 
 	if err != nil {
@@ -61,13 +61,13 @@ func (r *UsersRepository) GetUserByEmail(email string) (*User, error) {
 	return user, nil
 }
 
-func (r *UsersRepository) InsertUser(dto *SignUpDTO) (*User, error) {
+func (r *usersRepository) insertUser(dto *signUpDTO) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), maxQueryTime)
 	defer cancel()
 
 	var insertedId int
 
-	existingUser, err := r.GetUserByEmail(dto.Email)
+	existingUser, err := r.getUserByEmail(dto.Email)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println(err)
 		return nil, err
@@ -77,11 +77,11 @@ func (r *UsersRepository) InsertUser(dto *SignUpDTO) (*User, error) {
 	}
 
 	user := &User{
-		Email:             dto.Email,
-		Password:          dto.Password,
-		PhoneNumber:       dto.PhoneNumber,
-		CreatedAt:         time.Now(),
-		UpdatedPasswordAt: time.Now(),
+		Email:       dto.Email,
+		Password:    dto.Password,
+		PhoneNumber: dto.PhoneNumber,
+		TimeCreated: time.Now(),
+		TimeSignOut: time.Now(),
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
@@ -90,15 +90,15 @@ func (r *UsersRepository) InsertUser(dto *SignUpDTO) (*User, error) {
 	}
 	user.Password = string(hashedPassword)
 
-	stmt := `insert into "user" (email, password, "phoneNumber", "createdAt", "updatedPasswordAt")
+	stmt := `insert into "user" (email, password, "phoneNumber", "timeCreated", "timeSignOut")
 values ($1, $2, $3, $4, $5) returning id`
 
-	err = r.DB.QueryRowContext(ctx, stmt,
+	err = r.db.QueryRowContext(ctx, stmt,
 		user.Email,
 		user.Password,
 		user.PhoneNumber,
-		user.CreatedAt,
-		user.UpdatedPasswordAt,
+		user.TimeCreated,
+		user.TimeSignOut,
 	).Scan(&insertedId)
 
 	user.ID = insertedId
@@ -108,20 +108,34 @@ values ($1, $2, $3, $4, $5) returning id`
 	return user, nil
 }
 
-func (r *UsersRepository) UpdateUser(user *User) error {
+func (r *usersRepository) updateUser(user *User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), maxQueryTime)
 	defer cancel()
 
-	stmt := `update "user" set "phoneNumber" = $1, "updatedPasswordAt" = $2 where id = $3`
+	stmt := `update "user" set "phoneNumber" = $1, "timeSignOut" = $2 where id = $3`
 
-	_, err := r.DB.ExecContext(ctx, stmt, user.PhoneNumber, user.UpdatedPasswordAt, user.ID)
+	_, err := r.db.ExecContext(ctx, stmt, user.PhoneNumber, user.TimeSignOut, user.ID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *UsersRepository) ChangePassword(user *User) error {
+func (r *usersRepository) signOut(user *User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), maxQueryTime)
+	defer cancel()
+
+	user.TimeSignOut = time.Now()
+	stmt := `update "user" set "timeSignOut" = $1 where id = $2`
+
+	_, err := r.db.ExecContext(ctx, stmt, user.TimeSignOut, user.ID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *usersRepository) changePassword(user *User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), maxQueryTime)
 	defer cancel()
 
@@ -130,11 +144,11 @@ func (r *UsersRepository) ChangePassword(user *User) error {
 		return err
 	}
 	user.Password = string(hashedPassword)
-	user.UpdatedPasswordAt = time.Now()
+	user.TimeSignOut = time.Now()
 
-	stmt := `update "user" set password = $1, "updatedPasswordAt" = $2 where id = $3`
+	stmt := `update "user" set password = $1, "timeSignOut" = $2 where id = $3`
 
-	_, err = r.DB.ExecContext(ctx, stmt, user.Password, user.UpdatedPasswordAt, user.ID)
+	_, err = r.db.ExecContext(ctx, stmt, user.Password, user.TimeSignOut, user.ID)
 	if err != nil {
 		return err
 	}

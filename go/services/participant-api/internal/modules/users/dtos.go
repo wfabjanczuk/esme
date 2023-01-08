@@ -5,14 +5,14 @@ import (
 	"net/mail"
 )
 
-type SignUpDTO struct {
+type signUpDTO struct {
 	Email           string `json:"email"`
 	Password        string `json:"password"`
 	ConfirmPassword string `json:"confirmPassword"`
 	PhoneNumber     string `json:"phoneNumber"`
 }
 
-func (d *SignUpDTO) Validate() error {
+func (d *signUpDTO) validate() error {
 	_, err := mail.ParseAddress(d.Email)
 	if err != nil {
 		return errors.New("invalid email address")
@@ -26,12 +26,12 @@ func (d *SignUpDTO) Validate() error {
 	return nil
 }
 
-type SignInDTO struct {
+type signInDTO struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-func (d *SignInDTO) Validate() error {
+func (d *signInDTO) validate() error {
 	_, err := mail.ParseAddress(d.Email)
 	if err != nil {
 		return errors.New("invalid email address")
@@ -42,17 +42,17 @@ func (d *SignInDTO) Validate() error {
 	return nil
 }
 
-type UpdateProfileDTO struct {
+type updateProfileDTO struct {
 	PhoneNumber string `json:"phoneNumber"`
 }
 
-type ChangePasswordDTO struct {
+type changePasswordDTO struct {
 	OldPassword        string `json:"oldPassword"`
 	NewPassword        string `json:"newPassword"`
 	ConfirmNewPassword string `json:"confirmNewPassword"`
 }
 
-func (d *ChangePasswordDTO) Validate() error {
+func (d *changePasswordDTO) validate() error {
 	if len(d.OldPassword) < 8 {
 		return errors.New("oldPassword must be at least 8 characters")
 	}
@@ -61,6 +61,9 @@ func (d *ChangePasswordDTO) Validate() error {
 	}
 	if d.NewPassword != d.ConfirmNewPassword {
 		return errors.New("confirmNewPassword must match newPassword")
+	}
+	if d.NewPassword == d.OldPassword {
+		return errors.New("newPassword must be different from oldPassword")
 	}
 	return nil
 }

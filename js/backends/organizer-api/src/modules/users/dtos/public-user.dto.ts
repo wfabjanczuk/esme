@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { UserRole } from '../user-role.enum';
-import { Column } from 'typeorm';
 
 export class PublicUserDto {
   @Expose()
