@@ -23,7 +23,7 @@ import { FindAgencyCommentsOptionsDto } from './dtos/find-agency-comments-option
 
 @Controller('agency/comments')
 @UseGuards(AuthenticationGuard, AgencySupportGuard)
-@ApiTags('2. Agency: comments')
+@ApiTags('2. Organizer: comments')
 export class AgencyCommentsController {
   constructor(private agencyCommentsService: AgencyCommentsService) {}
 

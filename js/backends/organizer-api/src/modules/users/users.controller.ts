@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Session,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -128,15 +127,7 @@ export class UsersController {
       },
     },
   })
-  async remove(
-    @CurrentUser() currentUser: User,
-    @Session() session: any,
-    @Param() { id }: IdDto,
-  ) {
-    const removedUser = await this.usersService.remove(id, currentUser);
-    if (id === session.userId) {
-      session.userId = undefined;
-    }
-    return removedUser;
+  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
+    return await this.usersService.remove(id, currentUser);
   }
 }

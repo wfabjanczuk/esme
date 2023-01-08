@@ -1,21 +1,18 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  Post,
-  Session,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { User } from './user.entity';
 import { SignInDto } from './dtos/sign-in.dto';
-import { AuthenticationGuard } from '../../common/guards/authentication.guard';
-import { AuthenticationService } from './authentication.service';
+import {
+  AuthenticationService,
+  signInErrorMessage,
+} from './authentication.service';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
-import { PublicUserDto } from './dtos/public-user.dto';
+import { AuthenticatedUserDto } from './dtos/authenticated-user.dto';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { AuthenticationGuard } from '../../common/guards/authentication.guard';
+import { User } from './user.entity';
 
 @Controller('auth')
-@Serialize(PublicUserDto)
+@Serialize(AuthenticatedUserDto)
 @ApiTags('0. Authentication')
 export class AuthenticationController {
   constructor(private authenticationService: AuthenticationService) {}
@@ -24,33 +21,29 @@ export class AuthenticationController {
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    type: User,
+    type: AuthenticatedUserDto,
   })
   @ApiNotFoundResponse({
     schema: {
       example: {
-        statusCode: 404,
-        message: 'User with email jan@kowalski.com not found',
-        error: 'Not Found',
+        statusCode: 400,
+        message: signInErrorMessage,
+        error: 'Bad Request',
       },
     },
   })
-  async signIn(
-    @Body() { email, password }: SignInDto,
-    @Session() session: any,
-  ) {
-    const user = await this.authenticationService.authenticate(email, password);
-    session.userId = user.id;
-    return user;
+  async signIn(@Body() { email, password }: SignInDto) {
+    return await this.authenticationService.authenticate(email, password);
   }
 
   @Post('sign-out')
-  @HttpCode(200)
   @UseGuards(AuthenticationGuard)
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
+    description: 'User successfully signed out.',
   })
-  signOut(@Session() session: any) {
-    session.userId = undefined;
+  async signOut(@CurrentUser() currentUser: User) {
+    await this.authenticationService.signOut(currentUser);
   }
 }

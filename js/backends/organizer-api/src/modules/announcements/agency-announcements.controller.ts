@@ -24,7 +24,7 @@ import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
 
 @Controller('agency/announcements')
 @UseGuards(AuthenticationGuard)
-@ApiTags('2. Agency: announcements')
+@ApiTags('2. Organizer: announcements')
 export class AgencyAnnouncementsController {
   constructor(private agencyAnnouncementsService: AgencyAnnouncementsService) {}
 

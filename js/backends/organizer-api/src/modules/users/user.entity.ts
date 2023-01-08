@@ -35,6 +35,14 @@ export class User {
   @ApiProperty({ example: '+48123456789' })
   phoneNumber: string;
 
+  @Column({ type: 'timestamptz' })
+  @ApiProperty({ example: '2022-11-26T18:47:02.541Z' })
+  timeCreated: Date;
+
+  @Column({ type: 'timestamptz' })
+  @ApiProperty({ example: '2022-11-26T18:47:02.541Z' })
+  timeSignOut: Date;
+
   @Column()
   @ApiProperty({ example: UserRole.agencyOwner })
   role: UserRole;

@@ -24,6 +24,14 @@ export class PublicUserDto {
   phoneNumber: string;
 
   @Expose()
+  @ApiProperty({ example: '2022-11-26T18:47:02.541Z' })
+  timeCreated: Date;
+
+  @Expose()
+  @ApiProperty({ example: '2022-11-26T18:47:02.541Z' })
+  timeSignOut: Date;
+
+  @Expose()
   @ApiProperty({ example: UserRole.agencyOwner })
   role: UserRole;
 

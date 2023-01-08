@@ -23,7 +23,7 @@ import { FindAgencyIssuesOptionsDto } from './dtos/find-agency-issues-options.dt
 
 @Controller('agency/issues')
 @UseGuards(AuthenticationGuard, AgencySupportGuard)
-@ApiTags('2. Agency: issues')
+@ApiTags('2. Organizer: issues')
 export class AgencyIssuesController {
   constructor(private agencyIssuesService: AgencyIssuesService) {}
 

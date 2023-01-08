@@ -24,7 +24,7 @@ import { AgencyContactsService } from './agency-contacts.service';
 
 @Controller('agency/contacts')
 @UseGuards(AuthenticationGuard)
-@ApiTags('2. Agency: contacts')
+@ApiTags('2. Organizer: contacts')
 export class AgencyContactsController {
   constructor(private agencyContactsService: AgencyContactsService) {}
 

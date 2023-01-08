@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Session,
   UseGuards,
 } from '@nestjs/common';
 import { User } from './user.entity';
@@ -32,7 +31,7 @@ import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
 @Controller('agency/users')
 @UseGuards(AuthenticationGuard)
 @Serialize(PublicUserDto)
-@ApiTags('2. Agency: users')
+@ApiTags('2. Organizer: users')
 export class AgencyUsersController {
   constructor(private agencyUsersService: AgencyUsersService) {}
 
@@ -135,15 +134,7 @@ export class AgencyUsersController {
       },
     },
   })
-  async remove(
-    @CurrentUser() currentUser: User,
-    @Session() session: any,
-    @Param() { id }: IdDto,
-  ) {
-    const removedUser = await this.agencyUsersService.remove(id, currentUser);
-    if (id === session.userId) {
-      session.userId = undefined;
-    }
-    return removedUser;
+  async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
+    return await this.agencyUsersService.remove(id, currentUser);
   }
 }

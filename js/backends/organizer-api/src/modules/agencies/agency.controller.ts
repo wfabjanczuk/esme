@@ -19,7 +19,7 @@ import { AgencyService } from './agency.service';
 import { User } from '../users/user.entity';
 
 @Controller('agency')
-@ApiTags('2. Agency')
+@ApiTags('2. Organizer: agency')
 export class AgencyController {
   constructor(private agencyService: AgencyService) {}
 

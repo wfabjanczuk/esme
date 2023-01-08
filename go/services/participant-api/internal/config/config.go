@@ -11,7 +11,7 @@ type Config struct {
 	Port           int
 	Env            string
 	ParticipantDSN string
-	JwtSecret      string
+	JWTSecret      string
 }
 
 func GetConfigFromEnv(logger *log.Logger) *Config {
@@ -37,8 +37,8 @@ func GetConfigFromEnv(logger *log.Logger) *Config {
 		cfg.Env = "development"
 	}
 
-	cfg.JwtSecret = os.Getenv("JWT_SECRET")
-	if cfg.JwtSecret == "" {
+	cfg.JWTSecret = os.Getenv("JWT_SECRET")
+	if cfg.JWTSecret == "" {
 		logger.Fatal("Error loading JWT_SECRET from .env file")
 	}
 

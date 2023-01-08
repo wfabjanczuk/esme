@@ -15,12 +15,12 @@ var UnexpectedError = errors.New("unexpected error")
 var InvalidOldPasswordError = errors.New("invalid oldPassword")
 
 type profileController struct {
-	usersRepository *UsersRepository
+	usersRepository *usersRepository
 	responder       *response.Responder
 	logger          *log.Logger
 }
 
-func newProfileController(usersRepository *UsersRepository, logger *log.Logger) *profileController {
+func newProfileController(usersRepository *usersRepository, logger *log.Logger) *profileController {
 	return &profileController{
 		usersRepository: usersRepository,
 		responder:       response.NewResponder(logger),
@@ -56,7 +56,7 @@ func (c *profileController) updateProfile(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	updateProfileDTO := &UpdateProfileDTO{}
+	updateProfileDTO := &updateProfileDTO{}
 	err = json.Unmarshal(body, updateProfileDTO)
 	if err != nil {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
@@ -70,7 +70,7 @@ func (c *profileController) updateProfile(w http.ResponseWriter, r *http.Request
 	}
 	user.PhoneNumber = updateProfileDTO.PhoneNumber
 
-	err = c.usersRepository.UpdateUser(user)
+	err = c.usersRepository.updateUser(user)
 	if err != nil {
 		c.responder.WriteError(w, err, http.StatusInternalServerError)
 		return
@@ -86,13 +86,13 @@ func (c *profileController) changePassword(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	changePasswordDTO := &ChangePasswordDTO{}
+	changePasswordDTO := &changePasswordDTO{}
 	err = json.Unmarshal(body, changePasswordDTO)
 	if err != nil {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
-	if err = changePasswordDTO.Validate(); err != nil {
+	if err = changePasswordDTO.validate(); err != nil {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
@@ -109,7 +109,7 @@ func (c *profileController) changePassword(w http.ResponseWriter, r *http.Reques
 	}
 	user.Password = changePasswordDTO.NewPassword
 
-	err = c.usersRepository.ChangePassword(user)
+	err = c.usersRepository.changePassword(user)
 	if err != nil {
 		c.responder.WriteError(w, err, http.StatusInternalServerError)
 		return

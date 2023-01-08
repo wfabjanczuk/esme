@@ -2,6 +2,12 @@ import { UsersService } from '../../modules/users/users.service';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../../modules/users/user.entity';
+import { JwtService } from '@nestjs/jwt';
+import {
+  Issuer,
+  JwtPayload,
+  OrganizerTokenPrefix,
+} from '../../modules/users/jwt.config';
 
 declare global {
   export namespace Express {
@@ -13,21 +19,59 @@ declare global {
 
 @Injectable()
 export class CurrentUserMiddleware implements NestMiddleware {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private jwtService: JwtService,
+    private usersService: UsersService,
+  ) {}
 
   async use(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const { userId } = req.session || {};
+    req.currentUser = await this.getUserByAuthorizationHeader(req);
+    next();
+  }
 
-    if (userId) {
-      try {
-        req.currentUser = await this.usersService.findOne(userId);
-        delete req.currentUser.password;
-      } catch (e) {
-        req.currentUser = undefined;
-        req.session.userId = undefined;
-      }
+  async getUserByAuthorizationHeader(req: Request): Promise<User | undefined> {
+    const authorizationHeader = req.header('Authorization');
+    if (!authorizationHeader) {
+      return undefined;
     }
 
-    next();
+    const headerParts = authorizationHeader.split(' ');
+    if (headerParts.length !== 2 || headerParts[0] !== 'Bearer') {
+      return undefined;
+    }
+
+    const tokenParts = headerParts[1].split(':');
+    if (tokenParts.length !== 2 || tokenParts[0] !== OrganizerTokenPrefix) {
+      return undefined;
+    }
+
+    let payload: JwtPayload;
+    try {
+      payload = this.jwtService.verify<JwtPayload>(tokenParts[1]);
+    } catch (e) {
+      return undefined;
+    }
+
+    const now = Date.now() / 1000;
+    if (now < payload.nbf || payload.exp < now) {
+      return undefined;
+    }
+    if (payload.iss !== Issuer || payload.aud[0] !== Issuer) {
+      return undefined;
+    }
+
+    let user: User;
+    try {
+      user = await this.usersService.findOne(payload.sub);
+    } catch (e) {
+      return undefined;
+    }
+    const timeSignOut = user.timeSignOut.getTime() / 1000;
+    if (payload.iat < timeSignOut) {
+      return undefined;
+    }
+
+    delete user.password;
+    return user;
   }
 }

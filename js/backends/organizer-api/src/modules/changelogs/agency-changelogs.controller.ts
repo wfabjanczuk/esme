@@ -10,10 +10,11 @@ import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
 
 @Controller('agency/changelogs')
 @UseGuards(AuthenticationGuard, AgencySupportGuard)
-@ApiTags('2. Agency: changelogs')
+@ApiTags('2. Organizer: changelogs')
 export class AgencyChangelogsController {
   constructor(private changelogsService: ChangelogsService) {}
 
+  @Get()
   @Get()
   @ApiResponse({
     status: 200,
@@ -25,7 +26,7 @@ export class AgencyChangelogsController {
   ) {
     return this.changelogsService.findAll({
       ...options,
-      userAgencyId: agencyId,
+      agencyId: agencyId,
     });
   }
 }

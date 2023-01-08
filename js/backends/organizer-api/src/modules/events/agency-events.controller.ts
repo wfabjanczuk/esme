@@ -27,7 +27,7 @@ import { User } from '../users/user.entity';
 
 @Controller('agency/events')
 @UseGuards(AuthenticationGuard)
-@ApiTags('2. Agency: events')
+@ApiTags('2. Organizer: events')
 export class AgencyEventsController {
   constructor(private agencyEventsService: AgencyEventsService) {}
 
