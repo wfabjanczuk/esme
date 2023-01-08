@@ -15,7 +15,7 @@ const maxOpenDbConn = 10
 const maxIdleDbConn = 5
 const maxDbLifetime = 5 * time.Minute
 
-func SetupConnection(DSN string, logger *log.Logger) *sql.DB {
+func SetupConnection(dsn string, logger *log.Logger) *sql.DB {
 	var db *sql.DB
 	var err error
 	maxDevRetries := 10
@@ -26,7 +26,7 @@ func SetupConnection(DSN string, logger *log.Logger) *sql.DB {
 	for i := 1; i <= maxDevRetries; i++ {
 		logger.Println(fmt.Sprintf("Opening dev DB connection attempt %d", i))
 
-		db, err = openConnection(DSN)
+		db, err = openConnection(dsn)
 		if err == nil {
 			logger.Println("Dev DB connection successfully opened.")
 			return db
@@ -40,8 +40,8 @@ func SetupConnection(DSN string, logger *log.Logger) *sql.DB {
 	return db
 }
 
-func openConnection(DSN string) (*sql.DB, error) {
-	db, err := sql.Open("pgx", DSN)
+func openConnection(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil, err
 	}

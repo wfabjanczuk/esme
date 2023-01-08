@@ -1,6 +1,7 @@
 package users
 
 import (
+	"database/sql"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
@@ -12,6 +13,7 @@ type UsersModule struct {
 	authController    *authController
 	profileController *profileController
 	AuthMiddleware    func(next func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc
+	ParticipantDB     *sql.DB
 }
 
 func NewUsersModule(logger *log.Logger, config *config.Config, router *httprouter.Router) *UsersModule {
@@ -30,6 +32,7 @@ func NewUsersModule(logger *log.Logger, config *config.Config, router *httproute
 		authController:    authController,
 		profileController: profileController,
 		AuthMiddleware:    authController.Authenticate,
+		ParticipantDB:     db,
 	}
 
 	m.attachRoutes(router)

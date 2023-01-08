@@ -29,7 +29,8 @@ func NewApplication() *Application {
 
 func (a *Application) Bootstrap() {
 	router := httprouter.New()
-	users.NewUsersModule(a.Logger, a.Config, router)
+	usersModule := users.NewUsersModule(a.Logger, a.Config, router)
+	defer usersModule.ParticipantDB.Close()
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", a.Config.Port),

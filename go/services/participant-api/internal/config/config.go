@@ -19,12 +19,12 @@ func GetConfigFromEnv(logger *log.Logger) *Config {
 
 	err := godotenv.Load(".env.dev")
 	if err != nil {
-		logger.Fatal("Error loading environmental files")
+		logger.Fatal("Error loading .env file")
 	}
 
 	cfg.ParticipantDSN = os.Getenv("PARTICIPANT_DSN")
 	if cfg.ParticipantDSN == "" {
-		logger.Fatal("Error loading DSN from .env file")
+		logger.Fatal("Error loading PARTICIPANT_DSN from .env file")
 	}
 
 	cfg.Port, _ = strconv.Atoi(os.Getenv("PORT"))
