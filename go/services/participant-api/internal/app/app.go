@@ -40,9 +40,5 @@ func (a *Application) Bootstrap() {
 		WriteTimeout: 30 * time.Second,
 	}
 	a.Logger.Printf("Starting %s server on port %d", a.Config.Env, a.Config.Port)
-
-	err := srv.ListenAndServe()
-	if err != nil {
-		a.Logger.Println(err)
-	}
+	a.Logger.Panic(srv.ListenAndServe())
 }

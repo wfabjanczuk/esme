@@ -69,7 +69,6 @@ func (r *usersRepository) insertUser(dto *signUpDTO) (*User, error) {
 
 	existingUser, err := r.getUserByEmail(dto.Email)
 	if err != nil && err != sql.ErrNoRows {
-		log.Println(err)
 		return nil, err
 	}
 	if existingUser.ID > 0 {

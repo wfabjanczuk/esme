@@ -1,15 +1,14 @@
 package app
 
 import (
-	"dispatcher/internal/config"
-	"dispatcher/internal/middlewares"
-	"dispatcher/internal/queue"
-	"dispatcher/internal/requests"
-	"dispatcher/internal/response"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
+	"messenger/internal/config"
+	"messenger/internal/modules/api"
+	"messenger/internal/modules/storage"
+	"messenger/internal/queue"
 	"net/http"
 	"os"
 	"time"
@@ -37,26 +36,17 @@ func NewApplication() *Application {
 
 func (a *Application) Bootstrap() {
 	router := httprouter.New()
-	participantApiBasicAuth := middlewares.BasicAuth{
-		Handler:      router,
-		Responder:    response.NewResponder(a.Logger),
-		Username:     a.Config.InParticipantApiUser,
-		PasswordHash: a.Config.InParticipantApiPass,
-	}
-	requests.NewController(
-		a.QueueConnection,
-		a.QueueChannel,
-		a.Logger,
-		router,
-	)
+	storageModule := storage.NewModule(a.Logger, a.Config)
+	api.NewModule(a.Logger, storageModule, router)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", a.Config.Port),
-		Handler:      participantApiBasicAuth,
+		Handler:      router,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
+
 	a.Logger.Printf("Starting %s server on port %d", a.Config.Env, a.Config.Port)
 	a.Logger.Panic(srv.ListenAndServe())
 }
