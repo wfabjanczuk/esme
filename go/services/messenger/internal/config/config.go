@@ -8,12 +8,12 @@ import (
 )
 
 type Config struct {
-	Port                 int
-	Env                  string
-	QueueDSN             string
-	DatabaseDSN          string
-	InParticipantApiUser string
-	InParticipantApiPass string
+	Port              int
+	Env               string
+	QueueDsn          string
+	DatabaseDsn       string
+	OrganizerApiUrl   string
+	ParticipantApiUrl string
 }
 
 func GetConfigFromEnv(logger *log.Logger) *Config {
@@ -24,14 +24,24 @@ func GetConfigFromEnv(logger *log.Logger) *Config {
 		logger.Fatal("Error loading .env file")
 	}
 
-	cfg.QueueDSN = os.Getenv("QUEUE_DSN")
-	if cfg.QueueDSN == "" {
+	cfg.QueueDsn = os.Getenv("QUEUE_DSN")
+	if cfg.QueueDsn == "" {
 		logger.Fatal("Error loading QUEUE_DSN from .env file")
 	}
 
-	cfg.DatabaseDSN = os.Getenv("DATABASE_DSN")
-	if cfg.DatabaseDSN == "" {
+	cfg.DatabaseDsn = os.Getenv("DATABASE_DSN")
+	if cfg.DatabaseDsn == "" {
 		logger.Fatal("Error loading DATABASE_DSN from .env file")
+	}
+
+	cfg.OrganizerApiUrl = os.Getenv("ORGANIZER_API_URL")
+	if cfg.OrganizerApiUrl == "" {
+		logger.Fatal("Error loading ORGANIZER_API_URL from .env file")
+	}
+
+	cfg.ParticipantApiUrl = os.Getenv("PARTICIPANT_API_URL")
+	if cfg.ParticipantApiUrl == "" {
+		logger.Fatal("Error loading PARTICIPANT_API_URL from .env file")
 	}
 
 	cfg.Port, _ = strconv.Atoi(os.Getenv("PORT"))

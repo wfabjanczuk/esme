@@ -20,21 +20,45 @@ func (m *Manager) InitConnection(w http.ResponseWriter, r *http.Request) {
 	}
 	m.logger.Printf("Client %s connected\n", wsConnection.RemoteAddr())
 
+	user, err := m.authenticator.AuthenticateRequest(r)
+	if err != nil {
+		m.logger.Println(err)
+		wsConnection.Close()
+		return
+	}
+	m.logger.Println(user)
+
 	conn, err := connections.NewClientConnection(wsConnection)
 	if err != nil {
 		m.logger.Println(err)
+		wsConnection.Close()
 		return
 	}
 
 	chats, err := m.chatsRepository.FindAll()
 	if err != nil {
 		m.logger.Println(err)
+		wsConnection.Close()
 		return
 	}
 
 	for _, chat := range chats {
-		m.outputManager.CreateChat(chat.ID)
-		m.outputManager.SetOrganizerInChat(chat.ID, 1, conn)
+		err = m.outputManager.CreateChatIfNotExists(chat.ID)
+		if err != nil {
+			m.logger.Println(err)
+			wsConnection.Close()
+			return
+		}
+		if user.IsOrganizer() {
+			err = m.outputManager.SetOrganizerInChat(chat.ID, user.ID(), conn)
+		} else {
+			err = m.outputManager.SetParticipantInChat(chat.ID, user.ID(), conn)
+		}
+		if err != nil {
+			m.logger.Println(err)
+			wsConnection.Close()
+			return
+		}
 	}
 
 	go m.listenOnClientConnection(conn)

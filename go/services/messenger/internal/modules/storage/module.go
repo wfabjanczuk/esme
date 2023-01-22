@@ -20,8 +20,8 @@ type Module struct {
 	MessagesRepository *messages.MessagesRepository
 }
 
-func NewModule(logger *log.Logger, config *config.Config) *Module {
-	db := setupConnection(config.DatabaseDSN, logger).Database("esme")
+func NewModule(config *config.Config, logger *log.Logger) *Module {
+	db := setupConnection(config.DatabaseDsn, logger).Database("esme")
 
 	return &Module{
 		ChatsRepository:    chats.NewChatsRepository(db, maxQueryTime),

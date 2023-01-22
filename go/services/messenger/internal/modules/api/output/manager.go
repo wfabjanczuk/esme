@@ -7,7 +7,6 @@ import (
 	"sync"
 )
 
-var ErrChatExists = errors.New("chat already exists")
 var ErrChatNotFound = errors.New("chat not found")
 var ErrMessageNotSent = errors.New("message not sent")
 
@@ -36,12 +35,12 @@ func NewManager(messagesRepository *messages.MessagesRepository) *Manager {
 	}
 }
 
-func (m *Manager) CreateChat(chatId string) error {
+func (m *Manager) CreateChatIfNotExists(chatId string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	if _, exists := m.chats[chatId]; exists {
-		return ErrChatExists
+		return nil
 	}
 
 	m.chats[chatId] = &chat{

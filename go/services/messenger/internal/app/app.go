@@ -24,7 +24,7 @@ type Application struct {
 func NewApplication() *Application {
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Llongfile)
 	cfg := config.GetConfigFromEnv(logger)
-	connection, channel := queue.SetupConnection(cfg.QueueDSN, logger)
+	connection, channel := queue.SetupConnection(cfg.QueueDsn, logger)
 
 	return &Application{
 		Config:          cfg,
@@ -36,8 +36,8 @@ func NewApplication() *Application {
 
 func (a *Application) Bootstrap() {
 	router := httprouter.New()
-	storageModule := storage.NewModule(a.Logger, a.Config)
-	api.NewModule(a.Logger, storageModule, router)
+	storageModule := storage.NewModule(a.Config, a.Logger)
+	api.NewModule(a.Config, a.Logger, storageModule, router)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", a.Config.Port),

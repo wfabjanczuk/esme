@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/julienschmidt/httprouter"
 	"log"
+	"messenger/internal/config"
 	"messenger/internal/modules/api/input"
 	"messenger/internal/modules/api/output"
 	"messenger/internal/modules/storage"
@@ -17,13 +18,13 @@ type Module struct {
 	messagesRepository *messages.MessagesRepository
 }
 
-func NewModule(logger *log.Logger, storageModule *storage.Module, router *httprouter.Router) *Module {
+func NewModule(config *config.Config, logger *log.Logger, storageModule *storage.Module, router *httprouter.Router) *Module {
 	module := &Module{
 		chatsRepository:    storageModule.ChatsRepository,
 		messagesRepository: storageModule.MessagesRepository,
 	}
 	outputManager := output.NewManager(storageModule.MessagesRepository)
-	inputManager := input.NewManager(storageModule.ChatsRepository, outputManager, logger)
+	inputManager := input.NewManager(config, storageModule.ChatsRepository, outputManager, logger)
 
 	chat := module.testChatsModule()
 	module.testMessagesModule(chat)
