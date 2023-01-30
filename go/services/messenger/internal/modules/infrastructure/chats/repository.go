@@ -31,7 +31,7 @@ func (r *ChatsRepository) Create(chat *Chat) (*Chat, error) {
 		return nil, err
 	}
 
-	primitiveChat.ID = result.InsertedID.(primitive.ObjectID)
+	primitiveChat.Id = result.InsertedID.(primitive.ObjectID)
 	return primitiveChat.Chat(), err
 }
 
@@ -41,6 +41,52 @@ func (r *ChatsRepository) FindAll() ([]*Chat, error) {
 
 	var chats []*Chat
 	cursor, err := r.collection.Find(ctx, bson.M{})
+
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var primitiveChat PrimitiveChat
+		err = cursor.Decode(&primitiveChat)
+		if err != nil {
+			return nil, err
+		}
+		chats = append(chats, primitiveChat.Chat())
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return chats, nil
+}
+
+func (r *ChatsRepository) FindAllByOrganizerId(organizerId int32) ([]*Chat, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
+	defer cancel()
+
+	var chats []*Chat
+	cursor, err := r.collection.Find(ctx, bson.M{"organizerId": organizerId})
+
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var primitiveChat PrimitiveChat
+		err = cursor.Decode(&primitiveChat)
+		if err != nil {
+			return nil, err
+		}
+		chats = append(chats, primitiveChat.Chat())
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return chats, nil
+}
+
+func (r *ChatsRepository) FindAllByParticipantId(participantId int32) ([]*Chat, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
+	defer cancel()
+
+	var chats []*Chat
+	cursor, err := r.collection.Find(ctx, bson.M{"participantId": participantId})
 
 	defer cursor.Close(ctx)
 	for cursor.Next(ctx) {
@@ -85,7 +131,7 @@ func (r *ChatsRepository) Replace(chat *Chat) (*Chat, error) {
 		return nil, err
 	}
 
-	result, err := r.collection.ReplaceOne(ctx, bson.M{"_id": primitiveChat.ID}, primitiveChat)
+	result, err := r.collection.ReplaceOne(ctx, bson.M{"_id": primitiveChat.Id}, primitiveChat)
 	if err != nil {
 		return nil, err
 	}

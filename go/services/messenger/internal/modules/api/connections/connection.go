@@ -1,36 +1,74 @@
 package connections
 
 import (
-	"fmt"
 	"github.com/gorilla/websocket"
+	"log"
+	"messenger/internal/modules/api/users"
 	"time"
 )
 
-const ReadTimeout = 60 * time.Second
+const ReadTimeout = 30 * time.Minute
 
-type ClientConnection struct {
-	WS *websocket.Conn
+type OrganizerConnection struct {
+	Ws        *websocket.Conn
+	Organizer *users.Organizer
+	ChatIds   []string
+	logger    *log.Logger
 }
 
-func NewClientConnection(wsConnection *websocket.Conn) (*ClientConnection, error) {
-	conn := &ClientConnection{
-		WS: wsConnection,
+type ParticipantConnection struct {
+	Ws          *websocket.Conn
+	Participant *users.Participant
+	ChatIds     []string
+	logger      *log.Logger
+}
+
+func NewOrganizerConnection(wsConnection *websocket.Conn, organizer *users.Organizer, logger *log.Logger) (*OrganizerConnection, error) {
+	conn := &OrganizerConnection{
+		Ws:        wsConnection,
+		Organizer: organizer,
+		logger:    logger,
 	}
-	err := conn.WS.SetReadDeadline(time.Now().Add(ReadTimeout))
+	err := conn.Ws.SetReadDeadline(time.Now().Add(ReadTimeout))
 	if err != nil {
 		return nil, err
 	}
 	return conn, nil
 }
 
-func (c *ClientConnection) ResetReadTimer() {
-	err := c.WS.SetReadDeadline(time.Now().Add(ReadTimeout))
+func (c *OrganizerConnection) ResetReadTimer() {
+	err := c.Ws.SetReadDeadline(time.Now().Add(ReadTimeout))
 	if err != nil {
 		c.Close()
 	}
 }
 
-func (c *ClientConnection) Close() {
-	c.WS.Close()
-	fmt.Printf("Client %s disconnected\n", c.WS.RemoteAddr())
+func (c *OrganizerConnection) Close() {
+	c.Ws.Close()
+	c.logger.Printf("closed connection for organizer %s\n", c.Ws.RemoteAddr())
+}
+
+func NewParticipantConnection(wsConnection *websocket.Conn, participant *users.Participant, logger *log.Logger) (*ParticipantConnection, error) {
+	conn := &ParticipantConnection{
+		Ws:          wsConnection,
+		Participant: participant,
+		logger:      logger,
+	}
+	err := conn.Ws.SetReadDeadline(time.Now().Add(ReadTimeout))
+	if err != nil {
+		return nil, err
+	}
+	return conn, nil
+}
+
+func (c *ParticipantConnection) ResetReadTimer() {
+	err := c.Ws.SetReadDeadline(time.Now().Add(ReadTimeout))
+	if err != nil {
+		c.Close()
+	}
+}
+
+func (c *ParticipantConnection) Close() {
+	c.Ws.Close()
+	c.logger.Printf("closed connection for participant %s\n", c.Ws.RemoteAddr())
 }

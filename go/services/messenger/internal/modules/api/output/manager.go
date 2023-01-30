@@ -3,22 +3,17 @@ package output
 import (
 	"errors"
 	"messenger/internal/modules/api/connections"
-	"messenger/internal/modules/storage/messages"
+	"messenger/internal/modules/infrastructure/messages"
 	"sync"
 )
 
 var ErrChatNotFound = errors.New("chat not found")
 var ErrMessageNotSent = errors.New("message not sent")
 
-type client struct {
-	ID         int32
-	Connection *connections.ClientConnection
-}
-
 type chat struct {
-	ChatID      string
-	Organizer   *client
-	Participant *client
+	ChatId                string
+	OrganizerConnection   *connections.OrganizerConnection
+	ParticipantConnection *connections.ParticipantConnection
 }
 
 type Manager struct {
@@ -35,91 +30,139 @@ func NewManager(messagesRepository *messages.MessagesRepository) *Manager {
 	}
 }
 
-func (m *Manager) CreateChatIfNotExists(chatId string) error {
+func (m *Manager) getSetChat(chatId string) *chat {
+	c, exists := m.chats[chatId]
+	if !exists {
+		c = &chat{
+			ChatId: chatId,
+		}
+		m.chats[chatId] = c
+	}
+	return c
+}
+
+func (m *Manager) SetOrganizerInChat(chatId string, conn *connections.OrganizerConnection) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	if _, exists := m.chats[chatId]; exists {
+	m.getSetChat(chatId).OrganizerConnection = conn
+}
+
+func (m *Manager) SetParticipantInChat(chatId string, conn *connections.ParticipantConnection) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	m.getSetChat(chatId).ParticipantConnection = conn
+}
+
+func (m *Manager) RemoveOrganizerFromChat(chatId string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	c, exists := m.chats[chatId]
+	if !exists {
+		return ErrChatNotFound
+	}
+
+	if c.ParticipantConnection == nil {
+		delete(m.chats, chatId)
 		return nil
 	}
 
-	m.chats[chatId] = &chat{
-		ChatID: chatId,
-	}
+	c.OrganizerConnection = nil
 	return nil
 }
 
-func (m *Manager) DeleteChat(chatId string) error {
+func (m *Manager) RemoveParticipantFromChat(chatId string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	if _, exists := m.chats[chatId]; !exists {
+	c, exists := m.chats[chatId]
+	if !exists {
 		return ErrChatNotFound
 	}
 
-	delete(m.chats, chatId)
+	if c.OrganizerConnection == nil {
+		delete(m.chats, chatId)
+		return nil
+	}
+
+	c.ParticipantConnection = nil
 	return nil
 }
 
-func (m *Manager) SetOrganizerInChat(chatId string, id int32, conn *connections.ClientConnection) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	var channel *chat
-	var exists bool
-	if channel, exists = m.chats[chatId]; !exists {
-		return ErrChatNotFound
-	}
-
-	channel.Organizer = &client{
-		ID:         id,
-		Connection: conn,
-	}
-	return nil
-}
-
-func (m *Manager) SetParticipantInChat(chatId string, id int32, conn *connections.ClientConnection) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	var channel *chat
-	var exists bool
-	if channel, exists = m.chats[chatId]; !exists {
-		return ErrChatNotFound
-	}
-
-	channel.Participant = &client{
-		ID:         id,
-		Connection: conn,
-	}
-	return nil
-}
-
-func (m *Manager) SendInChat(chatId string, message *messages.Message) error {
+func (m *Manager) SendUserMessageInChat(chatId string, message *messages.Message) error {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	var chat *chat
-	var exists bool
-	if chat, exists = m.chats[chatId]; !exists {
+	c, exists := m.chats[chatId]
+	if !exists {
 		return ErrChatNotFound
 	}
 
 	message, err := m.messagesRepository.Create(message)
 	if err != nil {
 		if message.FromOrganizer == 1 {
-			sendErrorMessage(chat.Organizer.Connection, ErrMessageNotSent.Error())
+			sendErrorMessage(c.OrganizerConnection.Ws, ErrMessageNotSent.Error())
 		} else {
-			sendErrorMessage(chat.Participant.Connection, ErrMessageNotSent.Error())
+			sendErrorMessage(c.ParticipantConnection.Ws, ErrMessageNotSent.Error())
 		}
 		return ErrMessageNotSent
 	}
 
-	if chat.Organizer != nil {
-		sendSuccessMessage(chat.Organizer.Connection, message.Content)
+	if c.OrganizerConnection != nil {
+		sendSuccessMessage(c.OrganizerConnection.Ws, message.Content)
 	}
-	if chat.Participant != nil {
-		sendSuccessMessage(chat.Participant.Connection, message.Content)
+	if c.ParticipantConnection != nil {
+		sendSuccessMessage(c.ParticipantConnection.Ws, message.Content)
+	}
+	return nil
+}
+
+func (m *Manager) SendSystemMessageInChat(chatId string, message string) error {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	c, exists := m.chats[chatId]
+	if !exists {
+		return ErrChatNotFound
+	}
+
+	if c.OrganizerConnection != nil {
+		sendSuccessMessage(c.OrganizerConnection.Ws, message)
+	}
+	if c.ParticipantConnection != nil {
+		sendSuccessMessage(c.ParticipantConnection.Ws, message)
+	}
+	return nil
+}
+
+func (m *Manager) SendSystemMessageToOrganizer(chatId string, message string) error {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	c, exists := m.chats[chatId]
+	if !exists {
+		return ErrChatNotFound
+	}
+
+	if c.OrganizerConnection != nil {
+		sendSuccessMessage(c.OrganizerConnection.Ws, message)
+	}
+	return nil
+}
+
+func (m *Manager) SendSystemMessageToParticipant(chatId string, message string) error {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	c, exists := m.chats[chatId]
+	if !exists {
+		return ErrChatNotFound
+	}
+
+	if c.ParticipantConnection != nil {
+		sendSuccessMessage(c.ParticipantConnection.Ws, message)
 	}
 	return nil
 }

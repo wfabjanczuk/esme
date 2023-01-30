@@ -3,41 +3,34 @@ package app
 import (
 	"fmt"
 	"github.com/julienschmidt/httprouter"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
 	"messenger/internal/config"
 	"messenger/internal/modules/api"
-	"messenger/internal/modules/storage"
-	"messenger/internal/queue"
+	"messenger/internal/modules/infrastructure"
 	"net/http"
 	"os"
 	"time"
 )
 
 type Application struct {
-	Config          *config.Config
-	QueueConnection *amqp.Connection
-	QueueChannel    *amqp.Channel
-	Logger          *log.Logger
+	Config *config.Config
+	Logger *log.Logger
 }
 
 func NewApplication() *Application {
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Llongfile)
 	cfg := config.GetConfigFromEnv(logger)
-	connection, channel := queue.SetupConnection(cfg.QueueDsn, logger)
 
 	return &Application{
-		Config:          cfg,
-		QueueConnection: connection,
-		QueueChannel:    channel,
-		Logger:          logger,
+		Config: cfg,
+		Logger: logger,
 	}
 }
 
 func (a *Application) Bootstrap() {
 	router := httprouter.New()
-	storageModule := storage.NewModule(a.Config, a.Logger)
-	api.NewModule(a.Config, a.Logger, storageModule, router)
+	infrastructureModule := infrastructure.NewModule(a.Config, a.Logger)
+	api.NewModule(a.Config, a.Logger, infrastructureModule, router)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", a.Config.Port),
@@ -47,6 +40,6 @@ func (a *Application) Bootstrap() {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	a.Logger.Printf("Starting %s server on port %d", a.Config.Env, a.Config.Port)
-	a.Logger.Panic(srv.ListenAndServe())
+	a.Logger.Printf("starting %s server on port %d\n", a.Config.Env, a.Config.Port)
+	a.Logger.Panicln(srv.ListenAndServe())
 }

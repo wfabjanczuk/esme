@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+var ErrMalformedToken = errors.New("malformed token")
 var ErrUnknownUser = errors.New("unknown user")
 
 const (
@@ -21,96 +22,90 @@ const (
 	prefixParticipant     = "participant"
 )
 
-type profile struct {
-	ID       int32 `json:"id"`
-	AgencyID int32 `json:"agencyId"`
-}
-
 type Authenticator struct {
 	organizerApiUrl   string
 	participantApiUrl string
 	logger            *log.Logger
 }
 
-func NewAuthenticator(config *config.Config, logger *log.Logger) *Authenticator {
+func NewAuthenticator(cfg *config.Config, logger *log.Logger) *Authenticator {
 	return &Authenticator{
-		organizerApiUrl:   config.OrganizerApiUrl,
-		participantApiUrl: config.ParticipantApiUrl,
+		organizerApiUrl:   cfg.OrganizerApiUrl,
+		participantApiUrl: cfg.ParticipantApiUrl,
 		logger:            logger,
 	}
 }
 
-func (a *Authenticator) AuthenticateRequest(r *http.Request) (*User, error) {
-	header := r.Header.Get("Authorization")
-	headerParts := strings.Split(header, " ")
+type ParseHeaderResult struct {
+	IsOrganizer bool
+	Token       string
+	Err         error
+}
+
+func (a *Authenticator) ParseHeader(authorizationHeader string) ParseHeaderResult {
+	result := ParseHeaderResult{}
+
+	headerParts := strings.Split(authorizationHeader, " ")
 	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-		return nil, ErrUnknownUser
+		result.Err = ErrMalformedToken
+		return result
 	}
 
-	return a.AuthenticateToken(headerParts[1])
-}
-
-func (a *Authenticator) AuthenticateToken(token string) (*User, error) {
-	tokenParts := strings.Split(token, ":")
+	result.Token = headerParts[1]
+	tokenParts := strings.Split(result.Token, ":")
 	if len(tokenParts) != 2 {
-		return nil, ErrUnknownUser
+		result.Err = ErrMalformedToken
+		return result
 	}
 
-	userTypePrefix := tokenParts[0]
-	switch {
-	case userTypePrefix == prefixOrganizer:
-		return a.authenticateOrganizer(token)
-	case userTypePrefix == prefixParticipant:
-		return a.authenticateParticipant(token)
-	default:
-		return nil, ErrUnknownUser
+	if tokenParts[0] == prefixOrganizer {
+		result.IsOrganizer = true
+		return result
 	}
+
+	if tokenParts[0] == prefixParticipant {
+		result.IsOrganizer = false
+		return result
+	}
+
+	result.Err = ErrMalformedToken
+	return result
 }
 
-func (a *Authenticator) authenticateOrganizer(token string) (*User, error) {
+func (a *Authenticator) AuthenticateOrganizer(token string) (*Organizer, error) {
 	profileUrl := a.organizerApiUrl + "profile"
-	p, err := a.getProfile(profileUrl, token)
-	if err != nil || p.AgencyID == 0 {
-		return nil, ErrUnknownUser
-	}
-
-	return &User{
-		id:       p.ID,
-		agencyId: p.AgencyID,
-		userType: userTypeOrganizer,
-		token:    token,
-	}, nil
-}
-
-func (a *Authenticator) authenticateParticipant(token string) (*User, error) {
-	profileUrl := a.participantApiUrl + "profile"
-	p, err := a.getProfile(profileUrl, token)
-	if err != nil {
-		return nil, ErrUnknownUser
-	}
-
-	return &User{
-		id:       p.ID,
-		userType: userTypeParticipant,
-		token:    token,
-	}, nil
-}
-
-func (a *Authenticator) getProfile(profileUrl, token string) (*profile, error) {
 	rawProfile, err := a.getRawProfile(profileUrl, token)
 	if err != nil {
-		a.logger.Printf("could not fetch user profile: %s", err)
+		a.logger.Printf("could not fetch organizer profile: %s\n", err)
 		return nil, ErrUnknownUser
 	}
 
-	p := &profile{}
-	err = json.Unmarshal(rawProfile, &p)
+	organizer := &Organizer{}
+	err = json.Unmarshal(rawProfile, &organizer)
 	if err != nil {
-		a.logger.Printf("could not read user profile: %s", err)
+		a.logger.Printf("could not read organizer profile: %s\n", err)
 		return nil, ErrUnknownUser
 	}
 
-	return p, nil
+	return organizer, nil
+}
+
+func (a *Authenticator) AuthenticateParticipant(token string) (*Participant, error) {
+	profileUrl := a.participantApiUrl + "profile"
+	rawProfile, err := a.getRawProfile(profileUrl, token)
+	if err != nil {
+		a.logger.Printf("could not fetch participant profile: %s\n", err)
+		return nil, ErrUnknownUser
+	}
+
+	participant := &Participant{}
+	err = json.Unmarshal(rawProfile, &participant)
+	if err != nil {
+		a.logger.Printf("could not read participant profile: %s\n", err)
+		return nil, ErrUnknownUser
+	}
+
+	return participant, nil
 }
 
 func (a *Authenticator) getRawProfile(profileUrl, token string) ([]byte, error) {
@@ -119,7 +114,7 @@ func (a *Authenticator) getRawProfile(profileUrl, token string) ([]byte, error) 
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, profileUrl, nil)
 	if err != nil {
-		return nil, fmt.Errorf("could not prepare authentication request: %w", err)
+		return nil, fmt.Errorf("could not prepare authentication request: %w\n", err)
 	}
 	request.Header = map[string][]string{
 		"Authorization": {"Bearer " + token},

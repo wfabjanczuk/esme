@@ -31,7 +31,7 @@ func (r *MessagesRepository) Create(message *Message) (*Message, error) {
 		return nil, err
 	}
 
-	primitiveMessage.ID = result.InsertedID.(primitive.ObjectID)
+	primitiveMessage.Id = result.InsertedID.(primitive.ObjectID)
 	return primitiveMessage.Message(), err
 }
 
@@ -90,7 +90,7 @@ func (r *MessagesRepository) Replace(message *Message) (*Message, error) {
 		return nil, err
 	}
 
-	result, err := r.collection.ReplaceOne(ctx, bson.M{"_id": primitiveMessage.ID}, primitiveMessage)
+	result, err := r.collection.ReplaceOne(ctx, bson.M{"_id": primitiveMessage.Id}, primitiveMessage)
 	if err != nil {
 		return nil, err
 	}

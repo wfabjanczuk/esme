@@ -1,7 +1,7 @@
 package output
 
 import (
-	"messenger/internal/modules/api/connections"
+	"github.com/gorilla/websocket"
 )
 
 const (
@@ -14,20 +14,20 @@ type WSResponse struct {
 	Status  string `json:"status"`
 }
 
-func sendErrorMessage(conn *connections.ClientConnection, message string) {
-	sendWSResponse(conn, WSResponse{
+func sendErrorMessage(ws *websocket.Conn, message string) {
+	sendWSResponse(ws, WSResponse{
 		Message: message,
 		Status:  statusError,
 	})
 }
 
-func sendSuccessMessage(conn *connections.ClientConnection, message string) {
-	sendWSResponse(conn, WSResponse{
+func sendSuccessMessage(ws *websocket.Conn, message string) {
+	sendWSResponse(ws, WSResponse{
 		Message: message,
 		Status:  statusSuccess,
 	})
 }
 
-func sendWSResponse(conn *connections.ClientConnection, response WSResponse) {
-	conn.WS.WriteJSON(response)
+func sendWSResponse(ws *websocket.Conn, response WSResponse) {
+	ws.WriteJSON(response)
 }

@@ -10,51 +10,51 @@ var ErrMessageInvalidId = errors.New("message: invalid id")
 var ErrMessageInvalidChatId = errors.New("message: invalid chat id")
 
 type Message struct {
-	ID            string    `json:"id"`
-	ChatID        string    `json:"chatId"`
-	Content       string    `json:"content"`
-	AuthorID      int32     `json:"authorId"`
+	Id            string    `json:"id"`
+	ChatId        string    `json:"chatId"`
+	AuthorId      int32     `json:"authorId"`
 	FromOrganizer int32     `json:"fromOrganizer"`
+	Content       string    `json:"content"`
 	TimeSent      time.Time `json:"timeSent"`
 }
 
 type PrimitiveMessage struct {
-	ID            primitive.ObjectID `bson:"_id,omitempty"`
-	ChatID        primitive.ObjectID `bson:"chat"`
-	Content       string             `bson:"content"`
-	AuthorID      int32              `bson:"authorId"`
+	Id            primitive.ObjectID `bson:"_id,omitempty"`
+	ChatId        primitive.ObjectID `bson:"chat"`
+	AuthorId      int32              `bson:"authorId"`
 	FromOrganizer int32              `bson:"fromOrganizer"`
+	Content       string             `bson:"content"`
 	TimeSent      primitive.DateTime `bson:"timeSent"`
 }
 
 func (m *Message) Primitive() (*PrimitiveMessage, error) {
-	chatObjectId, err := primitive.ObjectIDFromHex(m.ChatID)
+	chatObjectId, err := primitive.ObjectIDFromHex(m.ChatId)
 	if err != nil {
 		return nil, ErrMessageInvalidChatId
 	}
 
-	objectId, err := primitive.ObjectIDFromHex(m.ID)
-	if err != nil && m.ID != "" {
+	objectId, err := primitive.ObjectIDFromHex(m.Id)
+	if err != nil && m.Id != "" {
 		return nil, ErrMessageInvalidId
 	}
 
 	return &PrimitiveMessage{
-		ID:            objectId,
-		ChatID:        chatObjectId,
-		Content:       m.Content,
-		AuthorID:      m.AuthorID,
+		Id:            objectId,
+		ChatId:        chatObjectId,
+		AuthorId:      m.AuthorId,
 		FromOrganizer: m.FromOrganizer,
+		Content:       m.Content,
 		TimeSent:      primitive.NewDateTimeFromTime(m.TimeSent),
 	}, nil
 }
 
 func (p *PrimitiveMessage) Message() *Message {
 	return &Message{
-		ID:            p.ID.Hex(),
-		ChatID:        p.ChatID.Hex(),
-		Content:       p.Content,
-		AuthorID:      p.AuthorID,
+		Id:            p.Id.Hex(),
+		ChatId:        p.ChatId.Hex(),
+		AuthorId:      p.AuthorId,
 		FromOrganizer: p.FromOrganizer,
+		Content:       p.Content,
 		TimeSent:      p.TimeSent.Time(),
 	}
 }
