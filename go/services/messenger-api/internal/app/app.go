@@ -3,11 +3,11 @@ package app
 import (
 	"fmt"
 	"log"
+	"messenger-api/internal/config"
+	"messenger-api/internal/modules/api"
+	"messenger-api/internal/modules/infrastructure"
 	"net/http"
 	"os"
-	"participant-api/internal/config"
-	"participant-api/internal/modules/api"
-	"participant-api/internal/modules/infrastructure"
 	"time"
 )
 
@@ -37,6 +37,7 @@ func (a *Application) Bootstrap() {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
+
 	a.logger.Printf("starting %s server on port %d\n", a.config.Env, a.config.Port)
 	a.logger.Panicln(srv.ListenAndServe())
 }

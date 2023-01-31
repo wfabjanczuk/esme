@@ -8,10 +8,12 @@ import (
 )
 
 type Config struct {
-	Port           int
-	Env            string
-	ParticipantDSN string
-	JWTSecret      string
+	Port             int
+	Env              string
+	QueueDsn         string
+	OrganizerDbDsn   string
+	ParticipantDbDsn string
+	JwtSecret        string
 }
 
 func GetConfigFromEnv(logger *log.Logger) *Config {
@@ -22,9 +24,19 @@ func GetConfigFromEnv(logger *log.Logger) *Config {
 		logger.Fatal("Error loading .env file")
 	}
 
-	cfg.ParticipantDSN = os.Getenv("PARTICIPANT_DSN")
-	if cfg.ParticipantDSN == "" {
-		logger.Fatal("Error loading PARTICIPANT_DSN from .env file")
+	cfg.QueueDsn = os.Getenv("QUEUE_DSN")
+	if cfg.QueueDsn == "" {
+		logger.Fatal("Error loading QUEUE_DSN from .env file")
+	}
+
+	cfg.OrganizerDbDsn = os.Getenv("ORGANIZER_DB_DSN")
+	if cfg.OrganizerDbDsn == "" {
+		logger.Fatal("Error loading ORGANIZER_DB_DSN from .env file")
+	}
+
+	cfg.ParticipantDbDsn = os.Getenv("PARTICIPANT_DB_DSN")
+	if cfg.ParticipantDbDsn == "" {
+		logger.Fatal("Error loading PARTICIPANT_DB_DSN from .env file")
 	}
 
 	cfg.Port, _ = strconv.Atoi(os.Getenv("PORT"))
@@ -37,8 +49,8 @@ func GetConfigFromEnv(logger *log.Logger) *Config {
 		cfg.Env = "development"
 	}
 
-	cfg.JWTSecret = os.Getenv("JWT_SECRET")
-	if cfg.JWTSecret == "" {
+	cfg.JwtSecret = os.Getenv("JWT_SECRET")
+	if cfg.JwtSecret == "" {
 		logger.Fatal("Error loading JWT_SECRET from .env file")
 	}
 

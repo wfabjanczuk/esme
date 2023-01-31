@@ -64,34 +64,18 @@ services:
       - "8100:8080"
     depends_on:
       - esme_participant_db
+      - esme_chats_queue
 
-  esme_dispatcher_queue:
+  esme_chats_queue:
     image: rabbitmq:3-management
-    hostname: esme_dispatcher_queue
-    container_name: esme_dispatcher_queue
+    hostname: esme_chats_queue
+    container_name: esme_chats_queue
     environment:
       RABBITMQ_DEFAULT_USER: queue
       RABBITMQ_DEFAULT_PASS: queuePassword
     ports:
-      - "8201:15672"
+      - "8200:15672"
       - "56721:5672"
-
-  esme_dispatcher_api:
-    image: golang:1.18
-    hostname: esme_dispatcher_api
-    container_name: esme_dispatcher_api
-    working_dir: /usr/local/go/src/app
-    entrypoint: [ "bash", "-c" ]
-    command:
-      - |
-        go install github.com/githubnemo/CompileDaemon@latest
-        CompileDaemon -log-prefix=false -build='go build' -command='./dispatcher'
-    volumes:
-      - ../../go/services/dispatcher:/usr/local/go/src/app:rw
-    ports:
-      - "8200:8080"
-    depends_on:
-      - esme_dispatcher_queue
 
   esme_messenger_db:
     image: mongo:5-focal
@@ -128,9 +112,9 @@ services:
     command:
       - |
         go install github.com/githubnemo/CompileDaemon@latest
-        CompileDaemon -log-prefix=false -build='go build' -command='./messenger'
+        CompileDaemon -log-prefix=false -build='go build' -command='./messenger-api'
     volumes:
-      - ../../go/services/messenger:/usr/local/go/src/app:rw
+      - ../../go/services/messenger-api:/usr/local/go/src/app:rw
     ports:
       - "8300:8080"
     depends_on:
