@@ -9,6 +9,7 @@ import (
 	"participant-api/internal/modules/api"
 	"participant-api/internal/modules/infrastructure"
 	"participant-api/internal/modules/infrastructure/events"
+	"participant-api/internal/modules/infrastructure/subscriptions"
 	"time"
 )
 
@@ -31,7 +32,8 @@ func (a *Application) Bootstrap() {
 	infrastructureModule := infrastructure.NewModule(a.config, a.logger)
 	apiModule := api.NewModule(a.config, infrastructureModule, a.logger)
 
-	a.testInfrastructureModule(infrastructureModule)
+	a.testEventsRepository(infrastructureModule.EventsRepository)
+	a.testSubscriptionsRepository(infrastructureModule.SubscriptionsRepository)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", a.config.Port),
@@ -44,9 +46,7 @@ func (a *Application) Bootstrap() {
 	a.logger.Panicln(srv.ListenAndServe())
 }
 
-func (a *Application) testInfrastructureModule(im *infrastructure.Module) {
-	eventsRepository := im.EventsRepository
-
+func (a *Application) testEventsRepository(eventsRepository *events.Repository) {
 	event, err := eventsRepository.GetEventById(1)
 	if err != nil {
 		a.logger.Fatal(err)
@@ -58,17 +58,53 @@ func (a *Application) testInfrastructureModule(im *infrastructure.Module) {
 		a.logger.Fatal(err)
 	}
 	filters := events.Filters{
-		Name:        "rap",
+		Name:        "%",
 		Description: "event",
 		Address:     "Warsaw",
 		TimeStart:   time.Date(2022, 1, 1, 0, 0, 0, 0, loc),
 		TimeEnd:     time.Date(2023, 1, 1, 0, 0, 0, 0, loc),
 	}
-	events, err := eventsRepository.FindEvents(filters, 20)
+	evs, err := eventsRepository.FindEvents(filters, 20)
 	if err != nil {
 		a.logger.Fatal(err)
 	}
-	for i, e := range events {
+	for i, e := range evs {
 		a.logger.Println("event", i, e)
+	}
+
+	evs, err = eventsRepository.FindEvents(events.Filters{}, 20)
+	if err != nil {
+		a.logger.Fatal(err)
+	}
+	for i, e := range evs {
+		a.logger.Println("event", i, e)
+	}
+}
+
+func (a *Application) testSubscriptionsRepository(subscriptionsRepository *subscriptions.Repository) {
+	err := subscriptionsRepository.Subscribe(1, 1)
+	if err != nil {
+		a.logger.Fatal(err)
+	}
+
+	err = subscriptionsRepository.Subscribe(1, 2)
+	if err != nil {
+		a.logger.Fatal(err)
+	}
+
+	eventIds, err := subscriptionsRepository.GetSubscriptionsByUserId(1)
+	if err != nil {
+		a.logger.Fatal(err)
+	}
+	a.logger.Println(eventIds)
+
+	err = subscriptionsRepository.Unsubscribe(1, 1)
+	if err != nil {
+		a.logger.Fatal(err)
+	}
+
+	err = subscriptionsRepository.Unsubscribe(1, 2)
+	if err != nil {
+		a.logger.Fatal(err)
 	}
 }

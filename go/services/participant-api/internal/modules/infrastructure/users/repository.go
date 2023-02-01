@@ -64,12 +64,12 @@ func (r *Repository) InsertUser(user *User) (*User, error) {
 
 	var insertedId int
 
-	existingUser, err := r.GetUserByEmail(user.Email)
-	if err != nil && err != sql.ErrNoRows {
-		return nil, err
-	}
-	if existingUser.Id > 0 {
+	_, err := r.GetUserByEmail(user.Email)
+	if err == nil {
 		return nil, errors.New("email already exists")
+	}
+	if err != sql.ErrNoRows {
+		return nil, err
 	}
 
 	now := time.Now()

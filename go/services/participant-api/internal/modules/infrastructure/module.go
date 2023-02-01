@@ -5,6 +5,7 @@ import (
 	"log"
 	"participant-api/internal/config"
 	"participant-api/internal/modules/infrastructure/events"
+	"participant-api/internal/modules/infrastructure/subscriptions"
 	"participant-api/internal/modules/infrastructure/users"
 	"time"
 )
@@ -12,10 +13,11 @@ import (
 const maxQueryTime = 3 * time.Second
 
 type Module struct {
-	EventsRepository *events.Repository
-	UsersRepository  *users.Repository
-	QueueConnection  *amqp.Connection
-	QueueChannel     *amqp.Channel
+	EventsRepository        *events.Repository
+	UsersRepository         *users.Repository
+	SubscriptionsRepository *subscriptions.Repository
+	QueueConnection         *amqp.Connection
+	QueueChannel            *amqp.Channel
 }
 
 func NewModule(cfg *config.Config, logger *log.Logger) *Module {
@@ -24,9 +26,10 @@ func NewModule(cfg *config.Config, logger *log.Logger) *Module {
 	qConnection, qChannel := setupQueueConnection(cfg.QueueDsn, logger)
 
 	return &Module{
-		EventsRepository: events.NewRepository(organizerDb, maxQueryTime),
-		UsersRepository:  users.NewRepository(participantDb, maxQueryTime),
-		QueueConnection:  qConnection,
-		QueueChannel:     qChannel,
+		EventsRepository:        events.NewRepository(organizerDb, maxQueryTime),
+		UsersRepository:         users.NewRepository(participantDb, maxQueryTime),
+		SubscriptionsRepository: subscriptions.NewRepository(participantDb, maxQueryTime),
+		QueueConnection:         qConnection,
+		QueueChannel:            qChannel,
 	}
 }

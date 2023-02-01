@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -51,47 +52,60 @@ func (f Filters) isEmpty() bool {
 	return f.Name == "" && f.Description == "" && f.Address == "" && f.TimeStart.IsZero() && f.TimeEnd.IsZero()
 }
 
-func (f Filters) buildWhereClause() string {
+func (f Filters) parseTextSearchFilter(field, value string, argId int) (condition, arg string) {
+	condition = fmt.Sprintf("e.%s ilike '%%' || $%d || '%%'", field, argId)
+	arg = strings.ReplaceAll(value, "%", `\%`)
+	return
+}
+
+func (f Filters) buildWhereClause() (string, []any) {
 	if f.isEmpty() {
-		return ""
+		return "", nil
 	}
 
 	var conditions []string
+	var args []any
 	if f.Name != "" {
-		conditions = append(conditions, fmt.Sprintf(`e.name ilike '%%%s%%' `, f.Name))
+		c, a := f.parseTextSearchFilter("name", f.Name, len(args)+1)
+		conditions = append(conditions, c)
+		args = append(args, a)
 	}
 	if f.Description != "" {
-		conditions = append(conditions, fmt.Sprintf(`e.description ilike '%%%s%%' `, f.Description))
+		c, a := f.parseTextSearchFilter("description", f.Description, len(args)+1)
+		conditions = append(conditions, c)
+		args = append(args, a)
 	}
 	if f.Address != "" {
-		conditions = append(conditions, fmt.Sprintf(`e.address ilike '%%%s%%' `, f.Address))
+		c, a := f.parseTextSearchFilter("address", f.Address, len(args)+1)
+		conditions = append(conditions, c)
+		args = append(args, a)
 	}
 	if !f.TimeStart.IsZero() {
-		conditions = append(conditions, fmt.Sprintf(`e."timeStart" >= '%s' `, f.TimeStart.Format(time.RFC3339)))
+		c := fmt.Sprintf(`e."timeStart" >= $%d`, len(args)+1)
+		conditions = append(conditions, c)
+		args = append(args, f.TimeStart)
 	}
 	if !f.TimeEnd.IsZero() {
-		conditions = append(conditions, fmt.Sprintf(`e."timeEnd" <= '%s' `, f.TimeEnd.Format(time.RFC3339)))
+		c := fmt.Sprintf(`e."timeEnd" <= $%d`, len(args)+1)
+		conditions = append(conditions, c)
+		args = append(args, f.TimeEnd)
 	}
 
-	where := "where "
-	for i, c := range conditions {
-		where += c
-		if i < len(conditions)-1 {
-			where += "and "
-		}
-	}
-
-	return where
+	whereClause := "where " + strings.Join(conditions, " and ")
+	return whereClause, args
 }
 
 func (r *Repository) FindEvents(filters Filters, limit int) ([]*Event, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
-	query := `select e.id, e.name, e.description, e.address, e.lat, e.lng, e."timeStart", e."timeEnd"
-       from "event" e ` + filters.buildWhereClause() + fmt.Sprintf(`limit %d`, limit)
+	selectClause := `select e.id, e.name, e.description, e.address, e.lat, e.lng, e."timeStart", e."timeEnd" from "event" e`
+	whereClause, args := filters.buildWhereClause()
+	orderByClause := `order by e."timeStart" asc`
+	limitClause := fmt.Sprintf(`limit %d`, limit)
 
-	rows, err := r.db.QueryContext(ctx, query)
+	query := strings.Join([]string{selectClause, whereClause, orderByClause, limitClause}, " ")
+	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
