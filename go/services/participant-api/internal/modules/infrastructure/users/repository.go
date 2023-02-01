@@ -20,7 +20,7 @@ func NewRepository(db *sql.DB, maxQueryTime time.Duration) *Repository {
 	}
 }
 
-func (r *Repository) GetUserById(ID int) (*User, error) {
+func (r *Repository) GetUserById(Id int) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
@@ -29,12 +29,12 @@ func (r *Repository) GetUserById(ID int) (*User, error) {
 	query := `select u.id, u.email, u.password, u."phoneNumber", u."timeCreated", u."timeSignOut"
        from "user" u where u.id = $1`
 
-	err := r.db.QueryRowContext(ctx, query, ID).Scan(
+	err := r.db.QueryRowContext(ctx, query, Id).Scan(
 		&user.Id, &user.Email, &user.Password, &user.PhoneNumber, &user.TimeCreated, &user.TimeSignOut,
 	)
 
 	if err != nil {
-		return user, err
+		return nil, err
 	}
 	return user, nil
 }
@@ -53,7 +53,7 @@ func (r *Repository) GetUserByEmail(email string) (*User, error) {
 	)
 
 	if err != nil {
-		return user, err
+		return nil, err
 	}
 	return user, nil
 }
