@@ -18,8 +18,10 @@ func NewModule(
 	logger *log.Logger,
 ) *Module {
 	m := &Module{
-		eventsController: NewController(infrastructureModule.EventsRepository, logger),
-		currentUser:      currentUser,
+		eventsController: NewController(
+			infrastructureModule.EventsRepository, infrastructureModule.SubscriptionsRepository, logger,
+		),
+		currentUser: currentUser,
 	}
 	m.attachRoutes(router)
 	return m
@@ -28,4 +30,10 @@ func NewModule(
 func (m *Module) attachRoutes(router *httprouter.Router) {
 	router.HandlerFunc(http.MethodGet, "/events", m.currentUser.HandlerFunc(m.eventsController.FindEvents))
 	router.HandlerFunc(http.MethodGet, "/events/:id", m.currentUser.HandlerFunc(m.eventsController.GetEvent))
+	router.HandlerFunc(
+		http.MethodPost, "/events/:id/subscribe", m.currentUser.HandlerFunc(m.eventsController.Subscribe),
+	)
+	router.HandlerFunc(
+		http.MethodPost, "/events/:id/unsubscribe", m.currentUser.HandlerFunc(m.eventsController.Unsubscribe),
+	)
 }

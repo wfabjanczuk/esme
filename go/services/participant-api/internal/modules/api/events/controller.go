@@ -7,23 +7,32 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"participant-api/internal/modules/api/common/requests"
 	"participant-api/internal/modules/api/common/responses"
 	"participant-api/internal/modules/infrastructure/events"
+	"participant-api/internal/modules/infrastructure/subscriptions"
+	"participant-api/internal/modules/infrastructure/users"
 	"strconv"
 	"time"
 )
 
+var unexpectedError = errors.New("unexpected error")
+
 type Controller struct {
-	eventsRepository *events.Repository
-	responder        *responses.Responder
-	logger           *log.Logger
+	eventsRepository        *events.Repository
+	subscriptionsRepository *subscriptions.Repository
+	responder               *responses.Responder
+	logger                  *log.Logger
 }
 
-func NewController(eventsRepository *events.Repository, logger *log.Logger) *Controller {
+func NewController(
+	eventsRepository *events.Repository, subscriptionsRepository *subscriptions.Repository, logger *log.Logger,
+) *Controller {
 	return &Controller{
-		eventsRepository: eventsRepository,
-		responder:        responses.NewResponder(logger),
-		logger:           logger,
+		eventsRepository:        eventsRepository,
+		subscriptionsRepository: subscriptionsRepository,
+		responder:               responses.NewResponder(logger),
+		logger:                  logger,
 	}
 }
 
@@ -67,7 +76,9 @@ func (c *Controller) FindEvents(w http.ResponseWriter, r *http.Request) {
 	c.responder.WriteJson(w, http.StatusOK, eventsList)
 }
 
-func (c *Controller) GetEvent(w http.ResponseWriter, r *http.Request) {
+type getEventOnSuccess func(http.ResponseWriter, *http.Request, *users.User, *events.Event)
+
+func (c *Controller) getEvent(w http.ResponseWriter, r *http.Request, onSuccess getEventOnSuccess) {
 	idString := httprouter.ParamsFromContext(r.Context()).ByName("id")
 	id, err := strconv.Atoi(idString)
 	if err != nil {
@@ -87,5 +98,47 @@ func (c *Controller) GetEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.responder.WriteJson(w, http.StatusOK, event)
+	user, err := requests.GetCurrentUser(r)
+	if err != nil {
+		c.responder.WriteError(w, unexpectedError, http.StatusInternalServerError)
+		return
+	}
+
+	onSuccess(w, r, user, event)
+}
+
+func (c *Controller) GetEvent(w http.ResponseWriter, r *http.Request) {
+	c.getEvent(
+		w, r, func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
+			c.responder.WriteJson(w, http.StatusOK, event)
+		},
+	)
+}
+
+func (c *Controller) Subscribe(w http.ResponseWriter, r *http.Request) {
+	c.getEvent(
+		w, r, func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
+			err := c.subscriptionsRepository.Subscribe(user.Id, event.Id)
+			if err != nil {
+				c.responder.WriteError(w, unexpectedError, http.StatusInternalServerError)
+				return
+			}
+
+			c.responder.WriteEmptyResponse(w, http.StatusOK)
+		},
+	)
+}
+
+func (c *Controller) Unsubscribe(w http.ResponseWriter, r *http.Request) {
+	c.getEvent(
+		w, r, func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
+			err := c.subscriptionsRepository.Unsubscribe(user.Id, event.Id)
+			if err != nil {
+				c.responder.WriteError(w, unexpectedError, http.StatusInternalServerError)
+				return
+			}
+
+			c.responder.WriteEmptyResponse(w, http.StatusOK)
+		},
+	)
 }

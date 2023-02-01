@@ -47,7 +47,7 @@ func (r *Repository) Subscribe(userId int, eventId int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
-	stmt := `insert into "subscription" ("userId", "eventId") values ($1, $2)`
+	stmt := `insert into "subscription" ("userId", "eventId") values ($1, $2) on conflict do nothing`
 	_, err := r.db.ExecContext(ctx, stmt, userId, eventId)
 	return err
 }
