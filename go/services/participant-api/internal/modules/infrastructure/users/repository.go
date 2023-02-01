@@ -20,7 +20,7 @@ func NewRepository(db *sql.DB, maxQueryTime time.Duration) *Repository {
 	}
 }
 
-func (r *Repository) GetUserById(Id int) (*User, error) {
+func (r *Repository) GetUserById(id int) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
@@ -29,7 +29,7 @@ func (r *Repository) GetUserById(Id int) (*User, error) {
 	query := `select u.id, u.email, u.password, u."phoneNumber", u."timeCreated", u."timeSignOut"
        from "user" u where u.id = $1`
 
-	err := r.db.QueryRowContext(ctx, query, Id).Scan(
+	err := r.db.QueryRowContext(ctx, query, id).Scan(
 		&user.Id, &user.Email, &user.Password, &user.PhoneNumber, &user.TimeCreated, &user.TimeSignOut,
 	)
 
@@ -142,6 +142,19 @@ func (r *Repository) ChangePassword(user *User) error {
 	stmt := `update "user" set password = $1, "timeSignOut" = $2 where id = $3`
 
 	_, err = r.db.ExecContext(ctx, stmt, user.Password, user.TimeSignOut, user.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *Repository) DeleteUser(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
+	defer cancel()
+
+	stmt := `delete from "user" where id = $1`
+
+	_, err := r.db.ExecContext(ctx, stmt, id)
 	if err != nil {
 		return err
 	}

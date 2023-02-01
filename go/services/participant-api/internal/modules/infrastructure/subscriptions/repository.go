@@ -18,7 +18,7 @@ func NewRepository(db *sql.DB, maxQueryTime time.Duration) *Repository {
 	}
 }
 
-func (r *Repository) GetSubscriptionsByUserId(userId int) ([]int, error) {
+func (r *Repository) FindSubscriptionsByUserId(userId int) ([]int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
@@ -28,7 +28,7 @@ func (r *Repository) GetSubscriptionsByUserId(userId int) ([]int, error) {
 		return nil, err
 	}
 
-	var eventIds []int
+	eventIds := make([]int, 0)
 	for rows.Next() {
 		var eventId int
 		if err = rows.Scan(&eventId); err != nil {

@@ -2,7 +2,7 @@ package requests
 
 import (
 	"net/http"
-	currentUser "participant-api/internal/modules/api/middlewares/current-user"
+	currentUser "participant-api/internal/modules/api/common/middlewares/current-user"
 	"participant-api/internal/modules/infrastructure/users"
 )
 

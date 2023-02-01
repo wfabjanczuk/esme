@@ -5,7 +5,8 @@ import (
 	"log"
 	"net/http"
 	"participant-api/internal/config"
-	"participant-api/internal/modules/api/middlewares"
+	"participant-api/internal/modules/api/common/middlewares"
+	"participant-api/internal/modules/api/events"
 	"participant-api/internal/modules/api/users"
 	"participant-api/internal/modules/infrastructure"
 )
@@ -18,6 +19,7 @@ func NewModule(cfg *config.Config, infrastructureModule *infrastructure.Module, 
 	router := httprouter.New()
 	middlewaresModule := middlewares.NewModule(cfg.JwtSecret, infrastructureModule.UsersRepository, logger)
 	users.NewModule(cfg, infrastructureModule, middlewaresModule.CurrentUser, router, logger)
+	events.NewModule(infrastructureModule, middlewaresModule.CurrentUser, router, logger)
 
 	return &Module{
 		Router: middlewaresModule.EnableCors.Handler(router),

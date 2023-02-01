@@ -9,9 +9,9 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"participant-api/internal/modules/api/constants"
-	"participant-api/internal/modules/api/requests"
-	"participant-api/internal/modules/api/responses"
+	"participant-api/internal/modules/api/common/constants"
+	"participant-api/internal/modules/api/common/requests"
+	"participant-api/internal/modules/api/common/responses"
 	"participant-api/internal/modules/infrastructure/users"
 	"time"
 )

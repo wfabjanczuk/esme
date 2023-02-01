@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	"participant-api/internal/config"
-	currentUser "participant-api/internal/modules/api/middlewares/current-user"
+	currentUser "participant-api/internal/modules/api/common/middlewares/current-user"
 	"participant-api/internal/modules/api/users/auth"
 	"participant-api/internal/modules/api/users/profile"
 	"participant-api/internal/modules/infrastructure"
@@ -45,6 +45,7 @@ func (m *Module) attachRoutes(router *httprouter.Router) {
 
 	router.HandlerFunc(http.MethodGet, "/profile", m.currentUser.HandlerFunc(m.profileController.GetProfile))
 	router.HandlerFunc(http.MethodPatch, "/profile", m.currentUser.HandlerFunc(m.profileController.UpdateProfile))
+	router.HandlerFunc(http.MethodDelete, "/profile", m.currentUser.HandlerFunc(m.profileController.DeleteProfile))
 	router.HandlerFunc(
 		http.MethodPatch, "/profile/change-password", m.currentUser.HandlerFunc(m.profileController.ChangePassword),
 	)

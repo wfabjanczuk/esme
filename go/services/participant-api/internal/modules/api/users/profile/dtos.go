@@ -29,3 +29,14 @@ func (d *changePasswordDTO) validate() error {
 	}
 	return nil
 }
+
+type deleteProfileDTO struct {
+	Password string `json:"password"`
+}
+
+func (d *deleteProfileDTO) validate() error {
+	if len(d.Password) < 8 {
+		return errors.New("password must be at least 8 characters")
+	}
+	return nil
+}

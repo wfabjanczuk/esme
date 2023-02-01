@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"log"
-	currentUser "participant-api/internal/modules/api/middlewares/current-user"
-	enableCors "participant-api/internal/modules/api/middlewares/enable-cors"
+	currentUser "participant-api/internal/modules/api/common/middlewares/current-user"
+	enableCors "participant-api/internal/modules/api/common/middlewares/enable-cors"
 	"participant-api/internal/modules/infrastructure/users"
 )
 
