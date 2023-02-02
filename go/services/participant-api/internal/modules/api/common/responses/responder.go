@@ -23,11 +23,13 @@ type ErrorMessage struct {
 }
 
 func (r *Responder) WriteError(w http.ResponseWriter, error error, status int) {
-	err := r.WriteJson(w, status, ErrorMessage{
-		StatusCode: status,
-		Message:    error.Error(),
-		Error:      http.StatusText(status),
-	})
+	err := r.WriteJson(
+		w, status, ErrorMessage{
+			StatusCode: status,
+			Message:    error.Error(),
+			Error:      http.StatusText(status),
+		},
+	)
 	if err != nil {
 		r.logger.Println(err)
 	}
@@ -48,7 +50,7 @@ func (r *Responder) WriteJson(w http.ResponseWriter, statusCode int, data interf
 		return nil
 	}
 
-	r.logger.Println(data)
+	r.logger.Println(string(output))
 	return nil
 }
 

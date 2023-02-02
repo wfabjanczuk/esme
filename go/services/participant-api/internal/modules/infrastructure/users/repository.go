@@ -3,8 +3,8 @@ package users
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"golang.org/x/crypto/bcrypt"
+	"participant-api/internal/modules/api/common/responses"
 	"time"
 )
 
@@ -66,7 +66,7 @@ func (r *Repository) InsertUser(user *User) (*User, error) {
 
 	_, err := r.GetUserByEmail(user.Email)
 	if err == nil {
-		return nil, errors.New("email already exists")
+		return nil, responses.ErrEmailExists
 	}
 	if err != sql.ErrNoRows {
 		return nil, err

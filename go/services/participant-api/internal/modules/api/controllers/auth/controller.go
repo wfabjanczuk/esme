@@ -1,8 +1,8 @@
 package auth
 
 import (
+	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/pascaldekloe/jwt"
 	"golang.org/x/crypto/bcrypt"
@@ -16,13 +16,11 @@ import (
 	"time"
 )
 
-var signInError = errors.New("invalid email or password")
-var unexpectedError = errors.New("unexpected error")
-
 type Controller struct {
 	jwtSecret       string
 	usersRepository *users.Repository
 	responder       *responses.Responder
+	logger          *log.Logger
 }
 
 func NewController(jwtSecret string, usersRepository *users.Repository, logger *log.Logger) *Controller {
@@ -30,6 +28,7 @@ func NewController(jwtSecret string, usersRepository *users.Repository, logger *
 		jwtSecret:       jwtSecret,
 		usersRepository: usersRepository,
 		responder:       responses.NewResponder(logger),
+		logger:          logger,
 	}
 }
 
@@ -63,14 +62,20 @@ func (c *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 			PhoneNumber: signUpDTO.PhoneNumber,
 		},
 	)
-	if err != nil {
+	if err == responses.ErrEmailExists {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
+		return
+	}
+	if err != nil {
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrDatabase, http.StatusInternalServerError)
 		return
 	}
 
 	token, err := c.generateJwt(user)
 	if err != nil {
-		c.responder.WriteError(w, err, http.StatusInternalServerError)
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
 
@@ -96,25 +101,31 @@ func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err = signInDTO.validate(); err != nil {
-		c.responder.WriteError(w, signInError, http.StatusBadRequest)
+		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
 
 	user, err := c.usersRepository.GetUserByEmail(signInDTO.Email)
+	if err == sql.ErrNoRows {
+		c.responder.WriteError(w, responses.ErrInvalidCredentials, http.StatusBadRequest)
+		return
+	}
 	if err != nil {
-		c.responder.WriteError(w, signInError, http.StatusBadRequest)
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrDatabase, http.StatusInternalServerError)
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(signInDTO.Password))
 	if err != nil {
-		c.responder.WriteError(w, signInError, http.StatusBadRequest)
+		c.responder.WriteError(w, responses.ErrInvalidCredentials, http.StatusBadRequest)
 		return
 	}
 
 	token, err := c.generateJwt(user)
 	if err != nil {
-		c.responder.WriteError(w, err, http.StatusInternalServerError)
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
 
@@ -124,21 +135,6 @@ func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 			Token: token,
 		},
 	)
-}
-
-func (c *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
-	user, err := requests.GetCurrentUser(r)
-	if err != nil {
-		c.responder.WriteError(w, unexpectedError, http.StatusInternalServerError)
-		return
-	}
-	err = c.usersRepository.SignOut(user)
-	if err != nil {
-		c.responder.WriteError(w, unexpectedError, http.StatusInternalServerError)
-		return
-	}
-
-	c.responder.WriteEmptyResponse(w, 200)
 }
 
 func (c *Controller) generateJwt(user *users.User) (string, error) {
@@ -156,4 +152,21 @@ func (c *Controller) generateJwt(user *users.User) (string, error) {
 	}
 
 	return fmt.Sprintf("%s:%s", constants.ParticipantTokenPrefix, string(jwtBytes)), nil
+}
+
+func (c *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
+	user, err := requests.GetCurrentUser(r)
+	if err != nil {
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
+		return
+	}
+	err = c.usersRepository.SignOut(user)
+	if err != nil {
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
+		return
+	}
+
+	c.responder.WriteEmptyResponse(w, 200)
 }

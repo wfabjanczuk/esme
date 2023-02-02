@@ -2,7 +2,6 @@ package profile
 
 import (
 	"encoding/json"
-	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"io"
 	"log"
@@ -12,26 +11,25 @@ import (
 	"participant-api/internal/modules/infrastructure/users"
 )
 
-var invalidOldPasswordError = errors.New("invalid oldPassword")
-var invalidPasswordError = errors.New("invalid password")
-var unexpectedError = errors.New("unexpected error")
-
 type Controller struct {
 	usersRepository *users.Repository
 	responder       *responses.Responder
+	logger          *log.Logger
 }
 
 func NewController(usersRepository *users.Repository, logger *log.Logger) *Controller {
 	return &Controller{
 		usersRepository: usersRepository,
 		responder:       responses.NewResponder(logger),
+		logger:          logger,
 	}
 }
 
 func (c *Controller) GetProfile(w http.ResponseWriter, r *http.Request) {
 	user, err := requests.GetCurrentUser(r)
 	if err != nil {
-		c.responder.WriteError(w, unexpectedError, http.StatusInternalServerError)
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
 	c.responder.WriteJson(w, http.StatusOK, user)
@@ -53,7 +51,8 @@ func (c *Controller) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 
 	user, err := requests.GetCurrentUser(r)
 	if err != nil {
-		c.responder.WriteError(w, unexpectedError, http.StatusInternalServerError)
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
 	user.PhoneNumber = updateProfileDTO.PhoneNumber
@@ -87,19 +86,21 @@ func (c *Controller) ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 	user, err := requests.GetCurrentUser(r)
 	if err != nil {
-		c.responder.WriteError(w, unexpectedError, http.StatusInternalServerError)
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(changePasswordDTO.OldPassword))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(changePasswordDTO.Password))
 	if err != nil {
-		c.responder.WriteError(w, invalidOldPasswordError, http.StatusBadRequest)
+		c.responder.WriteError(w, responses.ErrInvalidPassword, http.StatusBadRequest)
 		return
 	}
 	user.Password = changePasswordDTO.NewPassword
 
 	err = c.usersRepository.ChangePassword(user)
 	if err != nil {
-		c.responder.WriteError(w, err, http.StatusInternalServerError)
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrDatabase, http.StatusInternalServerError)
 		return
 	}
 
@@ -119,21 +120,27 @@ func (c *Controller) DeleteProfile(w http.ResponseWriter, r *http.Request) {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
+	if err = deleteProfileDTO.validate(); err != nil {
+		c.responder.WriteError(w, err, http.StatusBadRequest)
+		return
+	}
 
 	user, err := requests.GetCurrentUser(r)
 	if err != nil {
-		c.responder.WriteError(w, unexpectedError, http.StatusInternalServerError)
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(deleteProfileDTO.Password))
 	if err != nil {
-		c.responder.WriteError(w, invalidPasswordError, http.StatusBadRequest)
+		c.responder.WriteError(w, responses.ErrInvalidPassword, http.StatusBadRequest)
 		return
 	}
 
 	err = c.usersRepository.DeleteUser(user.Id)
 	if err != nil {
-		c.responder.WriteError(w, err, http.StatusInternalServerError)
+		c.logger.Println(err)
+		c.responder.WriteError(w, responses.ErrDatabase, http.StatusInternalServerError)
 		return
 	}
 

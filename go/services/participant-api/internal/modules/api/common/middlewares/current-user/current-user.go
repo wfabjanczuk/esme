@@ -2,7 +2,6 @@ package current_user
 
 import (
 	"context"
-	"errors"
 	"github.com/pascaldekloe/jwt"
 	"log"
 	"net/http"
@@ -16,13 +15,7 @@ import (
 
 type paramsUserKey struct{}
 
-var (
-	ParamsUserKey      = paramsUserKey{}
-	EmptyUserError     = errors.New("empty user from request")
-	MalformedUserError = errors.New("malformed user from request")
-	invalidHeaderError = errors.New("invalid authorization header")
-	invalidTokenError  = errors.New("invalid token")
-)
+var ParamsUserKey = paramsUserKey{}
 
 type Middleware struct {
 	handler         http.Handler
@@ -42,12 +35,12 @@ func NewMiddleware(jwtSecret string, usersRepository *users.Repository, logger *
 func (m *Middleware) getUserByAuthorizationHeader(authorizationHeader string) (*users.User, error) {
 	headerParts := strings.Split(authorizationHeader, " ")
 	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-		return nil, invalidHeaderError
+		return nil, responses.ErrInvalidHeader
 	}
 
 	tokenParts := strings.Split(headerParts[1], ":")
 	if len(tokenParts) != 2 || tokenParts[0] != constants.ParticipantTokenPrefix {
-		return nil, invalidTokenError
+		return nil, responses.ErrInvalidToken
 	}
 
 	jwtToken := tokenParts[1]
@@ -56,19 +49,19 @@ func (m *Middleware) getUserByAuthorizationHeader(authorizationHeader string) (*
 		!claims.Valid(time.Now()) ||
 		!claims.AcceptAudience(constants.TokenIssuer) ||
 		claims.Issuer != constants.TokenIssuer {
-		return nil, invalidTokenError
+		return nil, responses.ErrInvalidToken
 	}
 
 	userId, err := strconv.ParseInt(claims.Subject, 10, 64)
 	if err != nil {
-		return nil, invalidTokenError
+		return nil, responses.ErrInvalidToken
 	}
 	user, err := m.usersRepository.GetUserById(int(userId))
 	if err != nil {
-		return nil, invalidTokenError
+		return nil, responses.ErrInvalidToken
 	}
 	if claims.Issued.Time().Before(user.TimeSignOut) {
-		return nil, invalidTokenError
+		return nil, responses.ErrInvalidToken
 	}
 
 	return user, nil

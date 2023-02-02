@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"errors"
 	"net/mail"
+	"participant-api/internal/modules/api/common/responses"
 )
 
 type signUpDTO struct {
@@ -15,13 +15,13 @@ type signUpDTO struct {
 func (d *signUpDTO) validate() error {
 	_, err := mail.ParseAddress(d.Email)
 	if err != nil {
-		return errors.New("invalid email address")
+		return responses.ErrInvalidEmail
 	}
 	if len(d.Password) < 8 {
-		return errors.New("password must be at least 8 characters")
+		return responses.ErrPasswordTooShort
 	}
 	if d.Password != d.ConfirmPassword {
-		return errors.New("confirmPassword must match password")
+		return responses.ErrConfirmPassword
 	}
 	return nil
 }
@@ -34,10 +34,10 @@ type signInDTO struct {
 func (d *signInDTO) validate() error {
 	_, err := mail.ParseAddress(d.Email)
 	if err != nil {
-		return errors.New("invalid email address")
+		return responses.ErrInvalidEmail
 	}
 	if len(d.Password) < 8 {
-		return errors.New("password must be at least 8 characters")
+		return responses.ErrPasswordTooShort
 	}
 	return nil
 }
