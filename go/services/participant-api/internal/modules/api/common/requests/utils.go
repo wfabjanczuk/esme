@@ -3,7 +3,7 @@ package requests
 import (
 	"errors"
 	"net/http"
-	currentUser "participant-api/internal/modules/api/common/middlewares/current-user"
+	"participant-api/internal/modules/api/common/middlewares/current_user"
 	"participant-api/internal/modules/infrastructure/users"
 )
 
@@ -13,7 +13,7 @@ var (
 )
 
 func GetCurrentUser(r *http.Request) (*users.User, error) {
-	userParam := r.Context().Value(currentUser.ParamsUserKey)
+	userParam := r.Context().Value(current_user.ParamsUserKey)
 	if userParam == nil {
 		return nil, errEmptyUser
 	}

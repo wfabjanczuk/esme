@@ -1,7 +1,7 @@
 package profile
 
 import (
-	"participant-api/internal/modules/api/common/responses"
+	"participant-api/internal/modules/api/common/api_errors"
 )
 
 type updateProfileDTO struct {
@@ -16,16 +16,16 @@ type changePasswordDTO struct {
 
 func (d *changePasswordDTO) validate() error {
 	if len(d.Password) < 8 {
-		return responses.ErrPasswordTooShort
+		return api_errors.ErrPasswordTooShort
 	}
 	if len(d.NewPassword) < 8 {
-		return responses.ErrNewPasswordTooShort
+		return api_errors.ErrNewPasswordTooShort
 	}
 	if d.NewPassword != d.ConfirmNewPassword {
-		return responses.ErrConfirmNewPassword
+		return api_errors.ErrConfirmNewPassword
 	}
 	if d.NewPassword == d.Password {
-		return responses.ErrSamePasswords
+		return api_errors.ErrSamePasswords
 	}
 	return nil
 }
@@ -36,7 +36,7 @@ type deleteProfileDTO struct {
 
 func (d *deleteProfileDTO) validate() error {
 	if len(d.Password) < 8 {
-		return responses.ErrPasswordTooShort
+		return api_errors.ErrPasswordTooShort
 	}
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"participant-api/internal/modules/api/common/api_errors"
 	"participant-api/internal/modules/api/common/requests"
 	"participant-api/internal/modules/api/common/responses"
 	"participant-api/internal/modules/infrastructure/events"
@@ -39,7 +40,7 @@ func (c *Controller) parseTimeFilter(field, value string) (time.Time, error) {
 
 	t, err := time.Parse(time.RFC3339, value)
 	if err != nil {
-		return t, responses.NewErrInvalidTimeFilter(field)
+		return t, api_errors.NewErrInvalidTimeFilter(field)
 	}
 	return t, nil
 }
@@ -65,7 +66,7 @@ func (c *Controller) FindEvents(w http.ResponseWriter, r *http.Request) {
 	eventsList, err := c.eventsRepository.FindEvents(filters, 20)
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, responses.ErrDatabase, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
 		return
 	}
 
@@ -79,25 +80,25 @@ func (c *Controller) getEvent(w http.ResponseWriter, r *http.Request, onSuccess 
 	id, err := strconv.Atoi(idString)
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, responses.ErrInvalidQueryId, http.StatusBadRequest)
+		c.responder.WriteError(w, api_errors.ErrInvalidQueryId, http.StatusBadRequest)
 		return
 	}
 
 	event, err := c.eventsRepository.GetEventById(id)
 	if err == sql.ErrNoRows {
-		c.responder.WriteError(w, responses.NewErrEventNotFound(id), http.StatusNotFound)
+		c.responder.WriteError(w, api_errors.NewErrEventNotFound(id), http.StatusNotFound)
 		return
 	}
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, responses.ErrDatabase, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
 		return
 	}
 
 	user, err := requests.GetCurrentUser(r)
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
 
@@ -105,39 +106,39 @@ func (c *Controller) getEvent(w http.ResponseWriter, r *http.Request, onSuccess 
 }
 
 func (c *Controller) GetEvent(w http.ResponseWriter, r *http.Request) {
-	c.getEvent(
-		w, r, func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
-			c.responder.WriteJson(w, http.StatusOK, event)
-		},
-	)
+	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
+		c.responder.WriteJson(w, http.StatusOK, event)
+	}
+
+	c.getEvent(w, r, onSuccess)
 }
 
 func (c *Controller) Subscribe(w http.ResponseWriter, r *http.Request) {
-	c.getEvent(
-		w, r, func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
-			err := c.subscriptionsRepository.Subscribe(user.Id, event.Id)
-			if err != nil {
-				c.logger.Println(err)
-				c.responder.WriteError(w, responses.ErrDatabase, http.StatusInternalServerError)
-				return
-			}
+	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
+		err := c.subscriptionsRepository.Subscribe(user.Id, event.Id)
+		if err != nil {
+			c.logger.Println(err)
+			c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
+			return
+		}
 
-			c.responder.WriteEmptyResponse(w, http.StatusOK)
-		},
-	)
+		c.responder.WriteEmptyResponse(w, http.StatusOK)
+	}
+
+	c.getEvent(w, r, onSuccess)
 }
 
 func (c *Controller) Unsubscribe(w http.ResponseWriter, r *http.Request) {
-	c.getEvent(
-		w, r, func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
-			err := c.subscriptionsRepository.Unsubscribe(user.Id, event.Id)
-			if err != nil {
-				c.logger.Println(err)
-				c.responder.WriteError(w, responses.ErrDatabase, http.StatusInternalServerError)
-				return
-			}
+	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
+		err := c.subscriptionsRepository.Unsubscribe(user.Id, event.Id)
+		if err != nil {
+			c.logger.Println(err)
+			c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
+			return
+		}
 
-			c.responder.WriteEmptyResponse(w, http.StatusOK)
-		},
-	)
+		c.responder.WriteEmptyResponse(w, http.StatusOK)
+	}
+
+	c.getEvent(w, r, onSuccess)
 }

@@ -28,6 +28,9 @@ func NewApplication() *Application {
 
 func (a *Application) Bootstrap() {
 	infrastructureModule := infrastructure.NewModule(a.config, a.logger)
+	defer infrastructureModule.MqConnection.Close()
+	defer infrastructureModule.MqChannel.Close()
+
 	apiModule := api.NewModule(a.config, infrastructureModule, a.logger)
 
 	srv := &http.Server{

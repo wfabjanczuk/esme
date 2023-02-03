@@ -26,12 +26,12 @@ func (r *Repository) GetEventById(id int) (*Event, error) {
 
 	event := &Event{}
 
-	query := `select e.id, e.name, e.description, e.address, e.lat, e.lng, e."timeStart", e."timeEnd"
+	query := `select e.id, e.name, e.description, e.address, e.lat, e.lng, e."timeStart", e."timeEnd", e."agencyId"
        from "event" e where e.id = $1`
 
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
 		&event.Id, &event.Name, &event.Description, &event.Address, &event.Lat, &event.Lng, &event.TimeStart,
-		&event.TimeEnd,
+		&event.TimeEnd, &event.AgencyId,
 	)
 
 	if err != nil {
@@ -94,7 +94,8 @@ func (r *Repository) FindEvents(filters Filters, limit int) ([]*Event, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
-	selectClause := `select e.id, e.name, e.description, e.address, e.lat, e.lng, e."timeStart", e."timeEnd" from "event" e`
+	selectClause := `select e.id, e.name, e.description, e.address, e.lat, e.lng, e."timeStart", e."timeEnd",
+       e."agencyId" from "event" e`
 	whereClause, args := filters.buildWhereClause()
 	orderByClause := `order by e."timeStart" asc`
 	limitClause := fmt.Sprintf(`limit %d`, limit)
@@ -110,7 +111,7 @@ func (r *Repository) FindEvents(filters Filters, limit int) ([]*Event, error) {
 		event := &Event{}
 		err = rows.Scan(
 			&event.Id, &event.Name, &event.Description, &event.Address, &event.Lat, &event.Lng, &event.TimeStart,
-			&event.TimeEnd,
+			&event.TimeEnd, &event.AgencyId,
 		)
 		if err != nil {
 			return nil, err

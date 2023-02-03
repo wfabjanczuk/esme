@@ -11,4 +11,5 @@ type Event struct {
 	Lng         float64   `json:"lng"`
 	TimeStart   time.Time `json:"timeStart"`
 	TimeEnd     time.Time `json:"timeEnd"`
+	AgencyId    int       `json:"-"`
 }

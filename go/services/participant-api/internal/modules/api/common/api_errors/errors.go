@@ -1,4 +1,4 @@
-package responses
+package api_errors
 
 import (
 	"errors"
@@ -14,6 +14,7 @@ var (
 	ErrInvalidEmail       = errors.New("invalid email address")
 	ErrInvalidPassword    = errors.New("invalid password")
 	ErrInvalidCredentials = errors.New("invalid email or password")
+	ErrInvalidQueryId     = errors.New("invalid `id` query parameter")
 
 	ErrPasswordTooShort    = errors.New("password must be at least 8 characters")
 	ErrNewPasswordTooShort = errors.New("newPassword must be at least 8 characters")
@@ -21,8 +22,9 @@ var (
 	ErrConfirmNewPassword  = errors.New("confirmNewPassword must match newPassword")
 	ErrSamePasswords       = errors.New("newPassword must be different from current password")
 
-	ErrEmailExists    = errors.New("email already exists")
-	ErrInvalidQueryId = errors.New("invalid `id` query parameter")
+	ErrEmailExists        = errors.New("email already exists")
+	ErrChatRequestExists  = errors.New("chat request already exists")
+	ErrDescriptionTooLong = errors.New("description must be at most 2000 characters")
 )
 
 func NewErrInvalidTimeFilter(field string) error {

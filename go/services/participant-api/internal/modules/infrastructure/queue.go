@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func setupQueueConnection(dsn string, logger *log.Logger) (*amqp.Connection, *amqp.Channel) {
+func setupMqConnection(dsn string, logger *log.Logger) (*amqp.Connection, *amqp.Channel) {
 	var connection *amqp.Connection
 	var channel *amqp.Channel
 	var err error

@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"participant-api/internal/modules/api/common/api_errors"
 	"participant-api/internal/modules/api/common/constants"
 	"participant-api/internal/modules/api/common/requests"
 	"participant-api/internal/modules/api/common/responses"
@@ -62,20 +63,20 @@ func (c *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 			PhoneNumber: signUpDTO.PhoneNumber,
 		},
 	)
-	if err == responses.ErrEmailExists {
+	if err == api_errors.ErrEmailExists {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, responses.ErrDatabase, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
 		return
 	}
 
 	token, err := c.generateJwt(user)
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
 
@@ -107,25 +108,25 @@ func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 
 	user, err := c.usersRepository.GetUserByEmail(signInDTO.Email)
 	if err == sql.ErrNoRows {
-		c.responder.WriteError(w, responses.ErrInvalidCredentials, http.StatusBadRequest)
+		c.responder.WriteError(w, api_errors.ErrInvalidCredentials, http.StatusUnauthorized)
 		return
 	}
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, responses.ErrDatabase, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(signInDTO.Password))
 	if err != nil {
-		c.responder.WriteError(w, responses.ErrInvalidCredentials, http.StatusBadRequest)
+		c.responder.WriteError(w, api_errors.ErrInvalidCredentials, http.StatusUnauthorized)
 		return
 	}
 
 	token, err := c.generateJwt(user)
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
 
@@ -158,13 +159,13 @@ func (c *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
 	user, err := requests.GetCurrentUser(r)
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
 	err = c.usersRepository.SignOut(user)
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, responses.ErrUnexpected, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
 

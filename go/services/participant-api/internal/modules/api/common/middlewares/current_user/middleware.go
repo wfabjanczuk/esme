@@ -5,6 +5,7 @@ import (
 	"github.com/pascaldekloe/jwt"
 	"log"
 	"net/http"
+	"participant-api/internal/modules/api/common/api_errors"
 	"participant-api/internal/modules/api/common/constants"
 	"participant-api/internal/modules/api/common/responses"
 	"participant-api/internal/modules/infrastructure/users"
@@ -35,12 +36,12 @@ func NewMiddleware(jwtSecret string, usersRepository *users.Repository, logger *
 func (m *Middleware) getUserByAuthorizationHeader(authorizationHeader string) (*users.User, error) {
 	headerParts := strings.Split(authorizationHeader, " ")
 	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-		return nil, responses.ErrInvalidHeader
+		return nil, api_errors.ErrInvalidHeader
 	}
 
 	tokenParts := strings.Split(headerParts[1], ":")
 	if len(tokenParts) != 2 || tokenParts[0] != constants.ParticipantTokenPrefix {
-		return nil, responses.ErrInvalidToken
+		return nil, api_errors.ErrInvalidToken
 	}
 
 	jwtToken := tokenParts[1]
@@ -49,19 +50,19 @@ func (m *Middleware) getUserByAuthorizationHeader(authorizationHeader string) (*
 		!claims.Valid(time.Now()) ||
 		!claims.AcceptAudience(constants.TokenIssuer) ||
 		claims.Issuer != constants.TokenIssuer {
-		return nil, responses.ErrInvalidToken
+		return nil, api_errors.ErrInvalidToken
 	}
 
 	userId, err := strconv.ParseInt(claims.Subject, 10, 64)
 	if err != nil {
-		return nil, responses.ErrInvalidToken
+		return nil, api_errors.ErrInvalidToken
 	}
 	user, err := m.usersRepository.GetUserById(int(userId))
 	if err != nil {
-		return nil, responses.ErrInvalidToken
+		return nil, api_errors.ErrInvalidToken
 	}
 	if claims.Issued.Time().Before(user.TimeSignOut) {
-		return nil, responses.ErrInvalidToken
+		return nil, api_errors.ErrInvalidToken
 	}
 
 	return user, nil

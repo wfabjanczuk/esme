@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"golang.org/x/crypto/bcrypt"
-	"participant-api/internal/modules/api/common/responses"
+	"participant-api/internal/modules/api/common/api_errors"
 	"time"
 )
 
@@ -66,7 +66,7 @@ func (r *Repository) InsertUser(user *User) (*User, error) {
 
 	_, err := r.GetUserByEmail(user.Email)
 	if err == nil {
-		return nil, responses.ErrEmailExists
+		return nil, api_errors.ErrEmailExists
 	}
 	if err != sql.ErrNoRows {
 		return nil, err
@@ -83,7 +83,7 @@ func (r *Repository) InsertUser(user *User) (*User, error) {
 	user.Password = string(hashedPassword)
 
 	stmt := `insert into "user" (email, password, "phoneNumber", "timeCreated", "timeSignOut")
-values ($1, $2, $3, $4, $5) returning id`
+       values ($1, $2, $3, $4, $5) returning id`
 
 	err = r.db.QueryRowContext(
 		ctx, stmt,
