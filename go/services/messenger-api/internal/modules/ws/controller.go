@@ -9,7 +9,7 @@ import (
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/ws/consumers/organizers"
 	"messenger-api/internal/modules/ws/consumers/participants"
-	writers_chats "messenger-api/internal/modules/ws/writers/chats"
+	wchats "messenger-api/internal/modules/ws/writers/chats"
 	"net/http"
 )
 
@@ -22,21 +22,21 @@ var wsUpgrader = websocket.Upgrader{
 type Controller struct {
 	authenticator        *authentication.Authenticator
 	chatsRepository      *chats.Repository
-	out                  *writers_chats.Writer
+	out                  *wchats.Writer
 	organizersConsumer   *organizers.Consumer
 	participantsConsumer *participants.Consumer
 	logger               *log.Logger
 }
 
 func NewController(
-	cfg *config.Config, infra *infrastructure.Module, outputController *writers_chats.Writer, logger *log.Logger,
+	cfg *config.Config, infra *infrastructure.Module, chatsWriter *wchats.Writer, logger *log.Logger,
 ) *Controller {
 	return &Controller{
 		authenticator:        authentication.NewAuthenticator(cfg, logger),
 		chatsRepository:      infra.ChatsRepository,
-		organizersConsumer:   organizers.NewConsumer(infra, outputController, logger),
-		participantsConsumer: participants.NewConsumer(outputController, logger),
-		out:                  outputController,
+		organizersConsumer:   organizers.NewConsumer(infra, chatsWriter, logger),
+		participantsConsumer: participants.NewConsumer(chatsWriter, logger),
+		out:                  chatsWriter,
 		logger:               logger,
 	}
 }

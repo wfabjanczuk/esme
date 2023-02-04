@@ -15,6 +15,8 @@ type Chat struct {
 	OrganizerId   int32     `json:"organizerId"`
 	ParticipantId int32     `json:"participantId"`
 	Ended         int32     `json:"ended"`
+	LatStart      float64   `json:"latStart"`
+	LngStart      float64   `json:"lngStart"`
 	TimeStart     time.Time `json:"timeStart"`
 	TimeEnd       time.Time `json:"timeEnd"`
 }
@@ -26,6 +28,8 @@ type PrimitiveChat struct {
 	OrganizerId   int32              `bson:"organizerId"`
 	ParticipantId int32              `bson:"participantId"`
 	Ended         int32              `bson:"ended"`
+	LatStart      float64            `bson:"latStart"`
+	LngStart      float64            `bson:"lngStart"`
 	TimeStart     primitive.DateTime `bson:"timeStart"`
 	TimeEnd       primitive.DateTime `bson:"timeEnd"`
 }
@@ -43,6 +47,8 @@ func (c *Chat) Primitive() (*PrimitiveChat, error) {
 		OrganizerId:   c.OrganizerId,
 		ParticipantId: c.ParticipantId,
 		Ended:         c.Ended,
+		LatStart:      c.LatStart,
+		LngStart:      c.LngStart,
 		TimeStart:     primitive.NewDateTimeFromTime(c.TimeStart),
 		TimeEnd:       primitive.NewDateTimeFromTime(c.TimeEnd),
 	}, nil
@@ -56,6 +62,8 @@ func (p *PrimitiveChat) Chat() *Chat {
 		OrganizerId:   p.OrganizerId,
 		ParticipantId: p.ParticipantId,
 		Ended:         p.Ended,
+		LatStart:      p.LatStart,
+		LngStart:      p.LngStart,
 		TimeStart:     p.TimeStart.Time(),
 		TimeEnd:       p.TimeEnd.Time(),
 	}

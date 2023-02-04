@@ -10,8 +10,3 @@ type Message struct {
 	Payload      json.RawMessage `json:"payload"`
 	TimeReceived time.Time       `json:"-"`
 }
-
-const (
-	OrganizerMsgTypeSendMessage = "send_message"
-	OrganizerMsgTypeStartChat   = "start_chat"
-)

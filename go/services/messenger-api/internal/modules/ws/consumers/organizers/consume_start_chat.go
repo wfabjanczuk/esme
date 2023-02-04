@@ -1,9 +1,11 @@
 package organizers
 
 import (
+	"encoding/json"
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/ws/connections"
 	"messenger-api/internal/modules/ws/protocol"
+	"messenger-api/internal/modules/ws/protocol/organizers/out"
 )
 
 func (c *Consumer) consumeStartChat(conn *connections.OrganizerConnection, msg *protocol.Message) {
@@ -23,10 +25,25 @@ func (c *Consumer) consumeStartChat(conn *connections.OrganizerConnection, msg *
 			AgencyId:      conn.Organizer.AgencyId,
 			EventId:       chatRequest.EventId,
 			ParticipantId: chatRequest.ParticipantId,
+			LatStart:      chatRequest.Lat,
+			LngStart:      chatRequest.Lng,
 			TimeStart:     msg.TimeReceived,
 		},
 	)
 
 	c.logger.Println("%s get_chat created new chat %s", conn.GetInfo(), chat.Id)
 	c.chatsWriter.SetOrganizerInChat(chat.Id, conn)
+
+	payloadBytes, err := json.Marshal(out.NewChatPayload{Chat: chat})
+	if err != nil {
+		c.logger.Printf("could not send %s to %s: %s", msg.Type, conn.GetInfo(), err)
+		return
+	}
+
+	conn.Send(
+		&protocol.Message{
+			Type:    msg.Type,
+			Payload: payloadBytes,
+		},
+	)
 }

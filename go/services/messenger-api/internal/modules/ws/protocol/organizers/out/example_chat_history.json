@@ -1,0 +1,16 @@
+{
+  "type": "get_chat_history",
+  "payload": {
+    "chatId": "63de66a7ad2407a30a58651f",
+    "messages": [
+      {
+        "id": "63de66b7ad2407a30a586520",
+        "chatId": "63de66a7ad2407a30a58651f",
+        "authorId": 2,
+        "fromOrganizer": 1,
+        "content": "Hello, how can I help you?",
+        "timeSent": "2023-02-04T14:07:51.919Z"
+      }
+    ]
+  }
+}

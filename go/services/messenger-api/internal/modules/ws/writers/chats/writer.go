@@ -1,15 +1,11 @@
 package chats
 
 import (
-	"errors"
+	"messenger-api/internal/modules/common"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/connections"
 	"sync"
 )
-
-var ErrChatNotFound = errors.New("chat not found")
-var ErrMessageNotCreated = errors.New("message not created")
-var ErrMessageNotSent = errors.New("message not sent")
 
 type chatChannel struct {
 	ChatId                string
@@ -63,7 +59,7 @@ func (w *Writer) RemoveOrganizerFromChat(chatId string) error {
 
 	c, exists := w.chats[chatId]
 	if !exists {
-		return ErrChatNotFound
+		return common.ErrChatNotFound
 	}
 
 	if c.ParticipantConnection == nil {
@@ -81,7 +77,7 @@ func (w *Writer) RemoveParticipantFromChat(chatId string) error {
 
 	c, exists := w.chats[chatId]
 	if !exists {
-		return ErrChatNotFound
+		return common.ErrChatNotFound
 	}
 
 	if c.OrganizerConnection == nil {

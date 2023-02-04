@@ -7,9 +7,11 @@ import (
 	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/infrastructure/chat_requests"
 	"messenger-api/internal/modules/infrastructure/chats"
+	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/connections"
 	"messenger-api/internal/modules/ws/protocol"
-	writers_chats "messenger-api/internal/modules/ws/writers/chats"
+	"messenger-api/internal/modules/ws/protocol/organizers/in"
+	wchats "messenger-api/internal/modules/ws/writers/chats"
 	"os"
 	"time"
 )
@@ -17,16 +19,18 @@ import (
 type Consumer struct {
 	chatRequestsRepository *chat_requests.Repository
 	chatsRepository        *chats.Repository
-	chatsWriter            *writers_chats.Writer
+	messagesRepository     *messages.Repository
+	chatsWriter            *wchats.Writer
 	logger                 *log.Logger
 }
 
 func NewConsumer(
-	infra *infrastructure.Module, chatsWriter *writers_chats.Writer, logger *log.Logger,
+	infra *infrastructure.Module, chatsWriter *wchats.Writer, logger *log.Logger,
 ) *Consumer {
 	return &Consumer{
 		chatRequestsRepository: infra.ChatRequestsRepository,
 		chatsRepository:        infra.ChatsRepository,
+		messagesRepository:     infra.MessagesRepository,
 		chatsWriter:            chatsWriter,
 		logger:                 logger,
 	}
@@ -54,10 +58,14 @@ func (c *Consumer) ListenOnConnection(conn *connections.OrganizerConnection) {
 
 func (c *Consumer) consumeMessage(conn *connections.OrganizerConnection, msg *protocol.Message) {
 	switch msg.Type {
-	case protocol.OrganizerMsgTypeStartChat:
+	case in.StartChat:
 		c.consumeStartChat(conn, msg)
-	case protocol.OrganizerMsgTypeSendMessage:
+	case in.GetChats:
+		c.consumeGetChats(conn, msg)
+	case in.SendMessage:
 		c.consumeSendMessage(conn, msg)
+	case in.GetChatHistory:
+		c.consumeGetChatHistory(conn, msg)
 	}
 }
 
