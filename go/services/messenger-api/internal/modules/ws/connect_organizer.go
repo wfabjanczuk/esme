@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"messenger-api/internal/modules/common"
 	"messenger-api/internal/modules/ws/connections"
 	"net/http"
 )
@@ -29,6 +30,7 @@ func (c *Controller) connectOrganizer(w http.ResponseWriter, r *http.Request, to
 	chats, err := c.chatsRepository.FindAllByOrganizerId(organizer.Id)
 	if err != nil {
 		c.logger.Printf("%s could not fetch chats: %s\n", conn.GetInfo(), err)
+		conn.SendError(common.ErrChatsNotFetchedFromDb)
 		conn.Close()
 		return
 	}
@@ -37,6 +39,7 @@ func (c *Controller) connectOrganizer(w http.ResponseWriter, r *http.Request, to
 		err = c.out.SetChatOrganizer(chat.Id, conn)
 		if err != nil {
 			c.logger.Printf("%s could not connect to chats: %s\n", conn.GetInfo(), err)
+			conn.SendError(err)
 			c.out.DisconnectOrganizer(conn)
 			conn.Close()
 			return

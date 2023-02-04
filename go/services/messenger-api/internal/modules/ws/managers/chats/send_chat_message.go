@@ -1,14 +1,12 @@
 package chats
 
 import (
-	"encoding/json"
 	"messenger-api/internal/modules/common"
 	"messenger-api/internal/modules/infrastructure/messages"
-	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/out"
 )
 
-func (m *Manager) WriteMessageToChat(chatId string, message *messages.Message) error {
+func (m *Manager) SendChatMessage(chatId string, message *messages.Message) error {
 	m.mu.RLock()
 	cc, exists := m.chatChannels[chatId]
 	if !exists {
@@ -18,7 +16,7 @@ func (m *Manager) WriteMessageToChat(chatId string, message *messages.Message) e
 
 	msg, err := m.messagesRepository.Create(message)
 	if err != nil {
-		return common.ErrMessageNotCreated
+		return common.ErrMessageNotSaved
 	}
 
 	m.mu.RLock()
@@ -26,18 +24,15 @@ func (m *Manager) WriteMessageToChat(chatId string, message *messages.Message) e
 
 	cc, exists = m.chatChannels[chatId]
 	if !exists {
-		return common.ErrChatNotFound
+		return common.ErrChatNotFoundMessageSaved
 	}
 
-	outPayloadBytes, err := json.Marshal(out.UserMessagePayload{Message: msg})
+	outMsg, err := out.BuildUserMessage(msg)
 	if err != nil {
-		return common.ErrMessageNotSent
+		m.logger.Printf("could not build user message: %s", err)
+		return common.ErrInternal
 	}
 
-	outMsg := &protocol.Message{
-		Type:    out.MsgTypeUserMessage,
-		Payload: outPayloadBytes,
-	}
 	if cc.OrganizerConnection != nil {
 		cc.OrganizerConnection.Send(outMsg)
 	}

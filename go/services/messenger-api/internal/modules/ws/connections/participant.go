@@ -6,10 +6,11 @@ import (
 	"log"
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/ws/protocol"
+	"messenger-api/internal/modules/ws/protocol/out"
 	"time"
 )
 
-const participantReadTimeout = 30 * time.Minute
+const participantReadTimeout = 10 * time.Minute
 
 type ParticipantConnection struct {
 	Participant  *authentication.Participant
@@ -49,8 +50,40 @@ func (c *ParticipantConnection) Read() (*protocol.Message, error) {
 	return msg, err
 }
 
-func (c *ParticipantConnection) Send(msg *protocol.Message) error {
-	return c.wsConnection.WriteJSON(msg)
+func (c *ParticipantConnection) Send(outMsg *protocol.Message) {
+	err := c.wsConnection.WriteJSON(outMsg)
+	if err != nil {
+		c.logger.Printf("could not send %s to %s: %s\n", outMsg.Type, c.GetInfo(), err)
+		return
+	}
+}
+
+func (c *ParticipantConnection) SendInfo(info string) {
+	outMsg, e := out.BuildInfo(info)
+	if e != nil {
+		c.logger.Printf("could not parse info for %s: %s\n", c.GetInfo(), e)
+		return
+	}
+
+	e = c.wsConnection.WriteJSON(outMsg)
+	if e != nil {
+		c.logger.Printf("could not send info to %s: %s\n", c.GetInfo(), e)
+		return
+	}
+}
+
+func (c *ParticipantConnection) SendError(err error) {
+	outMsg, e := out.BuildError(err)
+	if e != nil {
+		c.logger.Printf("could not parse error for %s: %s\n", c.GetInfo(), e)
+		return
+	}
+
+	e = c.wsConnection.WriteJSON(outMsg)
+	if e != nil {
+		c.logger.Printf("could not send error to %s: %s\n", c.GetInfo(), e)
+		return
+	}
 }
 
 func (c *ParticipantConnection) Close() {

@@ -1,5 +1,5 @@
 {
-  "type": "get_chats",
+  "type": "chats",
   "payload": {
     "chats": [
       {

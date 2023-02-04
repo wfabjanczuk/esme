@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gorilla/websocket"
 	"log"
+	"messenger-api/internal/modules/common"
 	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/infrastructure/chat_requests"
 	"messenger-api/internal/modules/infrastructure/chats"
@@ -72,12 +73,14 @@ func (c *Consumer) consumeMessage(conn *connections.OrganizerConnection, msg *pr
 		c.consumeGetChatHistory(conn, msg)
 	default:
 		c.logger.Printf("invalid message type %s from %s\n", msg.Type, conn.GetInfo())
+		conn.SendError(common.ErrInvalidMessageType)
 	}
 }
 
 func (c *Consumer) handleReadError(conn *connections.OrganizerConnection, err error) bool {
 	if os.IsTimeout(err) {
 		c.logger.Printf("timeout from %s\n", conn.GetInfo())
+		conn.SendError(common.ErrTimeout)
 		c.closeConnectionResources(conn)
 		return false
 	}
@@ -89,7 +92,8 @@ func (c *Consumer) handleReadError(conn *connections.OrganizerConnection, err er
 		return false
 	}
 
-	c.logger.Printf("unexpected error from %s: %s\n", conn.GetInfo(), err)
+	c.logger.Printf("malformed message from %s: %s\n", conn.GetInfo(), err)
+	conn.SendError(common.ErrMalformedMessage)
 	return true
 }
 

@@ -1,5 +1,5 @@
 {
-  "type": "get_chat_history",
+  "type": "chat_history",
   "payload": {
     "chatId": "63de66a7ad2407a30a58651f",
     "messages": [

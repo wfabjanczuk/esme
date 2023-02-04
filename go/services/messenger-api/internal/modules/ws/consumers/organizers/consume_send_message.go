@@ -1,7 +1,7 @@
 package organizers
 
 import (
-	"encoding/json"
+	"messenger-api/internal/modules/common"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/connections"
 	"messenger-api/internal/modules/ws/protocol"
@@ -9,15 +9,16 @@ import (
 )
 
 func (c *Consumer) consumeSendMessage(conn *connections.OrganizerConnection, msg *protocol.Message) {
-	var inPayload in.SendMessagePayload
-	err := json.Unmarshal(msg.Payload, &inPayload)
+	inPayload, err := in.ParseSendMessagePayload(msg)
 	if err != nil {
 		c.logger.Printf("%s sent invalid %s payload\n", conn.GetInfo(), msg.Type)
+		conn.SendError(common.ErrInvalidMessagePayload)
 		return
 	}
 
 	if !c.chatsManager.HasChatOrganizer(inPayload.ChatId, conn) {
 		c.logger.Printf("%s has no access to chat %s\n", conn.GetInfo(), inPayload.ChatId)
+		conn.SendError(common.NewErrNoAccessToChat(inPayload.ChatId))
 		return
 	}
 
@@ -28,9 +29,9 @@ func (c *Consumer) consumeSendMessage(conn *connections.OrganizerConnection, msg
 		AuthorId:      conn.Organizer.Id,
 		TimeSent:      msg.TimeReceived,
 	}
-	err = c.chatsManager.WriteMessageToChat(inPayload.ChatId, organizerMessage)
+	err = c.chatsManager.SendChatMessage(inPayload.ChatId, organizerMessage)
 	if err != nil {
-		c.logger.Println(err)
+		conn.SendError(err)
 		return
 	}
 }
