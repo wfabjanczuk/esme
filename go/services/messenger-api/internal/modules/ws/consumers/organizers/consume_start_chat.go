@@ -5,7 +5,7 @@ import (
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/ws/connections"
 	"messenger-api/internal/modules/ws/protocol"
-	"messenger-api/internal/modules/ws/protocol/organizers/out"
+	"messenger-api/internal/modules/ws/protocol/out"
 )
 
 func (c *Consumer) consumeStartChat(conn *connections.OrganizerConnection, msg *protocol.Message) {
@@ -31,8 +31,12 @@ func (c *Consumer) consumeStartChat(conn *connections.OrganizerConnection, msg *
 		},
 	)
 
-	c.logger.Println("%s get_chat created new chat %s", conn.GetInfo(), chat.Id)
-	c.chatsWriter.SetOrganizerInChat(chat.Id, conn)
+	c.logger.Printf("%s started new chat %s", conn.GetInfo(), chat.Id)
+	err = c.chatsManager.SetChatOrganizer(chat.Id, conn)
+	if err != nil {
+		c.logger.Printf("could not connect %s to chat %s: %s", conn.GetInfo(), chat.Id, err)
+		return
+	}
 
 	payloadBytes, err := json.Marshal(out.NewChatPayload{Chat: chat})
 	if err != nil {
@@ -42,7 +46,7 @@ func (c *Consumer) consumeStartChat(conn *connections.OrganizerConnection, msg *
 
 	conn.Send(
 		&protocol.Message{
-			Type:    msg.Type,
+			Type:    out.MsgTypeNewChat,
 			Payload: payloadBytes,
 		},
 	)

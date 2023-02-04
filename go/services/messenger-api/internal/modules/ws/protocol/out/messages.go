@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	Error         = "error"
-	NewChat       = "new_chat"
-	Chats         = "chats"
-	ChatHistory   = "chat_history"
-	SystemMessage = "system_message"
-	UserMessage   = "user_message"
+	MsgTypeError         = "error"
+	MsgTypeNewChat       = "new_chat"
+	MsgTypeChats         = "chats"
+	MsgTypeChatHistory   = "chat_history"
+	MsgTypeSystemMessage = "system_message"
+	MsgTypeUserMessage   = "user_message"
 )
 
 type NewChatPayload struct {

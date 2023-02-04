@@ -1,4 +1,4 @@
-package organizers
+package participants
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"messenger-api/internal/modules/ws/protocol/out"
 )
 
-func (c *Consumer) consumeGetChatHistory(conn *connections.OrganizerConnection, msg *protocol.Message) {
+func (c *Consumer) consumeGetChatHistory(conn *connections.ParticipantConnection, msg *protocol.Message) {
 	var inPayload in.GetChatHistoryPayload
 	err := json.Unmarshal(msg.Payload, &inPayload)
 	if err != nil {

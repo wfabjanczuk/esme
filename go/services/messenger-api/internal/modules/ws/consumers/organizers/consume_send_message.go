@@ -5,31 +5,32 @@ import (
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/connections"
 	"messenger-api/internal/modules/ws/protocol"
-	"messenger-api/internal/modules/ws/protocol/organizers/in"
+	"messenger-api/internal/modules/ws/protocol/in"
 )
 
 func (c *Consumer) consumeSendMessage(conn *connections.OrganizerConnection, msg *protocol.Message) {
-	var payload in.SendMessagePayload
-	err := json.Unmarshal(msg.Payload, &payload)
+	var inPayload in.SendMessagePayload
+	err := json.Unmarshal(msg.Payload, &inPayload)
 	if err != nil {
 		c.logger.Printf("%s sent invalid %s payload\n", conn.GetInfo(), msg.Type)
 		return
 	}
 
-	if !conn.HasChat(payload.ChatId) {
-		c.logger.Printf("%s has no access to chat %s\n", conn.GetInfo(), payload.ChatId)
+	if !c.chatsManager.HasChatOrganizer(inPayload.ChatId, conn) {
+		c.logger.Printf("%s has no access to chat %s\n", conn.GetInfo(), inPayload.ChatId)
 		return
 	}
 
 	organizerMessage := &messages.Message{
-		ChatId:        payload.ChatId,
-		Content:       payload.Message,
+		ChatId:        inPayload.ChatId,
+		Content:       inPayload.Message,
 		FromOrganizer: 1,
 		AuthorId:      conn.Organizer.Id,
 		TimeSent:      msg.TimeReceived,
 	}
-	err = c.chatsWriter.WriteMessageToChat(payload.ChatId, organizerMessage)
+	err = c.chatsManager.WriteMessageToChat(inPayload.ChatId, organizerMessage)
 	if err != nil {
 		c.logger.Println(err)
+		return
 	}
 }

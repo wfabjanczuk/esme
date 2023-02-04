@@ -5,7 +5,7 @@ import (
 	"log"
 	"messenger-api/internal/config"
 	"messenger-api/internal/modules/infrastructure"
-	"messenger-api/internal/modules/ws/writers/chats"
+	"messenger-api/internal/modules/ws/managers/chats"
 	"net/http"
 )
 
@@ -14,8 +14,8 @@ type Module struct {
 }
 
 func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Logger) *Module {
-	chatsWriter := chats.NewWriter(infra.MessagesRepository)
-	inputController := NewController(cfg, infra, chatsWriter, logger)
+	chatsManager := chats.NewManager(infra.MessagesRepository, logger)
+	inputController := NewController(cfg, infra, chatsManager, logger)
 
 	router := httprouter.New()
 	router.HandlerFunc(http.MethodGet, "/connect", inputController.Connect)

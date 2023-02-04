@@ -1,10 +1,10 @@
 package in
 
 const (
-	StartChat      = "start_chat"
-	GetChats       = "get_chats"
-	SendMessage    = "send_message"
-	GetChatHistory = "get_chat_history"
+	MsgTypeStartChat      = "start_chat"
+	MsgTypeGetChats       = "get_chats"
+	MsgTypeSendMessage    = "send_message"
+	MsgTypeGetChatHistory = "get_chat_history"
 )
 
 type SendMessagePayload struct {

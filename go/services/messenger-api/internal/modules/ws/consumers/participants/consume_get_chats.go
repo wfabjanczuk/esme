@@ -1,4 +1,4 @@
-package organizers
+package participants
 
 import (
 	"encoding/json"
@@ -7,14 +7,14 @@ import (
 	"messenger-api/internal/modules/ws/protocol/out"
 )
 
-func (c *Consumer) consumeGetChats(conn *connections.OrganizerConnection, msg *protocol.Message) {
-	organizerChats, err := c.chatsRepository.FindAllByOrganizerId(conn.Organizer.Id)
+func (c *Consumer) consumeGetChats(conn *connections.ParticipantConnection, msg *protocol.Message) {
+	participantChats, err := c.chatsRepository.FindAllByParticipantId(conn.Participant.Id)
 	if err != nil {
 		c.logger.Printf("%s could not fetch chats: %s\n", conn.GetInfo(), err)
 		return
 	}
 
-	outPayloadBytes, err := json.Marshal(&out.ChatsPayload{Chats: organizerChats})
+	outPayloadBytes, err := json.Marshal(&out.ChatsPayload{Chats: participantChats})
 	if err != nil {
 		c.logger.Printf("could not send %s to %s: %s", msg.Type, conn.GetInfo(), err)
 		return

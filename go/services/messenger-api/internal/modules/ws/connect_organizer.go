@@ -18,7 +18,7 @@ func (c *Controller) connectOrganizer(w http.ResponseWriter, r *http.Request, to
 		return
 	}
 
-	conn, err := connections.NewOrganizerConnection(wsConnection, organizer, c.logger)
+	conn, err := connections.NewOrganizerConnection(organizer, wsConnection, c.logger)
 	if err != nil {
 		c.logger.Printf("could not set up organizer connection %s: %s\n", r.RemoteAddr, err)
 		wsConnection.Close()
@@ -34,8 +34,13 @@ func (c *Controller) connectOrganizer(w http.ResponseWriter, r *http.Request, to
 	}
 
 	for _, chat := range chats {
-		conn.AddChat(chat.Id)
-		c.out.SetOrganizerInChat(chat.Id, conn)
+		err = c.out.SetChatOrganizer(chat.Id, conn)
+		if err != nil {
+			c.logger.Printf("%s could not connect to chats: %s\n", conn.GetInfo(), err)
+			c.out.DisconnectOrganizer(conn)
+			conn.Close()
+			return
+		}
 	}
 
 	go c.organizersConsumer.ListenOnConnection(conn)

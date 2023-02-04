@@ -19,7 +19,7 @@ func (c *Controller) connectParticipant(w http.ResponseWriter, r *http.Request, 
 	}
 	c.logger.Printf("participant %s opened connection\n", wsConnection.RemoteAddr())
 
-	conn, err := connections.NewParticipantConnection(wsConnection, participant, c.logger)
+	conn, err := connections.NewParticipantConnection(participant, wsConnection, c.logger)
 	if err != nil {
 		c.logger.Printf("could not set up participant connection %s: %s\n", r.RemoteAddr, err)
 		wsConnection.Close()
@@ -34,8 +34,13 @@ func (c *Controller) connectParticipant(w http.ResponseWriter, r *http.Request, 
 	}
 
 	for _, chat := range chats {
-		conn.ChatIds = append(conn.ChatIds, chat.Id)
-		c.out.SetParticipantInChat(chat.Id, conn)
+		err = c.out.SetChatParticipant(chat.Id, conn)
+		if err != nil {
+			c.logger.Printf("%s could not connect to chats: %s\n", conn.GetInfo(), err)
+			c.out.DisconnectParticipant(conn)
+			conn.Close()
+			return
+		}
 	}
 
 	go c.participantsConsumer.ListenOnConnection(conn)

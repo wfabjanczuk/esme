@@ -6,30 +6,26 @@ import (
 	"log"
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/ws/protocol"
-	"sync"
 	"time"
 )
 
-const ReadTimeout = 30 * time.Minute
+const organizerReadTimeout = 30 * time.Second
 
 type OrganizerConnection struct {
-	Organizer *authentication.Organizer
-	logger    *log.Logger
-	chats     map[string]struct{}
-	ws        *websocket.Conn
-	mu        sync.RWMutex
+	Organizer    *authentication.Organizer
+	wsConnection *websocket.Conn
+	logger       *log.Logger
 }
 
 func NewOrganizerConnection(
-	wsConnection *websocket.Conn, organizer *authentication.Organizer, logger *log.Logger,
+	organizer *authentication.Organizer, wsConnection *websocket.Conn, logger *log.Logger,
 ) (*OrganizerConnection, error) {
 	conn := &OrganizerConnection{
-		ws:        wsConnection,
-		Organizer: organizer,
-		chats:     make(map[string]struct{}),
-		logger:    logger,
+		Organizer:    organizer,
+		logger:       logger,
+		wsConnection: wsConnection,
 	}
-	err := conn.ws.SetReadDeadline(time.Now().Add(ReadTimeout))
+	err := conn.wsConnection.SetReadDeadline(time.Now().Add(organizerReadTimeout))
 	if err != nil {
 		return nil, err
 	}
@@ -37,49 +33,27 @@ func NewOrganizerConnection(
 }
 
 func (c *OrganizerConnection) ResetReadTimer() {
-	err := c.ws.SetReadDeadline(time.Now().Add(ReadTimeout))
+	err := c.wsConnection.SetReadDeadline(time.Now().Add(organizerReadTimeout))
 	if err != nil {
 		c.Close()
 	}
 }
 
-func (c *OrganizerConnection) Close() {
-	c.ws.Close()
-	c.logger.Printf("closed connection for %s\n", c.GetInfo())
-}
-
 func (c *OrganizerConnection) GetInfo() string {
-	return fmt.Sprintf("organizer %d (%s)", c.Organizer.Id, c.ws.RemoteAddr())
-}
-
-func (c *OrganizerConnection) HasChat(chatId string) bool {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-
-	_, exists := c.chats[chatId]
-	return exists
-}
-
-func (c *OrganizerConnection) AddChat(chatId string) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	c.chats[chatId] = struct{}{}
-}
-
-func (c *OrganizerConnection) RemoveChat(chatId string) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	delete(c.chats, chatId)
+	return fmt.Sprintf("organizer %d (%s)", c.Organizer.Id, c.wsConnection.RemoteAddr())
 }
 
 func (c *OrganizerConnection) Read() (*protocol.Message, error) {
 	msg := &protocol.Message{}
-	err := c.ws.ReadJSON(msg)
+	err := c.wsConnection.ReadJSON(msg)
 	return msg, err
 }
 
 func (c *OrganizerConnection) Send(msg *protocol.Message) error {
-	return c.ws.WriteJSON(msg)
+	return c.wsConnection.WriteJSON(msg)
+}
+
+func (c *OrganizerConnection) Close() {
+	c.wsConnection.Close()
+	c.logger.Printf("closed connection for %s\n", c.GetInfo())
 }

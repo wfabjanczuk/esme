@@ -1,6 +1,7 @@
 package connections
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"messenger-api/internal/modules/authentication"
@@ -8,22 +9,23 @@ import (
 	"time"
 )
 
+const participantReadTimeout = 30 * time.Minute
+
 type ParticipantConnection struct {
-	Ws          *websocket.Conn
-	Participant *authentication.Participant
-	ChatIds     []string
-	logger      *log.Logger
+	Participant  *authentication.Participant
+	wsConnection *websocket.Conn
+	logger       *log.Logger
 }
 
 func NewParticipantConnection(
-	wsConnection *websocket.Conn, participant *authentication.Participant, logger *log.Logger,
+	participant *authentication.Participant, wsConnection *websocket.Conn, logger *log.Logger,
 ) (*ParticipantConnection, error) {
 	conn := &ParticipantConnection{
-		Ws:          wsConnection,
-		Participant: participant,
-		logger:      logger,
+		Participant:  participant,
+		wsConnection: wsConnection,
+		logger:       logger,
 	}
-	err := conn.Ws.SetReadDeadline(time.Now().Add(ReadTimeout))
+	err := conn.wsConnection.SetReadDeadline(time.Now().Add(participantReadTimeout))
 	if err != nil {
 		return nil, err
 	}
@@ -31,17 +33,27 @@ func NewParticipantConnection(
 }
 
 func (c *ParticipantConnection) ResetReadTimer() {
-	err := c.Ws.SetReadDeadline(time.Now().Add(ReadTimeout))
+	err := c.wsConnection.SetReadDeadline(time.Now().Add(participantReadTimeout))
 	if err != nil {
 		c.Close()
 	}
 }
 
-func (c *ParticipantConnection) Close() {
-	c.Ws.Close()
-	c.logger.Printf("closed connection for participant %s\n", c.Ws.RemoteAddr())
+func (c *ParticipantConnection) GetInfo() string {
+	return fmt.Sprintf("participant %d (%s)", c.Participant.Id, c.wsConnection.RemoteAddr())
+}
+
+func (c *ParticipantConnection) Read() (*protocol.Message, error) {
+	msg := &protocol.Message{}
+	err := c.wsConnection.ReadJSON(msg)
+	return msg, err
 }
 
 func (c *ParticipantConnection) Send(msg *protocol.Message) error {
-	return c.Ws.WriteJSON(msg)
+	return c.wsConnection.WriteJSON(msg)
+}
+
+func (c *ParticipantConnection) Close() {
+	c.wsConnection.Close()
+	c.logger.Printf("closed connection for %s\n", c.GetInfo())
 }

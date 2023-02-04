@@ -4,78 +4,79 @@ import (
 	"errors"
 	"github.com/gorilla/websocket"
 	"log"
+	"messenger-api/internal/modules/infrastructure"
+	"messenger-api/internal/modules/infrastructure/chats"
+	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/connections"
-	"messenger-api/internal/modules/ws/writers/chats"
+	mgmt_chats "messenger-api/internal/modules/ws/managers/chats"
+	"messenger-api/internal/modules/ws/protocol"
 	"os"
 	"time"
 )
 
 type Consumer struct {
-	out    *chats.Writer
-	logger *log.Logger
+	chatsRepository    *chats.Repository
+	messagesRepository *messages.Repository
+	chatsManager       *mgmt_chats.Manager
+	logger             *log.Logger
 }
 
-func NewConsumer(out *chats.Writer, logger *log.Logger) *Consumer {
+func NewConsumer(infra *infrastructure.Module, chatsManager *mgmt_chats.Manager, logger *log.Logger) *Consumer {
 	return &Consumer{
-		out:    out,
-		logger: logger,
+		chatsRepository:    infra.ChatsRepository,
+		messagesRepository: infra.MessagesRepository,
+		chatsManager:       chatsManager,
+		logger:             logger,
 	}
-}
-
-type wsRequest struct {
-	Payload string `json:"payload"`
-}
-
-type task struct {
-	ChatId        string
-	Payload       string
-	FromOrganizer int32
-	AuthorId      int32
-	TimeReceived  time.Time
 }
 
 func (c *Consumer) ListenOnConnection(conn *connections.ParticipantConnection) {
 	defer func() {
 		if r := recover(); r != nil {
-			c.logger.Printf("error %v\n", r)
+			c.logger.Printf("panic %v\n", r)
+			c.closeConnectionResources(conn)
+			return
 		}
 	}()
 
 	for {
-		var request wsRequest
-		err := conn.Ws.ReadJSON(&request)
+		msg, err := conn.Read()
 		if err != nil {
-			if os.IsTimeout(err) {
-				c.logger.Printf("participant %s timeout\n", conn.Ws.RemoteAddr())
-				conn.Close()
+			if !c.handleReadError(conn, err) {
 				return
 			}
-			closeError := &websocket.CloseError{}
-			if errors.As(err, &closeError) {
-				c.logger.Printf("close error: %s\n", err)
-				return
-			}
-			c.logger.Printf("unexpected error: %s\n", err)
-		} else {
-			conn.ResetReadTimer()
-			c.logger.Printf(
-				"new message from participant %s, payload: \"%s\"\n",
-				conn.Ws.RemoteAddr(),
-				request.Payload,
-			)
-			go c.handleTask(
-				task{
-					ChatId:        "63cf08b1d38a3682abc90575",
-					Payload:       request.Payload,
-					FromOrganizer: 0,
-					AuthorId:      conn.Participant.Id,
-					TimeReceived:  time.Now(),
-				},
-			)
+			continue
 		}
+
+		conn.ResetReadTimer()
+		msg.TimeReceived = time.Now()
+		go c.consumeMessage(conn, msg)
 	}
 }
 
-func (c *Consumer) handleTask(task task) {
+func (c *Consumer) consumeMessage(conn *connections.ParticipantConnection, msg *protocol.Message) {
 
+}
+
+func (c *Consumer) handleReadError(conn *connections.ParticipantConnection, err error) bool {
+	if os.IsTimeout(err) {
+		c.logger.Printf("timeout from %s\n", conn.GetInfo())
+		c.closeConnectionResources(conn)
+		return false
+	}
+
+	closeError := &websocket.CloseError{}
+	if errors.As(err, &closeError) {
+		c.logger.Printf("close error from %s: %s\n", conn.GetInfo(), err)
+		c.closeConnectionResources(conn)
+		return false
+	}
+
+	c.logger.Printf("unexpected error from %s: %s\n", conn.GetInfo(), err)
+	return true
+}
+
+func (c *Consumer) closeConnectionResources(conn *connections.ParticipantConnection) {
+	c.chatsManager.DisconnectParticipant(conn)
+	conn.Close()
 }
