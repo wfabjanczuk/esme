@@ -12,5 +12,33 @@ create table if not exists "user"
     "timeSignOut" timestamp with time zone not null
 );
 
+create table if not exists subscription
+(
+    "eventId" integer not null,
+    "userId"  integer not null
+        constraint subscription_user_id_fk
+            references "user"
+            on delete cascade,
+    constraint subscription_pk
+        primary key ("eventId", "userId")
+);
+
+create table if not exists "chatRequest"
+(
+    "eventId" integer not null,
+    "userId"  integer not null
+        constraint chat_request_user_id_fk
+            references "user"
+            on delete cascade,
+    constraint chat_request_pk
+        primary key ("eventId", "userId")
+);
+
 alter table "user"
+    owner to developer;
+
+alter table subscription
+    owner to developer;
+
+alter table "chatRequest"
     owner to developer;

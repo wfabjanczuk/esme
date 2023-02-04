@@ -1,0 +1,7 @@
+{
+  "type": "send_message",
+  "payload": {
+    "chatId": "63de66a7ad2407a30a58651f",
+    "message": "Hello, how can I help you?"
+  }
+}

@@ -2,19 +2,18 @@ package app
 
 import (
 	"fmt"
-	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
 	"os"
 	"participant-api/internal/config"
-	"participant-api/internal/middlewares"
-	"participant-api/internal/modules/users"
+	"participant-api/internal/modules/api"
+	"participant-api/internal/modules/infrastructure"
 	"time"
 )
 
 type Application struct {
-	Config *config.Config
-	Logger *log.Logger
+	config *config.Config
+	logger *log.Logger
 }
 
 func NewApplication() *Application {
@@ -22,26 +21,25 @@ func NewApplication() *Application {
 	cfg := config.GetConfigFromEnv(logger)
 
 	return &Application{
-		Config: cfg,
-		Logger: logger,
+		config: cfg,
+		logger: logger,
 	}
 }
 
 func (a *Application) Bootstrap() {
-	router := httprouter.New()
-	users.NewUsersModule(a.Logger, a.Config, router)
+	infrastructureModule := infrastructure.NewModule(a.config, a.logger)
+	defer infrastructureModule.MqConnection.Close()
+	defer infrastructureModule.MqChannel.Close()
+
+	apiModule := api.NewModule(a.config, infrastructureModule, a.logger)
 
 	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", a.Config.Port),
-		Handler:      middlewares.EnableCors{Handler: router},
+		Addr:         fmt.Sprintf(":%d", a.config.Port),
+		Handler:      apiModule.Router,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
-	a.Logger.Printf("Starting %s server on port %d", a.Config.Env, a.Config.Port)
-
-	err := srv.ListenAndServe()
-	if err != nil {
-		a.Logger.Println(err)
-	}
+	a.logger.Printf("starting %s server on port %d\n", a.config.Env, a.config.Port)
+	a.logger.Panicln(srv.ListenAndServe())
 }

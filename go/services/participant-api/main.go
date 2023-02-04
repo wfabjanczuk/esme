@@ -1,8 +1,7 @@
 package main
 
-import app2 "participant-api/internal/app"
+import "participant-api/internal/app"
 
 func main() {
-	app := app2.NewApplication()
-	app.Bootstrap()
+	app.NewApplication().Bootstrap()
 }

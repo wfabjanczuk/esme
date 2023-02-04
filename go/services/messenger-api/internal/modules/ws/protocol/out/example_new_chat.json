@@ -1,0 +1,15 @@
+{
+  "type": "new_chat",
+  "payload": {
+    "id": "63de66a7ad2407a30a58651f",
+    "agencyId": 1,
+    "eventId": 1,
+    "organizerId": 2,
+    "participantId": 1,
+    "ended": 0,
+    "latStart": 52.2348373,
+    "lngStart": 20.9840948,
+    "timeStart": "2023-02-04T14:07:35.103Z",
+    "timeEnd": "0001-01-01T00:00:00Z"
+  }
+}
