@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"participant-api/internal/modules/api/common/api_errors"
+	"strings"
 	"time"
 )
 
@@ -53,16 +55,15 @@ func (r *Repository) DoesChatRequestExist(userId, eventId int) (bool, error) {
 }
 
 func (r *Repository) RequestChat(chatRequest *ChatRequestMq) error {
-	// TODO: uncomment after testing
-	//err := r.insertChatRequest(chatRequest.ParticipantId, chatRequest.EventId)
-	//if err != nil {
-	//	if strings.Contains(err.Error(), duplicateChatRequestMessage) {
-	//		return api_errors.ErrChatRequestExists
-	//	}
-	//	return err
-	//}
+	err := r.insertChatRequest(chatRequest.ParticipantId, chatRequest.EventId)
+	if err != nil {
+		if strings.Contains(err.Error(), duplicateChatRequestMessage) {
+			return api_errors.ErrChatRequestExists
+		}
+		return err
+	}
 
-	err := r.publishChatSetup(chatRequest)
+	err = r.publishChatSetup(chatRequest)
 	if err != nil {
 		dbErr := r.deleteChatRequest(chatRequest.ParticipantId, chatRequest.EventId)
 		if dbErr != nil {
