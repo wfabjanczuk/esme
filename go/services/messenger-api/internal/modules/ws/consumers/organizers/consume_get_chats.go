@@ -16,7 +16,7 @@ func (c *Consumer) consumeGetChats(conn *connections.OrganizerConnection, msg *p
 
 	outPayloadBytes, err := json.Marshal(&out.ChatsPayload{Chats: organizerChats})
 	if err != nil {
-		c.logger.Printf("could not send %s to %s: %s", msg.Type, conn.GetInfo(), err)
+		c.logger.Printf("could not send %s to %s: %s\n", msg.Type, conn.GetInfo(), err)
 		return
 	}
 

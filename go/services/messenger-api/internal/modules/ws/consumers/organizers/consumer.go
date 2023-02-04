@@ -70,6 +70,8 @@ func (c *Consumer) consumeMessage(conn *connections.OrganizerConnection, msg *pr
 		c.consumeSendMessage(conn, msg)
 	case in.MsgTypeGetChatHistory:
 		c.consumeGetChatHistory(conn, msg)
+	default:
+		c.logger.Printf("invalid message type %s from %s\n", msg.Type, conn.GetInfo())
 	}
 }
 

@@ -31,16 +31,16 @@ func (c *Consumer) consumeStartChat(conn *connections.OrganizerConnection, msg *
 		},
 	)
 
-	c.logger.Printf("%s started new chat %s", conn.GetInfo(), chat.Id)
+	c.logger.Printf("%s started new chat %s\n", conn.GetInfo(), chat.Id)
 	err = c.chatsManager.SetChatOrganizer(chat.Id, conn)
 	if err != nil {
-		c.logger.Printf("could not connect %s to chat %s: %s", conn.GetInfo(), chat.Id, err)
+		c.logger.Printf("could not connect %s to chat %s: %s\n", conn.GetInfo(), chat.Id, err)
 		return
 	}
 
 	payloadBytes, err := json.Marshal(out.NewChatPayload{Chat: chat})
 	if err != nil {
-		c.logger.Printf("could not send %s to %s: %s", msg.Type, conn.GetInfo(), err)
+		c.logger.Printf("could not send %s to %s: %s\n", msg.Type, conn.GetInfo(), err)
 		return
 	}
 

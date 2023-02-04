@@ -29,7 +29,7 @@ func (c *Consumer) consumeGetChatHistory(conn *connections.ParticipantConnection
 		},
 	)
 	if err != nil {
-		c.logger.Printf("could not send %s to %s: %s", msg.Type, conn.GetInfo(), err)
+		c.logger.Printf("could not send %s to %s: %s\n", msg.Type, conn.GetInfo(), err)
 		return
 	}
 

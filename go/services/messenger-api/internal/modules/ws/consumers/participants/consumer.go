@@ -10,6 +10,7 @@ import (
 	"messenger-api/internal/modules/ws/connections"
 	mgmt_chats "messenger-api/internal/modules/ws/managers/chats"
 	"messenger-api/internal/modules/ws/protocol"
+	"messenger-api/internal/modules/ws/protocol/in"
 	"os"
 	"time"
 )
@@ -55,7 +56,16 @@ func (c *Consumer) ListenOnConnection(conn *connections.ParticipantConnection) {
 }
 
 func (c *Consumer) consumeMessage(conn *connections.ParticipantConnection, msg *protocol.Message) {
-
+	switch msg.Type {
+	case in.MsgTypeGetChats:
+		c.consumeGetChats(conn, msg)
+	case in.MsgTypeSendMessage:
+		c.consumeSendMessage(conn, msg)
+	case in.MsgTypeGetChatHistory:
+		c.consumeGetChatHistory(conn, msg)
+	default:
+		c.logger.Printf("invalid message type %s from %s\n", msg.Type, conn.GetInfo())
+	}
 }
 
 func (c *Consumer) handleReadError(conn *connections.ParticipantConnection, err error) bool {
