@@ -1,4 +1,4 @@
-package users
+package authentication
 
 type Organizer struct {
 	Id          int32  `json:"id"`

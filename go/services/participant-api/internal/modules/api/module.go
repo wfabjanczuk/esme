@@ -7,18 +7,18 @@ import (
 	"participant-api/internal/config"
 	"participant-api/internal/modules/api/common/middlewares"
 	"participant-api/internal/modules/api/controllers/auth"
-	"participant-api/internal/modules/api/controllers/chats"
+	"participant-api/internal/modules/api/controllers/chat_requests"
 	"participant-api/internal/modules/api/controllers/events"
 	"participant-api/internal/modules/api/controllers/profile"
 	"participant-api/internal/modules/infrastructure"
 )
 
 type Module struct {
-	Router  http.Handler
-	auth    *auth.Controller
-	profile *profile.Controller
-	events  *events.Controller
-	chats   *chats.Controller
+	Router       http.Handler
+	auth         *auth.Controller
+	profile      *profile.Controller
+	events       *events.Controller
+	chatRequests *chat_requests.Controller
 }
 
 func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Logger) *Module {
@@ -26,11 +26,11 @@ func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Log
 	mw := middlewares.NewModule(cfg.JwtSecret, infra.UsersRepository, logger)
 
 	module := &Module{
-		Router:  mw.EnableCors.Handler(router),
-		auth:    auth.NewController(cfg.JwtSecret, infra.UsersRepository, logger),
-		profile: profile.NewController(infra.UsersRepository, logger),
-		events:  events.NewController(infra.EventsRepository, infra.SubscriptionsRepository, logger),
-		chats:   chats.NewController(infra.EventsRepository, infra.ChatsRepository, logger),
+		Router:       mw.EnableCors.Handler(router),
+		auth:         auth.NewController(cfg.JwtSecret, infra.UsersRepository, logger),
+		profile:      profile.NewController(infra.UsersRepository, logger),
+		events:       events.NewController(infra.EventsRepository, infra.SubscriptionsRepository, logger),
+		chatRequests: chat_requests.NewController(infra.EventsRepository, infra.ChatRequestsRepository, logger),
 	}
 
 	module.attachRoutes(router, mw.CurrentUser.HandlerFunc)
@@ -52,6 +52,6 @@ func (m *Module) attachRoutes(r *httprouter.Router, cu func(http.HandlerFunc) ht
 	r.HandlerFunc(http.MethodPost, "/events/:id/subscribe", cu(m.events.Subscribe))
 	r.HandlerFunc(http.MethodPost, "/events/:id/unsubscribe", cu(m.events.Unsubscribe))
 
-	r.HandlerFunc(http.MethodGet, "/chats", cu(m.chats.DoesChatRequestExist))
-	r.HandlerFunc(http.MethodPost, "/chats", cu(m.chats.RequestChat))
+	r.HandlerFunc(http.MethodGet, "/chat-requests", cu(m.chatRequests.DoesChatRequestExist))
+	r.HandlerFunc(http.MethodPost, "/chat-requests", cu(m.chatRequests.RequestChat))
 }

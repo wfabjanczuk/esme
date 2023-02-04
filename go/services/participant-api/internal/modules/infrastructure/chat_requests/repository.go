@@ -1,4 +1,4 @@
-package chats
+package chat_requests
 
 import (
 	"context"
@@ -25,10 +25,10 @@ type Repository struct {
 }
 
 func NewRepository(
-	rabbitChannel *amqp.Channel, participantDb *sql.DB, maxMqPublishTime, maxDbQueryTime time.Duration,
+	mq *amqp.Channel, participantDb *sql.DB, maxMqPublishTime, maxDbQueryTime time.Duration,
 ) *Repository {
 	return &Repository{
-		mq:               rabbitChannel,
+		mq:               mq,
 		db:               participantDb,
 		maxMqPublishTime: maxMqPublishTime,
 		maxDbQueryTime:   maxDbQueryTime,
@@ -39,11 +39,11 @@ func (r *Repository) DoesChatRequestExist(userId, eventId int) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxDbQueryTime)
 	defer cancel()
 
-	chatRequest := &ChatRequest{}
+	chatRequestDb := &ChatRequestDb{}
 
 	query := `select cr."userId", cr."eventId" from "chatRequest" cr where cr."userId" = $1 and cr."eventId" = $2`
 
-	err := r.db.QueryRowContext(ctx, query, userId, eventId).Scan(&chatRequest.UserId, &chatRequest.EventId)
+	err := r.db.QueryRowContext(ctx, query, userId, eventId).Scan(&chatRequestDb.UserId, &chatRequestDb.EventId)
 
 	if err == sql.ErrNoRows {
 		return false, nil
@@ -54,8 +54,8 @@ func (r *Repository) DoesChatRequestExist(userId, eventId int) (bool, error) {
 	return true, nil
 }
 
-func (r *Repository) RequestChat(chatSetup *ChatSetup) error {
-	err := r.insertChatRequest(chatSetup.ParticipantId, chatSetup.EventId)
+func (r *Repository) RequestChat(chatRequest *ChatRequestMq) error {
+	err := r.insertChatRequest(chatRequest.ParticipantId, chatRequest.EventId)
 	if err != nil {
 		if strings.Contains(err.Error(), duplicateChatRequestMessage) {
 			return api_errors.ErrChatRequestExists
@@ -63,9 +63,9 @@ func (r *Repository) RequestChat(chatSetup *ChatSetup) error {
 		return err
 	}
 
-	err = r.publishChatSetup(chatSetup)
+	err = r.publishChatSetup(chatRequest)
 	if err != nil {
-		dbErr := r.deleteChatRequest(chatSetup.ParticipantId, chatSetup.EventId)
+		dbErr := r.deleteChatRequest(chatRequest.ParticipantId, chatRequest.EventId)
 		if dbErr != nil {
 			err = fmt.Errorf("%w; unable to delete chat request from participant db: %s", err, dbErr)
 		}
@@ -93,7 +93,7 @@ func (r *Repository) deleteChatRequest(userId int, eventId int) error {
 	return err
 }
 
-func (r *Repository) publishChatSetup(chat *ChatSetup) error {
+func (r *Repository) publishChatSetup(chat *ChatRequestMq) error {
 	queue, err := r.mq.QueueDeclare(
 		getQueueName(chat.AgencyId),
 		true,

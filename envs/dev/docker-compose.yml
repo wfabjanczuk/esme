@@ -64,12 +64,12 @@ services:
       - "8100:8080"
     depends_on:
       - esme_participant_db
-      - esme_help_queue
+      - esme_chat_requests_queue
 
-  esme_help_queue:
+  esme_chat_requests_queue:
     image: rabbitmq:3-management
-    hostname: esme_help_queue
-    container_name: esme_help_queue
+    hostname: esme_chat_requests_queue
+    container_name: esme_chat_requests_queue
     environment:
       RABBITMQ_DEFAULT_USER: queue
       RABBITMQ_DEFAULT_PASS: queuePassword

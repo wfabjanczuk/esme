@@ -4,7 +4,7 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
 	"participant-api/internal/config"
-	"participant-api/internal/modules/infrastructure/chats"
+	"participant-api/internal/modules/infrastructure/chat_requests"
 	"participant-api/internal/modules/infrastructure/events"
 	"participant-api/internal/modules/infrastructure/subscriptions"
 	"participant-api/internal/modules/infrastructure/users"
@@ -18,7 +18,7 @@ type Module struct {
 	EventsRepository        *events.Repository
 	UsersRepository         *users.Repository
 	SubscriptionsRepository *subscriptions.Repository
-	ChatsRepository         *chats.Repository
+	ChatRequestsRepository  *chat_requests.Repository
 	MqConnection            *amqp.Connection
 	MqChannel               *amqp.Channel
 }
@@ -32,8 +32,10 @@ func NewModule(cfg *config.Config, logger *log.Logger) *Module {
 		EventsRepository:        events.NewRepository(organizerDb, maxDbQueryTime),
 		UsersRepository:         users.NewRepository(participantDb, maxDbQueryTime),
 		SubscriptionsRepository: subscriptions.NewRepository(participantDb, maxDbQueryTime),
-		ChatsRepository:         chats.NewRepository(mqChannel, participantDb, maxMqPublishTime, maxDbQueryTime),
-		MqConnection:            mqConnection,
-		MqChannel:               mqChannel,
+		ChatRequestsRepository: chat_requests.NewRepository(
+			mqChannel, participantDb, maxMqPublishTime, maxDbQueryTime,
+		),
+		MqConnection: mqConnection,
+		MqChannel:    mqChannel,
 	}
 }

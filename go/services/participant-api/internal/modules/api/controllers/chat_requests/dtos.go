@@ -1,4 +1,4 @@
-package chats
+package chat_requests
 
 import (
 	"participant-api/internal/modules/api/common/api_errors"
