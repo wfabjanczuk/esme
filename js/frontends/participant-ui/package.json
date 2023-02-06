@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@esme/participant",
+  "name": "@esme/participant-ui",
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
