@@ -1,23 +1,23 @@
-import React, { useState } from 'react'
-import { CurrentUser, CurrentUserContext, InitialUser } from '../auth/current-user-context'
+import React from 'react'
+import { AuthenticatorContext } from '../auth/authenticator.context'
 import { Router } from '../dashboard/router'
 import { RouterProvider } from 'react-router-dom'
-import { SignInView } from '../auth/sign-in-view'
+import { SignInView } from '../pages/sign-in/sign-in.view'
 import { Theme } from './theme'
 import { ThemeProvider } from '@mui/material'
 import CssBaseline from '@mui/material/CssBaseline'
+import { useNewAuthenticator } from '../auth/authenticator.hook'
 
 export const Root = (): JSX.Element => {
-  const [currentUser, setCurrentUser] = useState<CurrentUser>(InitialUser)
-  currentUser.setState = setCurrentUser
+  const authenticator = useNewAuthenticator()
 
   return <ThemeProvider theme={Theme}>
     <CssBaseline/>
-    <CurrentUserContext.Provider value={currentUser}>
-      {currentUser.isAuthorized()
+    <AuthenticatorContext.Provider value={authenticator}>
+      {authenticator.isAuthorized()
         ? <RouterProvider router={Router}/>
         : <SignInView/>
       }
-    </CurrentUserContext.Provider>
+    </AuthenticatorContext.Provider>
   </ThemeProvider>
 }
