@@ -1,13 +1,13 @@
 import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
-import { Root } from '../root/root'
 import { ErrorView } from '../root/error-view'
 import { PlaceholderView } from '../root/placeholder-view'
+import { Dashboard } from './dashboard'
 
 export const Router = createBrowserRouter([
   {
     path: '/',
-    element: <Root />,
+    element: <Dashboard/>,
     errorElement: <ErrorView/>,
     children: [
       {

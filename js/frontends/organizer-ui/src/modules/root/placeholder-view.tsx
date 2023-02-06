@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react'
-import { Box } from '@mui/material'
 import Content from './content'
 import Header from './header'
 
@@ -14,8 +13,6 @@ export const PlaceholderView = ({ text }: Props): JSX.Element => {
 
   return <Fragment>
     <Header title={text}/>
-    <Box component='main' sx={{ flex: 1, py: 6, px: 4, bgcolor: '#eaeff1' }}>
-      <Content />
-    </Box>
+    <Content />
   </Fragment>
 }

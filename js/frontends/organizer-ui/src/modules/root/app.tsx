@@ -1,6 +1,6 @@
 import React from 'react'
-import { RouterProvider } from 'react-router-dom'
-import { Router } from '../dashboard/router'
-import './reset.css'
+import { Root } from './root'
 
-export const App = (): JSX.Element => <RouterProvider router={Router} />
+export const App = (): JSX.Element => {
+  return <Root/>
+}
