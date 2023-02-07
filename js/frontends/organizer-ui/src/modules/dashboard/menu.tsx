@@ -86,7 +86,7 @@ const item = {
   px: 3,
   color: 'rgba(255, 255, 255, 0.7)',
   '&:hover, &:focus': {
-    bgcolor: 'rgba(255, 255, 255, 0.08)'
+    backgroundColor: 'rgba(255, 255, 255, 0.08)'
   }
 }
 
@@ -107,7 +107,7 @@ export default function Menu (props: DrawerProps): JSX.Element {
           Emergency Service
         </ListItem>
         {categories.map(({ id, children }) => (
-          <Box key={id} sx={{ bgcolor: '#101F33' }}>
+          <Box key={id} sx={{ backgroundColor: '#101F33' }}>
             <ListItem sx={{ py: 2, px: 3 }}>
               <ListItemText sx={{ color: '#fff' }}>{id}</ListItemText>
             </ListItem>

@@ -14,7 +14,7 @@ import { Box } from '@mui/material'
 
 export default function Content (): JSX.Element {
   return (
-    <Box component='main' sx={{ flex: 1, py: 6, px: 4, bgcolor: '#eaeff1' }}>
+    <Box component='main' sx={{ flex: 1, py: 6, px: 4, backgroundColor: '#eaeff1' }}>
       <Paper sx={{ maxWidth: 936, margin: 'auto', overflow: 'hidden' }}>
         <AppBar
           position='static'

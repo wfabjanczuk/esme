@@ -1,8 +1,9 @@
 import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
-import { ErrorView } from '../root/error-view'
-import { PlaceholderView } from '../root/placeholder-view'
-import { Dashboard } from './dashboard'
+import { ErrorView } from './error-view'
+import { PlaceholderView } from './placeholder-view'
+import { Dashboard } from '../dashboard/dashboard'
+import { AgencyView } from '../pages/agency/agency.view'
 
 export const Router = createBrowserRouter([
   {
@@ -19,7 +20,7 @@ export const Router = createBrowserRouter([
           },
           {
             path: 'agency',
-            element: <PlaceholderView text={'Agency'}/>
+            element: <AgencyView/>
           },
           {
             path: 'users',

@@ -1,9 +1,9 @@
 import React, { FormEvent, useContext, useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import Paper from '@mui/material/Paper'
-import { styles } from './sign-in.styles'
-import { Authenticator, AuthenticatorContext } from '../../auth/authenticator.context'
-import { SignInForm } from './sign-in-form.component'
+import { Authenticator, AuthenticatorContext } from '../../api/auth/authenticator.context'
+import { SignInForm } from './sign-in.form'
+import { styles } from '../common/styles'
 
 export const SignInView = (): JSX.Element => {
   const authenticator = useContext(AuthenticatorContext)

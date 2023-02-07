@@ -33,6 +33,11 @@ export const styles = {
     my: 1.5
   },
   formButton: {
+    flexGrow: 1,
     my: 2
+  },
+  buttonGroup: {
+    display: 'flex',
+    gap: '40px'
   }
 }

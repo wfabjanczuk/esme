@@ -3,7 +3,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import Box from '@mui/material/Box'
 import Menu from './menu'
 import { Outlet } from 'react-router-dom'
-import { Theme } from '../root/theme'
+import { Theme } from './theme'
 
 const drawerWidth = 256
 
