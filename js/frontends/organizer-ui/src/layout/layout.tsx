@@ -7,16 +7,16 @@ import { Theme } from './theme'
 
 const drawerWidth = 256
 
-export interface DashboardOutletContext {
+export interface LayoutOutletContext {
   onDrawerToggle: () => void
 }
 
-export const Dashboard = (): JSX.Element => {
+export const Layout = (): JSX.Element => {
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const isSmUp = useMediaQuery(Theme.breakpoints.up('sm'))
 
   const handleDrawerToggle = (): void => setMobileOpen(!mobileOpen)
-  const outletContext: DashboardOutletContext = {
+  const outletContext: LayoutOutletContext = {
     onDrawerToggle: handleDrawerToggle
   }
 

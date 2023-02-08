@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
-import Content from '../dashboard/content'
-import Header from '../dashboard/header'
+import Content from '../layout/content'
+import Header from '../layout/header'
 
 interface Props {
   text: string

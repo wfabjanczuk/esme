@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react'
-import Header from '../../dashboard/header'
+import Header from '../../layout/header'
 import Paper from '@mui/material/Paper'
 import { Box, Typography } from '@mui/material'
-import { useAgency } from '../../api/agency/agency.hook'
+import { useAgency } from './agency.hook'
 import { AgencyForm } from './agency.form'
 import { styles } from '../common/styles'
 
@@ -22,7 +22,7 @@ export const AgencyView = (): JSX.Element => {
         px: 4,
         py: 2
       }}>
-        <Typography component='h2' variant='h5' sx={styles.header}>Edit Agency</Typography>
+        <Typography component='h2' variant='h5' sx={styles.header}>Edit agency</Typography>
         <AgencyForm agency={agency} errorMessages={errorMessages}/>
       </Paper>
     </Box>

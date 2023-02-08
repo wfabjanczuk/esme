@@ -16,6 +16,8 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
 import CellTowerIcon from '@mui/icons-material/CellTower'
 import { NavLink, useLocation } from 'react-router-dom'
+import { AuthenticatorContext } from '../pages/auth/authenticator.context'
+import { useContext } from 'react'
 
 const linkStyle = {
   color: 'inherit',
@@ -61,21 +63,6 @@ const categories = [
         id: 'Live support',
         icon: <CellTowerIcon/>,
         url: '/support'
-      }
-    ]
-  },
-  {
-    id: 'Account',
-    children: [
-      {
-        id: 'Profile',
-        icon: <AccountCircleOutlinedIcon/>,
-        url: '/profile'
-      },
-      {
-        id: 'Sign out',
-        icon: <LogoutOutlinedIcon/>,
-        url: '/sign-out'
       }
     ]
   }
@@ -124,7 +111,34 @@ export default function Menu (props: DrawerProps): JSX.Element {
             <Divider sx={{ mt: 2 }}/>
           </Box>
         ))}
+        <AccountCategory />
       </List>
     </Drawer>
   )
+}
+
+const AccountCategory = (): JSX.Element => {
+  const location = useLocation()
+  const authenticator = useContext(AuthenticatorContext)
+
+  return <Box key={'Account'} sx={{ backgroundColor: '#101F33' }}>
+    <ListItem sx={{ py: 2, px: 3 }}>
+      <ListItemText sx={{ color: '#fff' }}>Account</ListItemText>
+    </ListItem>
+    <ListItem disablePadding>
+      <NavLink to={'/profile'} style={linkStyle} >
+        <ListItemButton selected={location.pathname === '/profile'} sx={item}>
+          <ListItemIcon><AccountCircleOutlinedIcon/></ListItemIcon>
+          <ListItemText>Profile</ListItemText>
+        </ListItemButton>
+      </NavLink>
+    </ListItem>
+    <ListItem disablePadding>
+      <ListItemButton onClick={() => authenticator.signOut()} sx={item}>
+        <ListItemIcon><LogoutOutlinedIcon/></ListItemIcon>
+        <ListItemText>Sign out</ListItemText>
+      </ListItemButton>
+    </ListItem>
+    <Divider sx={{ mt: 2 }}/>
+  </Box>
 }

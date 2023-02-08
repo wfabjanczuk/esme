@@ -1,8 +1,8 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { useRouteError } from 'react-router-dom'
 import { Alert, Box } from '@mui/material'
 import Paper from '@mui/material/Paper'
-import Header from '../dashboard/header'
+import { styles } from '../pages/common/styles'
 
 interface RouteError {
   statusText?: string
@@ -12,8 +12,7 @@ interface RouteError {
 export const ErrorView = (): JSX.Element => {
   const error = useRouteError() as RouteError
 
-  return (<Fragment>
-    <Header title='Error'/>
+  return (<Box style={styles.root}>
     <Box component='main' sx={{ flex: 1, py: 6, px: 4, backgroundColor: '#eaeff1' }}>
       <Paper sx={{ maxWidth: 936, margin: 'auto', overflow: 'hidden', display: 'flex', flexDirection: 'row' }}
         elevation={0}>
@@ -22,7 +21,7 @@ export const ErrorView = (): JSX.Element => {
         </Alert>
       </Paper>
     </Box>
-  </Fragment>
+  </Box>
   )
 }
 
@@ -33,5 +32,6 @@ const getDisplayMessage = (error: RouteError): string => {
   if (error.message != null) {
     return error.message
   }
+
   return 'Error unknown'
 }

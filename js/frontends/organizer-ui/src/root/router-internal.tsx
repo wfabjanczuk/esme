@@ -1,14 +1,14 @@
 import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
-import { ErrorView } from './error-view'
+import { ErrorView } from './error.view'
 import { PlaceholderView } from './placeholder-view'
-import { Dashboard } from '../dashboard/dashboard'
+import { Layout } from '../layout/layout'
 import { AgencyView } from '../pages/agency/agency.view'
 
-export const Router = createBrowserRouter([
+export const RouterInternal = createBrowserRouter([
   {
     path: '/',
-    element: <Dashboard/>,
+    element: <Layout/>,
     errorElement: <ErrorView/>,
     children: [
       {
@@ -49,10 +49,6 @@ export const Router = createBrowserRouter([
           {
             path: 'profile',
             element: <PlaceholderView text={'Profile'}/>
-          },
-          {
-            path: 'sign-out',
-            element: <PlaceholderView text={'Sign out'}/>
           },
           {
             path: 'error',

@@ -6,14 +6,14 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { Box } from '@mui/material'
 import { useOutletContext } from 'react-router-dom'
-import { DashboardOutletContext } from './dashboard'
+import { LayoutOutletContext } from './layout'
 
 export interface HeaderProps {
   title: string
 }
 
 export default function Header (props: HeaderProps): JSX.Element {
-  const { onDrawerToggle } = useOutletContext<DashboardOutletContext>()
+  const { onDrawerToggle } = useOutletContext<LayoutOutletContext>()
 
   return (
     <React.Fragment>

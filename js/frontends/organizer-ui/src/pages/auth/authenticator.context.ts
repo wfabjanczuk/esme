@@ -1,6 +1,6 @@
 import React from 'react'
 import axios from 'axios'
-import { config } from '../../config/config'
+import { config } from '../../root/config'
 import { Profile } from './profile'
 import { parseErrorMessage } from '../common/utils'
 

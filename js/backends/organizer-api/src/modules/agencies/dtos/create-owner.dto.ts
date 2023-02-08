@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsNotEmpty,
   IsPhoneNumber,
   IsString,
   MaxLength,
@@ -24,11 +25,13 @@ export class CreateOwnerDto {
   @ApiProperty({ example: '&Y+sFaS{&d>8ycO)FLhF41qiQk{IYEb?' })
   confirmPassword: string;
 
+  @IsNotEmpty()
   @IsString()
   @MaxLength(100)
   @ApiProperty({ example: 'Jan' })
   firstName: string;
 
+  @IsNotEmpty()
   @IsString()
   @MaxLength(100)
   @ApiProperty({ example: 'Kowalski' })

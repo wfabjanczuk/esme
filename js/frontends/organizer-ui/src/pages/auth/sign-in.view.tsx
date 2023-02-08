@@ -1,7 +1,7 @@
 import React, { FormEvent, useContext, useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import Paper from '@mui/material/Paper'
-import { Authenticator, AuthenticatorContext } from '../../api/auth/authenticator.context'
+import { Authenticator, AuthenticatorContext } from './authenticator.context'
 import { SignInForm } from './sign-in.form'
 import { styles } from '../common/styles'
 
@@ -15,7 +15,7 @@ export const SignInView = (): JSX.Element => {
 
   return <Box sx={styles.root}>
     <Box component='main' sx={styles.background}>
-      <Paper sx={styles.card}>
+      <Paper sx={styles.cardSm}>
         <Typography variant='h4' component='h1' sx={styles.header}>Emergency Service</Typography>
         <SignInForm handleSubmit={handleSubmit} errorMessages={errorMessages}/>
       </Paper>

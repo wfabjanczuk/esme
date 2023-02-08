@@ -1,12 +1,12 @@
 import React from 'react'
-import { AuthenticatorContext } from '../api/auth/authenticator.context'
-import { Router } from './router'
+import { AuthenticatorContext } from '../pages/auth/authenticator.context'
+import { RouterInternal } from './router-internal'
 import { RouterProvider } from 'react-router-dom'
-import { SignInView } from '../pages/sign-in/sign-in.view'
-import { Theme } from '../dashboard/theme'
+import { Theme } from '../layout/theme'
 import { ThemeProvider } from '@mui/material'
 import CssBaseline from '@mui/material/CssBaseline'
-import { useNewAuthenticator } from '../api/auth/authenticator.hook'
+import { useNewAuthenticator } from '../pages/auth/authenticator.hook'
+import { RouterExternal } from './router-external'
 
 export const Root = (): JSX.Element => {
   const authenticator = useNewAuthenticator()
@@ -18,8 +18,8 @@ export const Root = (): JSX.Element => {
     <CssBaseline/>
     <AuthenticatorContext.Provider value={authenticator}>
       {authenticator.isAuthorized()
-        ? <RouterProvider router={Router}/>
-        : <SignInView/>
+        ? <RouterProvider router={RouterInternal}/>
+        : <RouterProvider router={RouterExternal}/>
       }
     </AuthenticatorContext.Provider>
   </ThemeProvider>

@@ -3,6 +3,7 @@ import React, { FormEvent } from 'react'
 import { FormErrors } from '../common/form-errors.component'
 import { styles } from '../common/styles'
 import { ButtonGroup } from '../common/button-group.component'
+import { Link } from 'react-router-dom'
 
 interface SignInFormProps {
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void
@@ -29,8 +30,10 @@ export const SignInForm = ({ handleSubmit, errorMessages }: SignInFormProps): JS
       />
       <FormErrors errorMessages={errorMessages}/>
       <ButtonGroup>
-        <Button type='submit' variant='contained' sx={styles.formButton}>Sign in</Button>
-        <Button type='submit' variant='contained' color='success' sx={styles.formButton}>Register</Button>
+        <Button type='submit' variant='contained' sx={styles.buttonGroupElement}>Sign in</Button>
+        <Link to={'/register'} style={styles.link}>
+          <Button type='button' variant='contained' color='secondary' sx={styles.linkButton}>Register</Button>
+        </Link>
       </ButtonGroup>
     </Box>
   </form>

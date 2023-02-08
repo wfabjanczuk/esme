@@ -9,13 +9,14 @@ export const styles = {
     px: 4,
     backgroundColor: '#eaeff1'
   },
-  card: {
+  cardSm: {
     boxSizing: 'border-box',
     maxWidth: 480,
     textAlign: 'center',
     margin: 'auto',
     px: 4,
-    py: 2
+    py: 2,
+    mb: 2
   },
   header: {
     mt: 2,
@@ -32,12 +33,17 @@ export const styles = {
     textAlign: 'left',
     my: 1.5
   },
-  formButton: {
+  buttonGroupElement: {
     flexGrow: 1,
     my: 2
   },
-  buttonGroup: {
-    display: 'flex',
-    gap: '40px'
+  link: {
+    color: 'inherit',
+    textDecoration: 'inherit',
+    flexGrow: 1
+  },
+  linkButton: {
+    width: '100%',
+    my: 2
   }
 }

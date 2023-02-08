@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { AuthenticatorContext } from '../auth/authenticator.context'
 import axios from 'axios'
-import { config } from '../../config/config'
+import { config } from '../../root/config'
 import { Agency } from './agency'
 import { parseErrorMessage } from '../common/utils'
 

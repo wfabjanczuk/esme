@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, Button, TextField } from '@mui/material'
 import { FormErrors } from '../common/form-errors.component'
-import { Agency } from '../../api/agency/agency'
+import { Agency } from './agency'
 import { styles } from '../common/styles'
 
 interface AgencyFormProps {
@@ -58,8 +58,8 @@ export const AgencyForm = ({ agency, errorMessages }: AgencyFormProps): JSX.Elem
       />
       <FormErrors errorMessages={errorMessages}/>
       <Box style={{ display: 'flex', gap: 40 }}>
-        <Button type='submit' variant='contained' color='success' sx={styles.formButton}>Save</Button>
-        <Button type='submit' variant='contained' color='error' sx={styles.formButton}>Delete</Button>
+        <Button type='submit' variant='contained' color='success' sx={styles.buttonGroupElement}>Save</Button>
+        <Button type='submit' variant='contained' color='error' sx={styles.buttonGroupElement}>Delete</Button>
       </Box>
     </Box>
   </form>
