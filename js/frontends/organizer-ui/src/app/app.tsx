@@ -7,25 +7,25 @@ import { ThemeProvider } from '@mui/material'
 import CssBaseline from '@mui/material/CssBaseline'
 import { useNewAuthenticator } from '../common/authenticator/authenticator.hook'
 import { RouterExternal } from './router-external'
-import { useNewAlertBar } from '../common/flash/alert-bar.hook'
-import { AlertBarContext } from '../common/flash/alert-bar.context'
+import { useNewAlertStore } from '../common/alert-bar/alert-store.hook'
+import { AlertStoreContext } from '../common/alert-bar/alert-store.context'
 
 export const App = (): JSX.Element => {
   const authenticator = useNewAuthenticator()
-  const alertBar = useNewAlertBar()
-  if (!authenticator.isInitialized() || !alertBar.isInitialized()) {
+  const alertStore = useNewAlertStore()
+  if (!authenticator.isInitialized() || !alertStore.isInitialized()) {
     return <></>
   }
 
   return <ThemeProvider theme={Theme}>
     <CssBaseline/>
     <AuthenticatorContext.Provider value={authenticator}>
-      <AlertBarContext.Provider value={alertBar}>
+      <AlertStoreContext.Provider value={alertStore}>
         {authenticator.isAuthorized()
           ? <RouterProvider router={RouterInternal}/>
           : <RouterProvider router={RouterExternal}/>
         }
-      </AlertBarContext.Provider>
+      </AlertStoreContext.Provider>
     </AuthenticatorContext.Provider>
   </ThemeProvider>
 }

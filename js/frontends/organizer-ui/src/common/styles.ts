@@ -9,9 +9,8 @@ export const styles = {
     px: 4,
     backgroundColor: '#eaeff1'
   },
-  cardSm: {
+  card: {
     boxSizing: 'border-box',
-    maxWidth: 480,
     textAlign: 'center',
     margin: 'auto',
     px: 4,

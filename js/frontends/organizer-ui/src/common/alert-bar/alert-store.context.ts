@@ -10,9 +10,9 @@ interface Alert {
   content: string
 }
 
-export class AlertBar {
+export class AlertStore {
   constructor (
-    private readonly setState: (flash: AlertBar) => void = emptySetState,
+    private readonly setState: (flash: AlertStore) => void = emptySetState,
     public readonly alerts: Alert[] = []
   ) {
   }
@@ -34,8 +34,8 @@ export class AlertBar {
   }
 
   private update (): void {
-    this.setState(new AlertBar(this.setState, this.alerts))
+    this.setState(new AlertStore(this.setState, this.alerts))
   }
 }
 
-export const AlertBarContext = React.createContext<AlertBar>(new AlertBar())
+export const AlertStoreContext = React.createContext<AlertStore>(new AlertStore())

@@ -5,7 +5,7 @@ import { Box, Typography } from '@mui/material'
 import { UpdateAgencyPayload, useAgency } from './agency.hook'
 import { AgencyForm } from './agency.form'
 import { styles } from '../../common/styles'
-import { AlertBar } from '../../common/flash/alert-bar.component'
+import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 
 export const AgencyView = (): JSX.Element => {
   const { agency, updateAgency, deleteAgency, errorMessages } = useAgency()

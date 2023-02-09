@@ -4,7 +4,7 @@ import axios from 'axios'
 import { config } from '../../app/config'
 import { Agency } from './agency'
 import { parseErrorMessage } from '../../common/utils'
-import { AlertBar, AlertBarContext } from '../../common/flash/alert-bar.context'
+import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-store.context'
 
 const agencyUrl = `${config.apiUrl}/agency`
 
@@ -23,7 +23,7 @@ interface AgencyState {
 export const useAgency = (): AgencyHook => {
   const authenticator = useContext(AuthenticatorContext)
 
-  const alertBar = useContext(AlertBarContext)
+  const alertStore = useContext(AlertStoreContext)
   const [agencyState, setAgencyState] = useState<AgencyState>({
     agency: undefined,
     errorMessages: []
@@ -35,7 +35,7 @@ export const useAgency = (): AgencyHook => {
 
   return {
     agency: agencyState.agency,
-    updateAgency: async (payload) => await updateAgency(payload, authenticator, setAgencyState, alertBar),
+    updateAgency: async (payload) => await updateAgency(payload, authenticator, setAgencyState, alertStore),
     deleteAgency: async () => await deleteAgency(authenticator, setAgencyState),
     errorMessages: agencyState.errorMessages
   }
@@ -69,11 +69,11 @@ const updateAgency = async (
   payload: UpdateAgencyPayload,
   authenticator: Authenticator,
   setAgencyState: Dispatch<SetStateAction<AgencyState>>,
-  alertBar: AlertBar
+  alertStore: AlertStore
 ): Promise<void> => {
   return await axios.patch<Agency>(agencyUrl, payload, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(({ data }) => {
-      alertBar.add('success', 'Agency successfully updated')
+      alertStore.add('success', 'Agency successfully updated')
       setAgencyState({
         agency: data,
         errorMessages: []

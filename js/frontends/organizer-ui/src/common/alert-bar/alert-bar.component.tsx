@@ -1,13 +1,17 @@
 import React, { useContext } from 'react'
-import { AlertBarContext } from './alert-bar.context'
+import { AlertStoreContext } from './alert-store.context'
 import { Alert, Box, Typography } from '@mui/material'
 import { styles } from '../styles'
 import { AlertColor } from '@mui/material/Alert/Alert'
 
-export const AlertBar = (): JSX.Element => {
-  const { alerts } = useContext(AlertBarContext)
+interface AlertBarProps {
+  maxWidth?: string
+}
 
-  return <Box sx={{ py: 2 }}>
+export const AlertBar = ({ maxWidth = '100%' }: AlertBarProps): JSX.Element => {
+  const { alerts } = useContext(AlertStoreContext)
+
+  return <Box sx={{ margin: 'auto', py: 2, maxWidth }}>
     {alerts.map((a, i) =>
       <AlertBarElement key={i} type={a.type} content={a.content}/>
     )}
