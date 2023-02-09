@@ -1,14 +1,22 @@
-import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateAgencyDto {
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
   @MaxLength(200)
   @ApiProperty({ example: 'Live Concert Agency' })
   name: string;
 
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
   @MaxLength(400)
   @ApiProperty({ example: 'Concert Street 1, Warsaw 01-234, Poland' })

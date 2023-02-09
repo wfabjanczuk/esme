@@ -11,7 +11,7 @@ export const FormErrors = ({ errorMessages }: FormErrorsProps): JSX.Element => {
     return <></>
   }
 
-  return <Alert severity='error' icon={false} sx={styles.formErrors}>
+  return <Alert severity='error' icon={false} sx={styles.formAlert}>
     {errorMessages.map((m, i) => (
       <Typography key={i} component='div' variant='caption'>{m}</Typography>
     ))}

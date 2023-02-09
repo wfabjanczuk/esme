@@ -1,8 +1,8 @@
 import { Box, Button, TextField } from '@mui/material'
 import React, { FormEvent } from 'react'
-import { FormErrors } from '../common/form-errors.component'
-import { styles } from '../common/styles'
-import { ButtonGroup } from '../common/button-group.component'
+import { FormErrors } from '../../common/form-errors.component'
+import { styles } from '../../common/styles'
+import { ButtonGroup } from '../../common/button-group.component'
 import { Link } from 'react-router-dom'
 
 interface SignInFormProps {
@@ -32,7 +32,7 @@ export const SignInForm = ({ handleSubmit, errorMessages }: SignInFormProps): JS
       <ButtonGroup>
         <Button type='submit' variant='contained' sx={styles.buttonGroupElement}>Sign in</Button>
         <Link to={'/register'} style={styles.link}>
-          <Button type='button' variant='contained' color='secondary' sx={styles.linkButton}>Register</Button>
+          <Button type='button' variant='contained' color='success' sx={styles.linkButton}>Register</Button>
         </Link>
       </ButtonGroup>
     </Box>

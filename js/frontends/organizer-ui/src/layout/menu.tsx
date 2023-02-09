@@ -16,7 +16,7 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
 import CellTowerIcon from '@mui/icons-material/CellTower'
 import { NavLink, useLocation } from 'react-router-dom'
-import { AuthenticatorContext } from '../pages/auth/authenticator.context'
+import { AuthenticatorContext } from '../common/authenticator/authenticator.context'
 import { useContext } from 'react'
 
 const linkStyle = {
@@ -134,7 +134,7 @@ const AccountCategory = (): JSX.Element => {
       </NavLink>
     </ListItem>
     <ListItem disablePadding>
-      <ListItemButton onClick={() => authenticator.signOut()} sx={item}>
+      <ListItemButton onClick={() => { void authenticator.signOut() }} sx={item}>
         <ListItemIcon><LogoutOutlinedIcon/></ListItemIcon>
         <ListItemText>Sign out</ListItemText>
       </ListItemButton>

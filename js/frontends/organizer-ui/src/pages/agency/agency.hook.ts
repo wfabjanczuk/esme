@@ -1,9 +1,10 @@
-import { useContext, useEffect, useState } from 'react'
-import { AuthenticatorContext } from '../auth/authenticator.context'
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
+import { Authenticator, AuthenticatorContext } from '../../common/authenticator/authenticator.context'
 import axios from 'axios'
-import { config } from '../../root/config'
+import { config } from '../../app/config'
 import { Agency } from './agency'
-import { parseErrorMessage } from '../common/utils'
+import { parseErrorMessage } from '../../common/utils'
+import { AlertBar, AlertBarContext } from '../../common/flash/alert-bar.context'
 
 const agencyUrl = `${config.apiUrl}/agency`
 
@@ -20,37 +21,42 @@ interface AgencyState {
 }
 
 export const useAgency = (): AgencyHook => {
-  const { authorizationHeader } = useContext(AuthenticatorContext)
-  const [state, setState] = useState<AgencyState>({
+  const authenticator = useContext(AuthenticatorContext)
+
+  const alertBar = useContext(AlertBarContext)
+  const [agencyState, setAgencyState] = useState<AgencyState>({
     agency: undefined,
     errorMessages: []
   })
 
   useEffect(() => {
-    void fetchAgency(authorizationHeader, setState)
-  }, [authorizationHeader])
+    void fetchAgency(authenticator, setAgencyState)
+  }, [authenticator])
 
   return {
-    agency: state.agency,
-    updateAgency: async (payload) => await updateAgency(payload, authorizationHeader, setState),
-    deleteAgency: async () => await deleteAgency(authorizationHeader, setState),
-    errorMessages: state.errorMessages
+    agency: agencyState.agency,
+    updateAgency: async (payload) => await updateAgency(payload, authenticator, setAgencyState, alertBar),
+    deleteAgency: async () => await deleteAgency(authenticator, setAgencyState),
+    errorMessages: agencyState.errorMessages
   }
 }
 
 const fetchAgency = async (
-  Authorization: string,
+  authenticator: Authenticator,
   setState: (state: AgencyState) => void
 ): Promise<void> => {
-  return await axios.get<Agency>(agencyUrl, { headers: { Authorization } })
+  return await axios.get<Agency>(agencyUrl, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(({ data }) => setState({
       agency: data,
       errorMessages: []
     }))
-    .catch(e => setState({
-      agency: undefined,
-      errorMessages: parseErrorMessage(e?.response?.data?.message)
-    }))
+    .catch(e => {
+      authenticator.checkAuthError(e)
+      setState({
+        agency: undefined,
+        errorMessages: parseErrorMessage(e?.response?.data?.message)
+      })
+    })
 }
 
 export interface UpdateAgencyPayload {
@@ -61,31 +67,41 @@ export interface UpdateAgencyPayload {
 
 const updateAgency = async (
   payload: UpdateAgencyPayload,
-  Authorization: string,
-  setState: (state: AgencyState) => void
+  authenticator: Authenticator,
+  setAgencyState: Dispatch<SetStateAction<AgencyState>>,
+  alertBar: AlertBar
 ): Promise<void> => {
-  return await axios.patch<Agency>(agencyUrl, payload, { headers: { Authorization } })
-    .then(({ data }) => setState({
-      agency: data,
-      errorMessages: []
-    }))
-    .catch(e => setState({
-      agency: undefined,
-      errorMessages: parseErrorMessage(e?.response?.data?.message)
-    }))
+  return await axios.patch<Agency>(agencyUrl, payload, { headers: { Authorization: authenticator.authorizationHeader } })
+    .then(({ data }) => {
+      alertBar.add('success', 'Agency successfully updated')
+      setAgencyState({
+        agency: data,
+        errorMessages: []
+      })
+    })
+    .catch(e => {
+      authenticator.checkAuthError(e)
+      setAgencyState((prevState) => ({
+        agency: prevState.agency,
+        errorMessages: parseErrorMessage(e?.response?.data?.message)
+      }))
+    })
 }
 
 const deleteAgency = async (
-  Authorization: string,
-  setState: (state: AgencyState) => void
+  authenticator: Authenticator,
+  setAgencyState: Dispatch<SetStateAction<AgencyState>>
 ): Promise<void> => {
-  return await axios.delete<Agency>(agencyUrl, { headers: { Authorization } })
-    .then(({ data }) => setState({
-      agency: data,
-      errorMessages: []
-    }))
-    .catch(e => setState({
-      agency: undefined,
+  return await axios.delete<Agency>(agencyUrl, { headers: { Authorization: authenticator.authorizationHeader } })
+    .then(() => {
+      setAgencyState({
+        agency: undefined,
+        errorMessages: []
+      })
+      void authenticator.signOut()
+    })
+    .catch(e => setAgencyState((prevState) => ({
+      agency: prevState.agency,
       errorMessages: parseErrorMessage(e?.response?.data?.message)
-    }))
+    })))
 }

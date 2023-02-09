@@ -1,8 +1,8 @@
 import React, { FormEvent } from 'react'
-import { styles } from '../common/styles'
+import { styles } from '../../common/styles'
 import { Box, Button, TextField, Typography } from '@mui/material'
-import { FormErrors } from '../common/form-errors.component'
-import { ButtonGroup } from '../common/button-group.component'
+import { FormErrors } from '../../common/form-errors.component'
+import { ButtonGroup } from '../../common/button-group.component'
 import { Link } from 'react-router-dom'
 
 interface SignUpFormProps {
@@ -16,50 +16,7 @@ export const SignUpForm = ({ handleSubmit, errorMessages }: SignUpFormProps): JS
   return <form onSubmit={handleSubmit}>
     <Box style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '30px' }}>
       <Box sx={{ maxWidth: '420px', flexGrow: 1 }}>
-        <Box sx={styles.form}>
-          <Typography>Fill owner data:</Typography>
-          <TextField
-            name='email'
-            label='owner email'
-            error={isError}
-            sx={styles.formField}
-          />
-          <TextField
-            type='password'
-            name='password'
-            label='password'
-            error={isError}
-            sx={styles.formField}
-          />
-          <TextField
-            type='password'
-            name='confirmPassword'
-            label='confirm password'
-            error={isError}
-            sx={styles.formField}
-          />
-          <TextField
-            name='firstName'
-            label='first name'
-            error={isError}
-            sx={styles.formField}
-          />
-          <TextField
-            name='lastName'
-            label='last name'
-            error={isError}
-            sx={styles.formField}
-          />
-          <TextField
-            name='phoneNumber'
-            label='phone number'
-            error={isError}
-            sx={styles.formField}
-          />
-        </Box>
-      </Box>
-      <Box sx={{ maxWidth: '420px', flexGrow: 1 }}>
-        <Typography>Fill agency data:</Typography>
+        <Typography>new agency:</Typography>
         <Box sx={styles.form}>
           <TextField
             name='name'
@@ -82,11 +39,54 @@ export const SignUpForm = ({ handleSubmit, errorMessages }: SignUpFormProps): JS
         </Box>
         <FormErrors errorMessages={errorMessages}/>
       </Box>
+      <Box sx={{ maxWidth: '420px', flexGrow: 1 }}>
+        <Box sx={styles.form}>
+          <Typography>new account for the owner:</Typography>
+          <TextField
+            name='email'
+            label='owner email'
+            error={isError}
+            sx={styles.formField}
+          />
+          <TextField
+            type='password'
+            name='password'
+            label='owner password'
+            error={isError}
+            sx={styles.formField}
+          />
+          <TextField
+            type='password'
+            name='confirmPassword'
+            label='owner confirm password'
+            error={isError}
+            sx={styles.formField}
+          />
+          <TextField
+            name='firstName'
+            label='owner first name'
+            error={isError}
+            sx={styles.formField}
+          />
+          <TextField
+            name='lastName'
+            label='owner last name'
+            error={isError}
+            sx={styles.formField}
+          />
+          <TextField
+            name='phoneNumber'
+            label='owner phone number'
+            error={isError}
+            sx={styles.formField}
+          />
+        </Box>
+      </Box>
     </Box>
     <ButtonGroup>
-      <Button type='submit' variant='contained' sx={styles.buttonGroupElement}>Register</Button>
+      <Button type='submit' variant='contained' color='success' sx={styles.buttonGroupElement}>Register</Button>
       <Link to={'/'} style={styles.link}>
-        <Button type='button' variant='contained' color='secondary' sx={styles.linkButton}>Go back</Button>
+        <Button type='button' variant='contained' color='error' sx={styles.linkButton}>Cancel</Button>
       </Link>
     </ButtonGroup>
   </form>

@@ -1,10 +1,11 @@
 import React from 'react'
-import axios from 'axios'
-import { config } from '../../root/config'
+import axios, { AxiosError } from 'axios'
+import { config } from '../../app/config'
 import { Profile } from './profile'
-import { parseErrorMessage } from '../common/utils'
+import { parseErrorMessage } from '../utils'
 
 const signInUrl = `${config.apiUrl}/auth/sign-in`
+const signOutUrl = `${config.apiUrl}/auth/sign-out`
 const emptySetState = (): void => {}
 
 interface SignInResponse {
@@ -14,7 +15,7 @@ interface SignInResponse {
 
 export class Authenticator {
   constructor (
-    private readonly setState: (currentUser: Authenticator) => void = emptySetState,
+    private readonly setState: (authenticator: Authenticator) => void = emptySetState,
     public readonly authorizationHeader: string = '',
     public readonly profile?: Profile
   ) {
@@ -28,7 +29,7 @@ export class Authenticator {
     return this.profile !== undefined
   }
 
-  async signInPassword (email: string, password: string): Promise<string[]> {
+  async signIn (email: string, password: string): Promise<string[]> {
     return await axios.post<SignInResponse>(signInUrl, { email, password })
       .then(({ data }) => {
         this.update(`Bearer ${data.token}`, data.user)
@@ -40,8 +41,21 @@ export class Authenticator {
       })
   }
 
-  signOut (): void {
-    this.update(undefined, undefined)
+  async signOut (): Promise<unknown> {
+    return await axios.post(signOutUrl, {}, {
+      headers: { Authorization: this.authorizationHeader }
+    }).finally(() => this.update(undefined, undefined))
+  }
+
+  checkAuthError = (e: AxiosError): void => {
+    const code = e?.response?.status
+    if (code === undefined) {
+      return
+    }
+
+    if ([401, 403].includes(code)) {
+      void this.signOut()
+    }
   }
 
   private update (authorizationHeader?: string, profile?: Profile): void {

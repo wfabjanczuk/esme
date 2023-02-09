@@ -29,9 +29,15 @@ export const styles = {
   formField: {
     my: 1.5
   },
-  formErrors: {
+  formAlert: {
+    display: 'flex',
+    alignItems: 'center',
     textAlign: 'left',
     my: 1.5
+  },
+  buttonGroup: {
+    display: 'flex',
+    gap: '30px'
   },
   buttonGroupElement: {
     flexGrow: 1,

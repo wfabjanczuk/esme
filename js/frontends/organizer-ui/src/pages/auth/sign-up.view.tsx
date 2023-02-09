@@ -1,13 +1,15 @@
 import React, { FormEvent, useState } from 'react'
 import { Box, Typography } from '@mui/material'
-import { styles } from '../common/styles'
+import { styles } from '../../common/styles'
 import Paper from '@mui/material/Paper'
 import { SignUpForm } from './sign-up.form'
 import axios from 'axios'
 import { Agency } from '../agency/agency'
-import { config } from '../../root/config'
-import { parseErrorMessage } from '../common/utils'
+import { config } from '../../app/config'
+import { parseErrorMessage } from '../../common/utils'
 import { NavigateFunction, useNavigate } from 'react-router-dom'
+
+const signUpUrl = `${config.apiUrl}/agency`
 
 export const SignUpView = (): JSX.Element => {
   const navigate = useNavigate()
@@ -27,8 +29,6 @@ export const SignUpView = (): JSX.Element => {
   </Box>
 }
 
-const signUpUrl = `${config.apiUrl}/agency`
-
 const handleSubmitAsync = async (
   e: FormEvent<HTMLFormElement>,
   navigate: NavigateFunction,
@@ -42,7 +42,7 @@ const handleSubmitAsync = async (
   }
 
   await axios.post<Agency>(signUpUrl, payload)
-    .then(r => navigate('/'))
+    .then(() => navigate('/'))
     .catch(e => setErrorMessages(parseErrorMessage(e?.response?.data?.message)))
 }
 

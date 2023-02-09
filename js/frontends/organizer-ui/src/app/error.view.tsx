@@ -2,7 +2,7 @@ import React from 'react'
 import { useRouteError } from 'react-router-dom'
 import { Alert, Box } from '@mui/material'
 import Paper from '@mui/material/Paper'
-import { styles } from '../pages/common/styles'
+import { styles } from '../common/styles'
 
 interface RouteError {
   statusText?: string
