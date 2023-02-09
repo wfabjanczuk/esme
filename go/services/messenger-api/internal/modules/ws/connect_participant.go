@@ -1,21 +1,18 @@
 package ws
 
 import (
+	"fmt"
+	"github.com/gorilla/websocket"
 	"messenger-api/internal/modules/common"
 	"messenger-api/internal/modules/ws/connections"
 	"net/http"
 )
 
-func (c *Controller) connectParticipant(w http.ResponseWriter, r *http.Request, token string) {
+func (c *Controller) connectParticipant(r *http.Request, wsConnection *websocket.Conn, token string) {
 	participant, err := c.authenticator.AuthenticateParticipant(token)
 	if err != nil {
 		c.logger.Printf("could not authenticate participant %s: %s\n", r.RemoteAddr, err)
-		return
-	}
-
-	wsConnection, err := wsUpgrader.Upgrade(w, r, nil)
-	if err != nil {
-		c.logger.Printf("could not upgrade participant connection %s: %s\n", r.RemoteAddr, err)
+		wsConnection.Close()
 		return
 	}
 
@@ -46,5 +43,6 @@ func (c *Controller) connectParticipant(w http.ResponseWriter, r *http.Request, 
 		}
 	}
 
+	conn.SendInfo(fmt.Sprintf("%s successfully connected", conn.GetInfo()))
 	go c.participantsConsumer.ListenOnConnection(conn)
 }
