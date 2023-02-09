@@ -12,7 +12,7 @@ interface Alert {
 
 export class AlertStore {
   constructor (
-    private readonly setState: (flash: AlertStore) => void = emptySetState,
+    private readonly setState: (alertStore: AlertStore) => void = emptySetState,
     public readonly alerts: Alert[] = []
   ) {
   }

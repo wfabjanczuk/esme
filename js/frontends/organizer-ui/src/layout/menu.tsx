@@ -32,7 +32,7 @@ const categories = [
       {
         id: 'Agency',
         icon: <WorkOutlineIcon/>,
-        url: '/agency'
+        url: '/'
       },
       {
         id: 'Users',

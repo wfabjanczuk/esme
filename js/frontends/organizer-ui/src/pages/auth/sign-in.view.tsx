@@ -14,6 +14,8 @@ export const SignInView = (): JSX.Element => {
     void handleSubmitAsync(e, authenticator, setErrorMessages)
   }
 
+  void authenticator.signIn('jan@kowalski.com', '&Y+sFaS{&d>8ycO)FLhF41qiQk{IYEb?')
+
   return <Box sx={styles.root}>
     <Box component='main' sx={styles.background}>
       <AlertBar maxWidth='480px'/>

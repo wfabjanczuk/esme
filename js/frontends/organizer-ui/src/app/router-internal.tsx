@@ -4,6 +4,7 @@ import { ErrorView } from './error.view'
 import { PlaceholderView } from './placeholder-view'
 import { Layout } from '../layout/layout'
 import { AgencyView } from '../pages/agency/agency.view'
+import { SupportView } from '../pages/support/support.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -16,10 +17,6 @@ export const RouterInternal = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <PlaceholderView text={'Index'}/>
-          },
-          {
-            path: 'agency',
             element: <AgencyView/>
           },
           {
@@ -44,7 +41,7 @@ export const RouterInternal = createBrowserRouter([
           },
           {
             path: 'support',
-            element: <PlaceholderView text={'Live support'}/>
+            element: <SupportView/>
           },
           {
             path: 'profile',

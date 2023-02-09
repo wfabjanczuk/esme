@@ -20,9 +20,9 @@ export const AgencyView = (): JSX.Element => {
   return <Fragment>
     <Header title='Agency'/>
     <Box component='main' sx={{ flex: 1, py: 2, px: 4, backgroundColor: '#eaeff1' }}>
-      <AlertBar />
+      <AlertBar maxWidth='936px'/>
       <Paper sx={{
-        maxWidth: 936,
+        maxWidth: '936px',
         margin: 'auto',
         overflow: 'hidden',
         px: 4,

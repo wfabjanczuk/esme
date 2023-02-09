@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 import { AlertStore } from './alert-store.context'
 
 export const useNewAlertStore = (): AlertStore => {
-  const [alertBar, setAlertBar] = useState<AlertStore>(new AlertStore())
+  const [alertStore, setAlertStore] = useState<AlertStore>(new AlertStore())
 
   useEffect(() => {
-    setAlertBar(new AlertStore(setAlertBar))
+    setAlertStore(new AlertStore(setAlertStore))
   }, [])
 
-  return alertBar
+  return alertStore
 }

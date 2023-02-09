@@ -13,6 +13,7 @@ import { AlertStoreContext } from '../common/alert-bar/alert-store.context'
 export const App = (): JSX.Element => {
   const authenticator = useNewAuthenticator()
   const alertStore = useNewAlertStore()
+
   if (!authenticator.isInitialized() || !alertStore.isInitialized()) {
     return <></>
   }

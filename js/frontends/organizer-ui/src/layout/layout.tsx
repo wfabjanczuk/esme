@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Menu from './menu'
 import { Outlet } from 'react-router-dom'
 import { Theme } from './theme'
+import { useNewMessenger } from '../pages/support/messenger.hook'
 
 const drawerWidth = 256
 
@@ -12,12 +13,17 @@ export interface LayoutOutletContext {
 }
 
 export const Layout = (): JSX.Element => {
+  const messenger = useNewMessenger()
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const isSmUp = useMediaQuery(Theme.breakpoints.up('sm'))
 
   const handleDrawerToggle = (): void => setMobileOpen(!mobileOpen)
   const outletContext: LayoutOutletContext = {
     onDrawerToggle: handleDrawerToggle
+  }
+
+  if (!messenger.isInitialized()) {
+    return <></>
   }
 
   return (
@@ -40,7 +46,7 @@ export const Layout = (): JSX.Element => {
           sx={{ display: { sm: 'block', xs: 'none' } }}
         />
       </Box>
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
         <Outlet context={outletContext}/>
       </Box>
     </Box>

@@ -10,7 +10,9 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, OrganizerTokenPrefix } from './jwt.config';
 import { AuthenticatedUserDto } from './dtos/authenticated-user.dto';
 
-export const signInErrorMessage = 'Invalid email or password';
+export const signInErrorMessage = 'invalid email or password';
+export const agencyInactiveErrorMessage =
+  'your agency is not approved by administrators';
 
 @Injectable()
 export class AuthenticationService implements OnModuleInit {
@@ -22,12 +24,18 @@ export class AuthenticationService implements OnModuleInit {
   ) {}
 
   async authenticate(email: string, password: string) {
-    const [user] = await this.repo.find({ where: { email } });
+    const [user] = await this.repo.find({
+      where: { email },
+      relations: { agency: true },
+    });
     if (!user) {
       throw new BadRequestException(signInErrorMessage);
     }
     if (!compareSync(password, user.password)) {
       throw new BadRequestException(signInErrorMessage);
+    }
+    if (user.agency && !user.agency.approved) {
+      throw new BadRequestException(agencyInactiveErrorMessage);
     }
 
     const authenticatedUser: AuthenticatedUserDto = {
