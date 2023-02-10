@@ -1,8 +1,7 @@
 import React from 'react'
 import { AlertColor } from '@mui/material/Alert/Alert'
 
-const emptySetState = (): void => {
-}
+const emptySetState = (): void => {}
 const alertDisplayTime = 5000
 
 interface Alert {
@@ -17,7 +16,7 @@ export class AlertStore {
   ) {
   }
 
-  isInitialized (): boolean {
+  hasState (): boolean {
     return this.setState !== emptySetState
   }
 

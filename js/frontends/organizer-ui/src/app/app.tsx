@@ -14,7 +14,7 @@ export const App = (): JSX.Element => {
   const authenticator = useNewAuthenticator()
   const alertStore = useNewAlertStore()
 
-  if (!authenticator.isInitialized() || !alertStore.isInitialized()) {
+  if (!authenticator.hasState() || !alertStore.hasState()) {
     return <></>
   }
 

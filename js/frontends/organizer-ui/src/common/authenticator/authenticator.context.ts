@@ -21,7 +21,7 @@ export class Authenticator {
   ) {
   }
 
-  isInitialized (): boolean {
+  hasState (): boolean {
     return this.setState !== emptySetState
   }
 

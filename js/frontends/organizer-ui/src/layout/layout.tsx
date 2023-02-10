@@ -22,7 +22,7 @@ export const Layout = (): JSX.Element => {
     onDrawerToggle: handleDrawerToggle
   }
 
-  if (!messenger.isInitialized()) {
+  if (!messenger.hasState()) {
     return <></>
   }
 
