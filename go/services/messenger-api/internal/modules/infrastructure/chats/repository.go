@@ -39,7 +39,7 @@ func (r *Repository) FindAll() ([]*Chat, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
-	var chats []*Chat
+	chats := make([]*Chat, 0)
 	cursor, err := r.collection.Find(ctx, bson.M{})
 
 	defer cursor.Close(ctx)
@@ -62,7 +62,7 @@ func (r *Repository) FindAllByOrganizerId(organizerId int32) ([]*Chat, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
-	var chats []*Chat
+	chats := make([]*Chat, 0)
 	cursor, err := r.collection.Find(ctx, bson.M{"organizerId": organizerId})
 
 	defer cursor.Close(ctx)
@@ -85,7 +85,7 @@ func (r *Repository) FindAllByParticipantId(participantId int32) ([]*Chat, error
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
-	var chats []*Chat
+	chats := make([]*Chat, 0)
 	cursor, err := r.collection.Find(ctx, bson.M{"participantId": participantId})
 
 	defer cursor.Close(ctx)

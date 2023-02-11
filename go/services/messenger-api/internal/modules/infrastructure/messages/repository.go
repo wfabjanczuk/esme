@@ -44,7 +44,7 @@ func (r *Repository) FindAll(chatId string) ([]*Message, error) {
 		return nil, err
 	}
 
-	var messages []*Message
+	messages := make([]*Message, 0)
 	cursor, err := r.collection.Find(ctx, bson.M{"chat": chatObjectId})
 
 	defer cursor.Close(ctx)

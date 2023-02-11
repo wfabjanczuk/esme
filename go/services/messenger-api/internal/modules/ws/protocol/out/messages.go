@@ -8,12 +8,12 @@ import (
 )
 
 const (
-	msgTypeInfo        = "info"
-	msgTypeError       = "error"
-	msgTypeNewChat     = "new_chat"
-	msgTypeChats       = "chats"
-	msgTypeChatHistory = "chat_history"
-	msgTypeUserMessage = "user_message"
+	MsgTypeInfo        = "info"
+	MsgTypeError       = "error"
+	MsgTypeNewChat     = "new_chat"
+	MsgTypeChats       = "chats"
+	MsgTypeChatHistory = "chat_history"
+	MsgTypeUserMessage = "user_message"
 )
 
 type infoPayload struct {
@@ -27,7 +27,7 @@ func BuildInfo(info string) (*protocol.Message, error) {
 	}
 
 	return &protocol.Message{
-		Type:    msgTypeInfo,
+		Type:    MsgTypeInfo,
 		Payload: outPayloadBytes,
 	}, nil
 }
@@ -43,7 +43,7 @@ func BuildError(error error) (*protocol.Message, error) {
 	}
 
 	return &protocol.Message{
-		Type:    msgTypeError,
+		Type:    MsgTypeError,
 		Payload: outPayloadBytes,
 	}, nil
 }
@@ -59,7 +59,7 @@ func BuildNewChat(chat *chats.Chat) (*protocol.Message, error) {
 	}
 
 	return &protocol.Message{
-		Type:    msgTypeNewChat,
+		Type:    MsgTypeNewChat,
 		Payload: outPayloadBytes,
 	}, nil
 }
@@ -75,7 +75,7 @@ func BuildChats(chats []*chats.Chat) (*protocol.Message, error) {
 	}
 
 	return &protocol.Message{
-		Type:    msgTypeChats,
+		Type:    MsgTypeChats,
 		Payload: outPayloadBytes,
 	}, nil
 }
@@ -92,7 +92,7 @@ func BuildChatHistory(chatId string, chatMessages []*messages.Message) (*protoco
 	}
 
 	return &protocol.Message{
-		Type:    msgTypeChatHistory,
+		Type:    MsgTypeChatHistory,
 		Payload: outPayloadBytes,
 	}, nil
 }
@@ -108,7 +108,7 @@ func BuildUserMessage(message *messages.Message) (*protocol.Message, error) {
 	}
 
 	return &protocol.Message{
-		Type:    msgTypeUserMessage,
+		Type:    MsgTypeUserMessage,
 		Payload: outPayloadBytes,
 	}, nil
 }

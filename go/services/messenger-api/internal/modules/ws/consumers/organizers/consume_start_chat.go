@@ -47,7 +47,7 @@ func (c *Consumer) consumeStartChat(conn *connections.OrganizerConnection, msg *
 
 	outMsg, err := out.BuildNewChat(chat)
 	if err != nil {
-		c.logger.Printf("could not send %s to %s: %s\n", msg.Type, conn.GetInfo(), err)
+		c.logger.Printf("could not send %s to %s: %s\n", out.MsgTypeNewChat, conn.GetInfo(), err)
 		conn.SendError(common.ErrInternal)
 		return
 	}

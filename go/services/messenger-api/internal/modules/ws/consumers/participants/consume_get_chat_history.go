@@ -25,7 +25,7 @@ func (c *Consumer) consumeGetChatHistory(conn *connections.ParticipantConnection
 
 	outMsg, err := out.BuildChatHistory(inPayload.ChatId, chatMessages)
 	if err != nil {
-		c.logger.Printf("could not send %s to %s: %s\n", msg.Type, conn.GetInfo(), err)
+		c.logger.Printf("could not send %s to %s: %s\n", out.MsgTypeChatHistory, conn.GetInfo(), err)
 		conn.SendError(common.ErrInternal)
 		return
 	}

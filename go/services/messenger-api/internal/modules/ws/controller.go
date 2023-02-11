@@ -73,6 +73,7 @@ func (c *Controller) Connect(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) readAuthorizationHeader(wsConnection *websocket.Conn) (string, error) {
+	c.logger.Printf("awaiting authorization message from %s", wsConnection.RemoteAddr())
 	err := wsConnection.SetReadDeadline(time.Now().Add(authorizationReadTimeout))
 	if err != nil {
 		return "", err
