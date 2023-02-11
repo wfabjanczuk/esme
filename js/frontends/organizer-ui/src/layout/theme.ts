@@ -108,6 +108,9 @@ theme = {
         root: {
           '&.Mui-selected': {
             color: '#4fc3f7'
+          },
+          '&.Mui-selected.light': {
+            color: '#006db3'
           }
         }
       }

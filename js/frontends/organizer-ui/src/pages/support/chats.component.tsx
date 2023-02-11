@@ -29,6 +29,7 @@ export const Chats = ({
       {chats.map((chat) => (
         <ListItem key={`chat_${chat.id}`} disablePadding>
           <ListItemButton
+            className={'light'}
             selected={activeChatId === chat.id}
             onClick={() => setActiveChatId(chat.id)}
           >
