@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { KeyboardEvent, useContext, useState } from 'react'
 import { Box } from '@mui/material'
 import TextField from '@mui/material/TextField'
 import Divider from '@mui/material/Divider'
@@ -14,6 +14,18 @@ interface ChatInputProps {
 export const ChatInput = ({ chatId }: ChatInputProps): JSX.Element => {
   const [message, setMessage] = useState<string>('')
   const messenger = useContext(MessengerContext)
+  const handleSend = (): void => {
+    if (message !== '') {
+      messenger.sendMessage(chatId, message)
+      setMessage('')
+    }
+  }
+  const handleKeyDown = (event: KeyboardEvent): void => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      handleSend()
+    }
+  }
 
   return <Box>
     <Divider/>
@@ -29,14 +41,14 @@ export const ChatInput = ({ chatId }: ChatInputProps): JSX.Element => {
       }}>
         <AddCircleIcon/>
       </IconButton>
-      <TextField multiline={true} size='small' sx={{ flexGrow: 1 }} maxRows={5} value={message}
-        onChange={e => setMessage(e.target.value)}/>
-      <IconButton sx={{
+      <TextField multiline={true} sx={{ flexGrow: 1 }} maxRows={5} value={message} size='small'
+        onChange={e => setMessage(e.target.value)}
+        onKeyDown={handleKeyDown}
+      />
+      <IconButton onClick={handleSend} sx={{
         ml: 1,
         color: '#006494'
-      }}
-      onClick={() => messenger.sendMessage(chatId, message)}
-      >
+      }}>
         <SendIcon/>
       </IconButton>
     </Box>
