@@ -57,8 +57,8 @@ export interface Chat {
   ended: 0
   latStart: number
   lngStart: number
-  timeStart: Date
-  timeEnd: Date
+  timeStart: string
+  timeEnd: string
 }
 
 export interface Message {
@@ -67,5 +67,5 @@ export interface Message {
   authorId: number
   fromOrganizer: number
   content: string
-  timeSent: Date
+  timeSent: string
 }
