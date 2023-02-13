@@ -33,13 +33,15 @@ export const Layout = (): JSX.Element => {
       <InboxContext.Provider value={inbox}>
         <Box sx={{
           display: 'flex',
-          minHeight: '100vh'
+          height: '100vh',
+          overflow: 'hidden'
         }}>
           <Box
             component='nav'
             sx={{
               width: { sm: drawerWidth },
-              flexShrink: { sm: 0 }
+              flexShrink: { sm: 0 },
+              height: '100%'
             }}
           >
             {isSmUp
@@ -65,7 +67,8 @@ export const Layout = (): JSX.Element => {
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'auto'
+            height: '100%',
+            maxHeight: '100%'
           }}>
             <Outlet context={outletContext}/>
           </Box>
