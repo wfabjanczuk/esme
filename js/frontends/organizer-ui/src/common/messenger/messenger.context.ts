@@ -39,6 +39,13 @@ export class Messenger {
       payload: { chatId }
     }))
   }
+
+  sendMessage (chatId: string, message: string): void {
+    this.webSocket.send(JSON.stringify({
+      type: 'send_message',
+      payload: { chatId, message }
+    }))
+  }
 }
 
 export const MessengerContext = React.createContext<Messenger>(new Messenger())

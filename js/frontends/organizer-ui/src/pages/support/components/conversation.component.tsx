@@ -23,6 +23,6 @@ export const Conversation = ({ chatId }: ConversationProps): JSX.Element => {
     justifyContent: 'space-between'
   }}>
     <ChatHistory messages={messages[chatId]}/>
-    <ChatInput/>
+    <ChatInput chatId={chatId}/>
   </Box>
 }
