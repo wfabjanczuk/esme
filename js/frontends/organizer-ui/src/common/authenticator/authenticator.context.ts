@@ -4,8 +4,8 @@ import { config } from '../../app/config'
 import { Profile } from './profile'
 import { parseErrorMessage } from '../utils'
 
-const signInUrl = `${config.apiUrl}/auth/sign-in`
-const signOutUrl = `${config.apiUrl}/auth/sign-out`
+const signInUrl = `${config.organizerApiUrl}/auth/sign-in`
+const signOutUrl = `${config.organizerApiUrl}/auth/sign-out`
 const emptySetState = (): void => {}
 
 interface SignInResponse {

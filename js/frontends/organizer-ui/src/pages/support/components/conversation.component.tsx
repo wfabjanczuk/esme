@@ -17,7 +17,6 @@ export const Conversation = ({ chatId }: ConversationProps): JSX.Element => {
 
   return <Box sx={{
     flexGrow: 1,
-    overflow: 'auto',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between'

@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import Divider from '@mui/material/Divider'
-import ListItemButton from '@mui/material/ListItemButton'
+import { ChatLabel } from './components/chat-label/chat-label.component'
 
 interface ChatsProps {
   activeChatId: string
@@ -27,15 +27,12 @@ export const Chats = ({
       </ListItem>
       <Divider/>
       {chats.map((chat) => (
-        <ListItem key={`chat_${chat.id}`} disablePadding>
-          <ListItemButton
-            className={'light'}
-            selected={activeChatId === chat.id}
-            onClick={() => setActiveChatId(chat.id)}
-          >
-            {chat.id}
-          </ListItemButton>
-        </ListItem>
+        <ChatLabel
+          key={`chats_${chat.id}`}
+          chat={chat}
+          activeChatId={activeChatId}
+          setActiveChatId={setActiveChatId}
+        />
       ))}
     </List>
   </Box>

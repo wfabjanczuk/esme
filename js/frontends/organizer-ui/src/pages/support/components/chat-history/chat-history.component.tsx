@@ -8,7 +8,7 @@ interface MessagesProps {
 }
 
 export const ChatHistory = ({ messages }: MessagesProps): JSX.Element => {
-  return <Box sx={{ overflow: 'auto' }}>
+  return <Box sx={{ overflow: 'auto', px: 1 }}>
     {messages.map((msg) => (
       <ChatBubble key={`${msg.chatId}_${msg.id}`} message={msg}/>
     ))}

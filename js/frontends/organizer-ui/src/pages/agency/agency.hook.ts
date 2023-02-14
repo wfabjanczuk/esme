@@ -6,7 +6,7 @@ import { Agency } from './agency'
 import { parseErrorMessage } from '../../common/utils'
 import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-store.context'
 
-const agencyUrl = `${config.apiUrl}/agency`
+const agencyUrl = `${config.organizerApiUrl}/agency`
 
 export interface AgencyHook {
   agency?: Agency

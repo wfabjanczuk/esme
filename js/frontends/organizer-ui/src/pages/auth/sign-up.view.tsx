@@ -11,7 +11,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom'
 import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-store.context'
 import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 
-const signUpUrl = `${config.apiUrl}/agency`
+const signUpUrl = `${config.organizerApiUrl}/agency`
 
 export const SignUpView = (): JSX.Element => {
   const alertStore = useContext(AlertStoreContext)
