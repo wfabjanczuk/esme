@@ -7,7 +7,7 @@ import { AgencyForm } from './agency.form'
 import { styles } from '../../common/styles'
 import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 
-export const AgencyView = (): JSX.Element => {
+export const EditAgencyView = (): JSX.Element => {
   const { agency, updateAgency, deleteAgency, errorMessages } = useAgency()
 
   const handleUpdate = (e: FormEvent<HTMLFormElement>): void => {

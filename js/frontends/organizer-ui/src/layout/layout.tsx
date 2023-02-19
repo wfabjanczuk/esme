@@ -68,7 +68,8 @@ export const Layout = (): JSX.Element => {
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
-            maxHeight: '100%'
+            maxHeight: '100%',
+            overflow: 'auto'
           }}>
             <Outlet context={outletContext}/>
           </Box>

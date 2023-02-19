@@ -3,6 +3,7 @@ import { Box, Button, TextField } from '@mui/material'
 import { FormErrors } from '../../common/form-errors.component'
 import { Agency } from './agency'
 import { styles } from '../../common/styles'
+import { DeleteForever, Save } from '@mui/icons-material'
 
 interface AgencyFormProps {
   agency?: Agency
@@ -11,7 +12,12 @@ interface AgencyFormProps {
   errorMessages: string[]
 }
 
-export const AgencyForm = ({ agency, handleUpdate, handleDelete, errorMessages }: AgencyFormProps): JSX.Element => {
+export const AgencyForm = ({
+  agency,
+  handleUpdate,
+  handleDelete,
+  errorMessages
+}: AgencyFormProps): JSX.Element => {
   if (agency === undefined) {
     return <FormErrors errorMessages={errorMessages}/>
   }
@@ -57,11 +63,15 @@ export const AgencyForm = ({ agency, handleUpdate, handleDelete, errorMessages }
         disabled
       />
       <FormErrors errorMessages={errorMessages}/>
-      <Box style={{ display: 'flex', gap: 40 }}>
-        <Button type='submit' variant='contained' color='success' sx={styles.buttonGroupElement}>
+      <Box style={{
+        display: 'flex',
+        gap: 40
+      }}>
+        <Button type='submit' variant='contained' color='success' sx={styles.buttonGroupElement} startIcon={<Save/>}>
           Save
         </Button>
-        <Button type='button' onClick={handleDelete} variant='contained' color='error' sx={styles.buttonGroupElement}>
+        <Button type='button' onClick={handleDelete} variant='contained' color='error' sx={styles.buttonGroupElement}
+          startIcon={<DeleteForever/>}>
           Delete
         </Button>
       </Box>

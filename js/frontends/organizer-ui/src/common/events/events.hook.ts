@@ -7,49 +7,47 @@ import { parseErrorMessage } from '../utils'
 
 const eventsUrl = `${config.organizerApiUrl}/agency/events`
 
-export interface EventHook {
-  event?: EsmeEvent
+export interface EventsHook {
+  events: EsmeEvent[]
   errorMessages: string[]
 }
 
-interface EventState {
-  event?: EsmeEvent
+interface EventsState {
+  events: EsmeEvent[]
   errorMessages: string[]
 }
 
-export const useEvent = (id: number): EventHook => {
+export const useEvents = (): EventsHook => {
   const authenticator = useContext(AuthenticatorContext)
 
-  const [eventState, setEventState] = useState<EventState>({
-    event: undefined,
+  const [eventsState, setEventsState] = useState<EventsState>({
+    events: [],
     errorMessages: []
   })
 
   useEffect(() => {
-    void fetchEvent(id, authenticator, setEventState)
+    void fetchEvents(authenticator, setEventsState)
   }, [authenticator])
 
   return {
-    event: eventState.event,
-    errorMessages: eventState.errorMessages
+    events: eventsState.events,
+    errorMessages: eventsState.errorMessages
   }
 }
 
-const fetchEvent = async (
-  id: number,
+const fetchEvents = async (
   authenticator: Authenticator,
-  setState: (state: EventState) => void
+  setState: (state: EventsState) => void
 ): Promise<void> => {
-  const eventUrl = `${eventsUrl}/${id}`
-  return await axios.get<EsmeEvent>(eventUrl, { headers: { Authorization: authenticator.authorizationHeader } })
+  return await axios.get<EsmeEvent[]>(eventsUrl, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(({ data }) => setState({
-      event: data,
+      events: data,
       errorMessages: []
     }))
     .catch(e => {
       authenticator.checkAuthError(e)
       setState({
-        event: undefined,
+        events: [],
         errorMessages: parseErrorMessage(e?.response?.data?.message)
       })
     })

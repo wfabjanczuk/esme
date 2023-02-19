@@ -100,7 +100,7 @@ export default function Menu (props: DrawerProps): JSX.Element {
             </ListItem>
             {children.map(({ id: childId, icon, url }) => (
               <ListItem disablePadding key={childId}>
-                <NavLink to={url} style={linkStyle} >
+                <NavLink to={url} style={linkStyle}>
                   <ListItemButton selected={location.pathname === url} sx={item}>
                     <ListItemIcon>{icon}</ListItemIcon>
                     <ListItemText>{childId}</ListItemText>

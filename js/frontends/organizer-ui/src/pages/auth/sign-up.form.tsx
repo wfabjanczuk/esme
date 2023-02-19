@@ -4,6 +4,7 @@ import { Box, Button, TextField, Typography } from '@mui/material'
 import { FormErrors } from '../../common/form-errors.component'
 import { ButtonGroup } from '../../common/button-group.component'
 import { Link } from 'react-router-dom'
+import { Close, PersonAdd } from '@mui/icons-material'
 
 interface SignUpFormProps {
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void
@@ -84,9 +85,13 @@ export const SignUpForm = ({ handleSubmit, errorMessages }: SignUpFormProps): JS
       </Box>
     </Box>
     <ButtonGroup>
-      <Button type='submit' variant='contained' color='success' sx={styles.buttonGroupElement}>Register</Button>
+      <Button type='submit' variant='contained' color='success' sx={styles.buttonGroupElement} startIcon={<PersonAdd/>}>
+        Register
+      </Button>
       <Link to={'/'} style={styles.link}>
-        <Button type='button' variant='contained' color='error' sx={styles.linkButton}>Cancel</Button>
+        <Button type='button' variant='contained' color='error' sx={styles.linkButton} startIcon={<Close/>}>
+          Cancel
+        </Button>
       </Link>
     </ButtonGroup>
   </form>

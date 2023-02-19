@@ -3,8 +3,10 @@ import { createBrowserRouter } from 'react-router-dom'
 import { ErrorView } from './error.view'
 import { PlaceholderView } from './placeholder-view'
 import { Layout } from '../layout/layout'
-import { AgencyView } from '../pages/agency/agency.view'
+import { EditAgencyView } from '../pages/agency/edit-agency.view'
 import { SupportView } from '../pages/support/support.view'
+import { EventsView } from '../pages/events/events.view'
+import { EditEventView } from '../pages/events/edit-event.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -17,7 +19,7 @@ export const RouterInternal = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <AgencyView/>
+            element: <EditAgencyView/>
           },
           {
             path: 'users',
@@ -25,7 +27,11 @@ export const RouterInternal = createBrowserRouter([
           },
           {
             path: 'events',
-            element: <PlaceholderView text={'Events'}/>
+            element: <EventsView/>
+          },
+          {
+            path: 'events/:id',
+            element: <EditEventView/>
           },
           {
             path: 'issues',

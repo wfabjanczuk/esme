@@ -4,6 +4,7 @@ import { FormErrors } from '../../common/form-errors.component'
 import { styles } from '../../common/styles'
 import { ButtonGroup } from '../../common/button-group.component'
 import { Link } from 'react-router-dom'
+import { Login, PersonAdd } from '@mui/icons-material'
 
 interface SignInFormProps {
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void
@@ -30,9 +31,13 @@ export const SignInForm = ({ handleSubmit, errorMessages }: SignInFormProps): JS
       />
       <FormErrors errorMessages={errorMessages}/>
       <ButtonGroup>
-        <Button type='submit' variant='contained' sx={styles.buttonGroupElement}>Sign in</Button>
+        <Button type='submit' variant='contained' sx={styles.buttonGroupElement} startIcon={<Login/>}>
+          Sign in
+        </Button>
         <Link to={'/register'} style={styles.link}>
-          <Button type='button' variant='contained' color='success' sx={styles.linkButton}>Register</Button>
+          <Button type='button' variant='contained' color='success' sx={styles.linkButton} startIcon={<PersonAdd/>}>
+            Register
+          </Button>
         </Link>
       </ButtonGroup>
     </Box>
