@@ -5,13 +5,13 @@ import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
 import { styles } from '../../common/styles'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import { useEvents } from '../../common/events/events.hook'
 import { GridActionsColDef } from '@mui/x-data-grid/models/colDef/gridColDef'
 import { Add, Edit } from '@mui/icons-material'
 import { NavLink } from 'react-router-dom'
 import { GridRowId } from '@mui/x-data-grid/models/gridRows'
 import dayjs from 'dayjs'
 import { GridValueGetterParams } from '@mui/x-data-grid/models/params/gridCellParams'
+import { useEvents } from './events.hook'
 
 const linkStyle = {
   color: 'inherit',
@@ -72,7 +72,7 @@ const EditButton = ({ id }: EditButtonProps): JSX.Element => {
 }
 
 export const EventsView = (): JSX.Element => {
-  const { events } = useEvents()
+  const { collection: events } = useEvents()
 
   return <Fragment>
     <Header title='Events'/>

@@ -5,7 +5,7 @@ import { parseErrorMessage } from '../utils'
 import { Agency } from '../../pages/agency/agency'
 import { useNavigate } from 'react-router-dom'
 
-export interface EntityHook<T> {
+export interface EditHook<T> {
   entity?: T
   update: (payload: Object) => Promise<void>
   remove: () => Promise<void>
@@ -17,7 +17,7 @@ interface State<T> {
   errorMessages: string[]
 }
 
-export const useEntity = <T> (id: number, baseUrl: string, onDeleteRedirectUrl: string): EntityHook<T> => {
+export const useEdit = <T> (id: number, baseUrl: string, onDeleteRedirectUrl: string): EditHook<T> => {
   const authenticator = useContext(AuthenticatorContext)
   const navigate = useNavigate()
   const onDelete = (): void => navigate(onDeleteRedirectUrl)

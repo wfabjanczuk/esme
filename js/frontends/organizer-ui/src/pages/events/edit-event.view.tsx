@@ -8,7 +8,7 @@ import { styles } from '../../common/styles'
 import Paper from '@mui/material/Paper'
 import Button from '@mui/material/Button'
 import { ArrowBack } from '@mui/icons-material'
-import { useEvent } from './event.hook'
+import { useEvent } from './events.hook'
 
 const linkStyle = {
   color: 'inherit',
