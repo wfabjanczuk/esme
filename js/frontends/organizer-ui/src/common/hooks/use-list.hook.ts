@@ -4,30 +4,30 @@ import axios from 'axios'
 import { parseErrorMessage } from '../utils'
 
 export interface ListHook<T> {
-  collection: T[]
+  list: T[]
   errorMessages: string[]
 }
 
 interface State<T> {
-  collection: T[]
+  list: T[]
   errorMessages: string[]
 }
 
 export const useList = <T> (baseUrl: string): ListHook<T> => {
   const authenticator = useContext(AuthenticatorContext)
 
-  const [collectionState, setCollectionState] = useState<State<T>>({
-    collection: [],
+  const [state, setState] = useState<State<T>>({
+    list: [],
     errorMessages: []
   })
 
   useEffect(() => {
-    void fetch(baseUrl, authenticator, setCollectionState)
+    void fetch(baseUrl, authenticator, setState)
   }, [authenticator])
 
   return {
-    collection: collectionState.collection,
-    errorMessages: collectionState.errorMessages
+    list: state.list,
+    errorMessages: state.errorMessages
   }
 }
 
@@ -38,13 +38,13 @@ const fetch = async <T> (
 ): Promise<void> => {
   return await axios.get<T[]>(url, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(({ data }) => setState({
-      collection: data,
+      list: data,
       errorMessages: []
     }))
     .catch(e => {
       authenticator.isAuthError(e)
       setState({
-        collection: [],
+        list: [],
         errorMessages: parseErrorMessage(e?.response?.data?.message)
       })
     })

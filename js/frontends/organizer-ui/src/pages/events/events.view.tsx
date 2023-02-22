@@ -72,7 +72,7 @@ const EditButton = ({ id }: EditButtonProps): JSX.Element => {
 }
 
 export const EventsView = (): JSX.Element => {
-  const { collection: events } = useEvents()
+  const { list: events } = useEvents()
 
   return <Fragment>
     <Header title='Events'/>

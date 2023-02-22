@@ -22,21 +22,21 @@ export const useEdit = <T> (id: number, baseUrl: string, onDeleteRedirectUrl: st
   const navigate = useNavigate()
   const onDelete = (): void => navigate(onDeleteRedirectUrl)
 
-  const [entityState, setEntityState] = useState<State<T>>({
+  const [state, setState] = useState<State<T>>({
     entity: undefined,
     errorMessages: []
   })
 
   const url = `${baseUrl}/${id}`
   useEffect(() => {
-    void fetch(url, authenticator, setEntityState)
+    void fetch(url, authenticator, setState)
   }, [authenticator])
 
   return {
-    errorMessages: entityState.errorMessages,
-    entity: entityState.entity,
-    update: async (payload: Object) => await update(url, payload, authenticator, setEntityState),
-    remove: async () => await remove(url, onDelete, authenticator, setEntityState)
+    errorMessages: state.errorMessages,
+    entity: state.entity,
+    update: async (payload: Object) => await update(url, payload, authenticator, setState),
+    remove: async () => await remove(url, onDelete, authenticator, setState)
   }
 }
 
