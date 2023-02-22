@@ -49,7 +49,7 @@ const fetchEvent = async (
       errorMessages: []
     }))
     .catch(e => {
-      authenticator.checkAuthError(e)
+      authenticator.isAuthError(e)
       setState({
         event: undefined,
         errorMessages: parseErrorMessage(e?.response?.data?.message)

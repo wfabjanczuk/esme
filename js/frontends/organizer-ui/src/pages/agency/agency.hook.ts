@@ -10,7 +10,7 @@ const agencyUrl = `${config.organizerApiUrl}/agency`
 
 export interface AgencyHook {
   agency?: Agency
-  updateAgency: (payload: UpdateAgencyPayload) => Promise<void>
+  updateAgency: (payload: Object) => Promise<void>
   deleteAgency: () => Promise<void>
   errorMessages: string[]
 }
@@ -51,7 +51,9 @@ const fetchAgency = async (
       errorMessages: []
     }))
     .catch(e => {
-      authenticator.checkAuthError(e)
+      if (authenticator.isAuthError(e)) {
+        return
+      }
       setState({
         agency: undefined,
         errorMessages: parseErrorMessage(e?.response?.data?.message)
@@ -59,14 +61,8 @@ const fetchAgency = async (
     })
 }
 
-export interface UpdateAgencyPayload {
-  name?: string
-  address?: string
-  website?: string
-}
-
 const updateAgency = async (
-  payload: UpdateAgencyPayload,
+  payload: Object,
   authenticator: Authenticator,
   setAgencyState: Dispatch<SetStateAction<AgencyState>>,
   alertStore: AlertStore
@@ -80,7 +76,9 @@ const updateAgency = async (
       })
     })
     .catch(e => {
-      authenticator.checkAuthError(e)
+      if (authenticator.isAuthError(e)) {
+        return
+      }
       setAgencyState((prevState) => ({
         agency: prevState.agency,
         errorMessages: parseErrorMessage(e?.response?.data?.message)

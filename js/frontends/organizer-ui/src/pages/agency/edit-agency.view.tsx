@@ -2,7 +2,7 @@ import React, { FormEvent, Fragment } from 'react'
 import Header from '../../layout/header'
 import Paper from '@mui/material/Paper'
 import { Box, Typography } from '@mui/material'
-import { UpdateAgencyPayload, useAgency } from './agency.hook'
+import { useAgency } from './agency.hook'
 import { AgencyForm } from './agency.form'
 import { styles } from '../../common/styles'
 import { AlertBar } from '../../common/alert-bar/alert-bar.component'
@@ -42,14 +42,11 @@ export const EditAgencyView = (): JSX.Element => {
 
 const handleUpdateAsync = async (
   e: FormEvent<HTMLFormElement>,
-  updateAgency: (payload: UpdateAgencyPayload) => Promise<void>
+  updateAgency: (payload: Object) => Promise<void>
 ): Promise<void> => {
   e.preventDefault()
   const formData = new FormData(e.currentTarget)
+  const payload = Object.fromEntries(formData)
 
-  await updateAgency({
-    name: formData.get('name') as string,
-    address: formData.get('address') as string,
-    website: formData.get('website') as string
-  })
+  await updateAgency(payload)
 }

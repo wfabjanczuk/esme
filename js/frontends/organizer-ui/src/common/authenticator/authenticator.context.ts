@@ -47,15 +47,18 @@ export class Authenticator {
     }).finally(() => this.update(undefined, undefined))
   }
 
-  checkAuthError = (e: AxiosError): void => {
+  isAuthError = (e: AxiosError): boolean => {
     const code = e?.response?.status
     if (code === undefined) {
-      return
+      return false
     }
 
     if ([401, 403].includes(code)) {
       void this.signOut()
+      return true
     }
+
+    return false
   }
 
   private update (authorizationHeader?: string, profile?: Profile): void {
