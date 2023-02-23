@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
+import { Dispatch, FormEvent, SetStateAction, useContext, useEffect, useState } from 'react'
 import { Authenticator, AuthenticatorContext } from '../authenticator/authenticator.context'
 import axios from 'axios'
 import { parseErrorMessage } from '../utils'
@@ -6,20 +6,22 @@ import { Agency } from '../../pages/agency/agency'
 import { useNavigate } from 'react-router-dom'
 
 export interface EditHook<T> {
-  entity?: T
-  update: (payload: Object) => Promise<void>
-  remove: () => Promise<void>
   errorMessages: string[]
+  entity?: T
+  update: (e: FormEvent<HTMLFormElement>) => void
+  remove: () => void
 }
 
 interface State<T> {
-  entity?: T
   errorMessages: string[]
+  entity?: T
 }
 
 export const useEdit = <T> (id: number, baseUrl: string, onDeleteRedirectUrl: string): EditHook<T> => {
   const authenticator = useContext(AuthenticatorContext)
   const navigate = useNavigate()
+
+  const url = `${baseUrl}/${id}`
   const onDelete = (): void => navigate(onDeleteRedirectUrl)
 
   const [state, setState] = useState<State<T>>({
@@ -27,20 +29,25 @@ export const useEdit = <T> (id: number, baseUrl: string, onDeleteRedirectUrl: st
     errorMessages: []
   })
 
-  const url = `${baseUrl}/${id}`
   useEffect(() => {
-    void fetch(url, authenticator, setState)
+    void fetchAsync(url, authenticator, setState)
   }, [authenticator])
 
-  return {
-    errorMessages: state.errorMessages,
-    entity: state.entity,
-    update: async (payload: Object) => await update(url, payload, authenticator, setState),
-    remove: async () => await remove(url, onDelete, authenticator, setState)
+  const update = (e: FormEvent<HTMLFormElement>): void => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const payload = Object.fromEntries(formData)
+    void updateAsync(url, payload, authenticator, setState)
   }
+
+  const remove = (): void => {
+    void removeAsync(url, onDelete, authenticator, setState)
+  }
+
+  return { ...state, update, remove }
 }
 
-const fetch = async <T> (
+const fetchAsync = async <T> (
   url: string,
   authenticator: Authenticator,
   setState: Dispatch<SetStateAction<State<T>>>
@@ -61,7 +68,7 @@ const fetch = async <T> (
     })
 }
 
-const update = async <T> (
+const updateAsync = async <T> (
   url: string,
   payload: Object,
   authenticator: Authenticator,
@@ -85,7 +92,7 @@ const update = async <T> (
     })
 }
 
-const remove = async <T> (
+const removeAsync = async <T> (
   url: string,
   onDelete: () => void,
   authenticator: Authenticator,

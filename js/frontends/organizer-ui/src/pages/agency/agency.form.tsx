@@ -8,14 +8,14 @@ import { DeleteForever, Save } from '@mui/icons-material'
 interface AgencyFormProps {
   agency?: Agency
   handleUpdate: (e: FormEvent<HTMLFormElement>) => void
-  handleDelete: () => void
+  handleRemove: () => void
   errorMessages: string[]
 }
 
 export const AgencyForm = ({
   agency,
   handleUpdate,
-  handleDelete,
+  handleRemove,
   errorMessages
 }: AgencyFormProps): JSX.Element => {
   if (agency === undefined) {
@@ -70,7 +70,7 @@ export const AgencyForm = ({
         <Button type='submit' variant='contained' color='success' sx={styles.buttonGroupElement} startIcon={<Save/>}>
           Save
         </Button>
-        <Button type='button' onClick={handleDelete} variant='contained' color='error' sx={styles.buttonGroupElement}
+        <Button type='button' onClick={handleRemove} variant='contained' color='error' sx={styles.buttonGroupElement}
           startIcon={<DeleteForever/>}>
           Delete
         </Button>

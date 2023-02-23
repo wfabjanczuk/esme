@@ -2,43 +2,43 @@ import { Box, Button, TextField } from '@mui/material'
 import { styles } from '../../common/styles'
 import { FormErrors } from '../../common/form-errors.component'
 import { DeleteForever, Save } from '@mui/icons-material'
-import { Event as EsmeEvent } from '../../common/events/event'
 import React from 'react'
-import dayjs from 'dayjs'
+import { utcdayjs } from '../../common/utils'
+import { useEditEvent } from './hooks'
 
-interface EventFormProps {
-  event?: EsmeEvent
-  errorMessages: string[]
+interface EditEventFormProps {
+  id: number
 }
 
-export const EventForm = ({ event, errorMessages }: EventFormProps): JSX.Element => {
-  if (event === undefined) {
+export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
+  const { errorMessages, entity, update, remove } = useEditEvent(id)
+  const isError = errorMessages.length > 0
+
+  if (entity === undefined) {
     return <></>
   }
 
-  const isError = errorMessages.length > 0
-
-  return <form>
+  return <form onSubmit={update}>
     <Box sx={styles.form}>
       <TextField
         type='number'
         name='id'
         label='id'
-        defaultValue={event.id}
+        defaultValue={entity.id}
         sx={styles.formField}
         disabled
       />
       <TextField
         name='name'
         label='name'
-        defaultValue={event.name}
+        defaultValue={entity.name}
         error={isError}
         sx={styles.formField}
       />
       <TextField
         name='description'
         label='description'
-        defaultValue={event.description}
+        defaultValue={entity.description}
         error={isError}
         sx={styles.formField}
         multiline
@@ -46,7 +46,7 @@ export const EventForm = ({ event, errorMessages }: EventFormProps): JSX.Element
       <TextField
         name='address'
         label='address'
-        defaultValue={event.address}
+        defaultValue={entity.address}
         error={isError}
         sx={styles.formField}
         multiline
@@ -55,7 +55,7 @@ export const EventForm = ({ event, errorMessages }: EventFormProps): JSX.Element
         type='datetime-local'
         name='timeStart'
         label='start time'
-        defaultValue={dayjs(event.timeStart).format('YYYY-MM-DDTHH:mm')}
+        defaultValue={utcdayjs(entity.timeStart).format('YYYY-MM-DDTHH:mm')}
         error={isError}
         sx={styles.formField}
         InputLabelProps={{ shrink: true }}
@@ -64,7 +64,7 @@ export const EventForm = ({ event, errorMessages }: EventFormProps): JSX.Element
         type='datetime-local'
         name='timeEnd'
         label='end time'
-        defaultValue={dayjs(event.timeEnd).format('YYYY-MM-DDTHH:mm')}
+        defaultValue={utcdayjs(entity.timeEnd).format('YYYY-MM-DDTHH:mm')}
         error={isError}
         sx={styles.formField}
         InputLabelProps={{ shrink: true }}
@@ -74,7 +74,7 @@ export const EventForm = ({ event, errorMessages }: EventFormProps): JSX.Element
         inputProps={{ step: 'any' }}
         name='lat'
         label='latitude'
-        defaultValue={event.lat}
+        defaultValue={entity.lat}
         sx={styles.formField}
       />
       <TextField
@@ -82,7 +82,7 @@ export const EventForm = ({ event, errorMessages }: EventFormProps): JSX.Element
         inputProps={{ step: 'any' }}
         name='lng'
         label='longitude'
-        defaultValue={event.lng}
+        defaultValue={entity.lng}
         sx={styles.formField}
       />
       <FormErrors errorMessages={errorMessages}/>
@@ -96,6 +96,7 @@ export const EventForm = ({ event, errorMessages }: EventFormProps): JSX.Element
           Save
         </Button>
         <Button type='button' variant='contained' color='error' sx={styles.buttonGroupElement}
+          onClick={remove}
           startIcon={<DeleteForever/>}>
           Delete
         </Button>

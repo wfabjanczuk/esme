@@ -9,9 +9,9 @@ import { GridActionsColDef } from '@mui/x-data-grid/models/colDef/gridColDef'
 import { Add, Edit } from '@mui/icons-material'
 import { NavLink } from 'react-router-dom'
 import { GridRowId } from '@mui/x-data-grid/models/gridRows'
-import dayjs from 'dayjs'
 import { GridValueGetterParams } from '@mui/x-data-grid/models/params/gridCellParams'
-import { useEvents } from './events.hook'
+import { useEventsList } from './hooks'
+import { utcdayjs } from '../../common/utils'
 
 const linkStyle = {
   color: 'inherit',
@@ -19,7 +19,7 @@ const linkStyle = {
   width: '100%'
 }
 
-const parseDate = ({ value }: GridValueGetterParams<string>): string => dayjs(value).format('YYYY-MM-DD HH:mm')
+const parseDate = ({ value }: GridValueGetterParams<string>): string => utcdayjs(value).format('YYYY-MM-DD HH:mm')
 
 const columns: Array<GridColDef | GridActionsColDef> = [
   {
@@ -72,7 +72,7 @@ const EditButton = ({ id }: EditButtonProps): JSX.Element => {
 }
 
 export const EventsView = (): JSX.Element => {
-  const { list: events } = useEvents()
+  const { list: events } = useEventsList()
 
   return <Fragment>
     <Header title='Events'/>
@@ -104,7 +104,7 @@ export const EventsView = (): JSX.Element => {
           />
         </div>
         <Box sx={{ mt: 3, mb: 2 }}>
-          <NavLink to={'/events/0'} style={linkStyle}>
+          <NavLink to={'/events/add'} style={linkStyle}>
             <Button variant='contained' color='primary' startIcon={<Add/>} sx={{ width: '200px' }}>
               Add event
             </Button>

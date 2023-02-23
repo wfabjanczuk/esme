@@ -1,18 +1,15 @@
+import { NavLink } from 'react-router-dom'
 import React, { Fragment } from 'react'
-import { NavLink, useParams } from 'react-router-dom'
-import { EditEventForm } from './edit-event.form'
 import Header from '../../layout/header'
-import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import { Box, Typography } from '@mui/material'
-import { styles } from '../../common/styles'
+import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
+import { styles } from '../../common/styles'
 import Button from '@mui/material/Button'
 import { ArrowBack } from '@mui/icons-material'
+import { CreateEventForm } from './create-event.form'
 
-export const EditEventView = (): JSX.Element => {
-  const { id: idFromRoute } = useParams()
-  const id = idFromRoute === undefined ? undefined : parseInt(idFromRoute, 10)
-
+export const CreateEventView = (): JSX.Element => {
   return <Fragment>
     <Header title='Event'/>
     <Box component='main' sx={{
@@ -21,10 +18,7 @@ export const EditEventView = (): JSX.Element => {
       px: 4,
       backgroundColor: '#eaeff1'
     }}>
-      {id !== undefined
-        ? <EditEventCard id={id}/>
-        : <></>
-      }
+      <CreateEventCard/>
     </Box>
   </Fragment>
 }
@@ -34,11 +28,7 @@ const linkStyle = {
   textDecoration: 'inherit'
 }
 
-interface EditEventCardProps {
-  id: number
-}
-
-const EditEventCard = ({ id }: EditEventCardProps): JSX.Element => {
+const CreateEventCard = (): JSX.Element => {
   return <Box component='main' sx={{
     flex: 1,
     py: 2,
@@ -57,14 +47,14 @@ const EditEventCard = ({ id }: EditEventCardProps): JSX.Element => {
         display: 'flex',
         justifyContent: 'space-between'
       }}>
-        Edit event
+        Add event
         <NavLink to={'/events/'} style={linkStyle}>
           <Button variant='contained' color='primary' startIcon={<ArrowBack/>}>
             Go to events list
           </Button>
         </NavLink>
       </Typography>
-      <EditEventForm id={id}/>
+      <CreateEventForm/>
     </Paper>
   </Box>
 }

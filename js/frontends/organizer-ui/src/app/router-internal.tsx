@@ -7,6 +7,7 @@ import { EditAgencyView } from '../pages/agency/edit-agency.view'
 import { SupportView } from '../pages/support/support.view'
 import { EventsView } from '../pages/events/events.view'
 import { EditEventView } from '../pages/events/edit-event.view'
+import { CreateEventView } from '../pages/events/create-event.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ export const RouterInternal = createBrowserRouter([
           {
             path: 'events',
             element: <EventsView/>
+          },
+          {
+            path: 'events/add',
+            element: <CreateEventView/>
           },
           {
             path: 'events/:id',

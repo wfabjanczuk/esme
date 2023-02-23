@@ -8,13 +8,13 @@ import { styles } from '../../common/styles'
 import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 
 export const EditAgencyView = (): JSX.Element => {
-  const { agency, updateAgency, deleteAgency, errorMessages } = useAgency()
+  const { errorMessages, agency, updateAgency, removeAgency } = useAgency()
 
   const handleUpdate = (e: FormEvent<HTMLFormElement>): void => {
     void handleUpdateAsync(e, updateAgency)
   }
-  const handleDelete = (): void => {
-    void deleteAgency()
+  const handleRemove = (): void => {
+    void removeAgency()
   }
 
   return <Fragment>
@@ -30,10 +30,10 @@ export const EditAgencyView = (): JSX.Element => {
       }}>
         <Typography component='h2' variant='h5' sx={styles.header}>Edit agency</Typography>
         <AgencyForm
+          errorMessages={errorMessages}
           agency={agency}
           handleUpdate={handleUpdate}
-          handleDelete={handleDelete}
-          errorMessages={errorMessages}
+          handleRemove={handleRemove}
         />
       </Paper>
     </Box>

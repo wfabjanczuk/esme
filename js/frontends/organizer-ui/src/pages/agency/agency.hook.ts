@@ -11,7 +11,7 @@ const agencyUrl = `${config.organizerApiUrl}/agency`
 export interface AgencyHook {
   agency?: Agency
   updateAgency: (payload: Object) => Promise<void>
-  deleteAgency: () => Promise<void>
+  removeAgency: () => Promise<void>
   errorMessages: string[]
 }
 
@@ -36,7 +36,7 @@ export const useAgency = (): AgencyHook => {
   return {
     agency: agencyState.agency,
     updateAgency: async (payload) => await updateAgency(payload, authenticator, setAgencyState, alertStore),
-    deleteAgency: async () => await deleteAgency(authenticator, setAgencyState),
+    removeAgency: async () => await removeAgency(authenticator, setAgencyState),
     errorMessages: agencyState.errorMessages
   }
 }
@@ -86,7 +86,7 @@ const updateAgency = async (
     })
 }
 
-const deleteAgency = async (
+const removeAgency = async (
   authenticator: Authenticator,
   setAgencyState: Dispatch<SetStateAction<AgencyState>>
 ): Promise<void> => {

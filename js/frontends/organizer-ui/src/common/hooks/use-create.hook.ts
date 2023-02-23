@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction, useContext, useState } from 'react'
+import { Dispatch, FormEvent, SetStateAction, useContext, useState } from 'react'
 import { Authenticator, AuthenticatorContext } from '../authenticator/authenticator.context'
 import axios from 'axios'
 import { parseErrorMessage } from '../utils'
 
 export interface CreateHook {
   errorMessages: string[]
-  create: (payload: Object) => Promise<void>
+  create: (payload: FormEvent<HTMLFormElement>) => void
 }
 
 interface State {
@@ -19,19 +19,23 @@ export const useCreate = (baseUrl: string): CreateHook => {
     errorMessages: []
   })
 
-  return {
-    errorMessages: state.errorMessages,
-    create: async (payload: Object) => await create(baseUrl, payload, authenticator, setState)
+  const create = (e: FormEvent<HTMLFormElement>): void => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const payload = Object.fromEntries(formData)
+    void createAsync(baseUrl, payload, authenticator, setState)
   }
+
+  return { ...state, create }
 }
 
-const create = async <T> (
+const createAsync = async <T> (
   url: string,
   payload: Object,
   authenticator: Authenticator,
   setState: Dispatch<SetStateAction<State>>
 ): Promise<void> => {
-  return await axios.patch<T>(url, payload, { headers: { Authorization: authenticator.authorizationHeader } })
+  return await axios.post<T>(url, payload, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(({ data }) => {
       setState({
         errorMessages: []
