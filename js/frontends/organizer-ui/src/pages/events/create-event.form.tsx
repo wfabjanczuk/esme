@@ -55,6 +55,7 @@ export const CreateEventForm = (): JSX.Element => {
         inputProps={{ step: 'any' }}
         name='lat'
         label='latitude'
+        error={isError}
         sx={styles.formField}
       />
       <TextField
@@ -62,6 +63,7 @@ export const CreateEventForm = (): JSX.Element => {
         inputProps={{ step: 'any' }}
         name='lng'
         label='longitude'
+        error={isError}
         sx={styles.formField}
       />
       <FormErrors errorMessages={errorMessages}/>

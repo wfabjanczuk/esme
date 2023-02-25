@@ -9,41 +9,42 @@ import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-stor
 const agencyUrl = `${config.organizerApiUrl}/agency`
 
 export interface AgencyHook {
+  errorMessages: string[]
   agency?: Agency
   updateAgency: (payload: Object) => Promise<void>
   removeAgency: () => Promise<void>
-  errorMessages: string[]
 }
 
-interface AgencyState {
-  agency?: Agency
+interface State {
   errorMessages: string[]
+  agency?: Agency
 }
 
 export const useAgency = (): AgencyHook => {
   const authenticator = useContext(AuthenticatorContext)
-
   const alertStore = useContext(AlertStoreContext)
-  const [agencyState, setAgencyState] = useState<AgencyState>({
+
+  const [state, setState] = useState<State>({
     agency: undefined,
     errorMessages: []
   })
 
   useEffect(() => {
-    void fetchAgency(authenticator, setAgencyState)
+    void fetchAgency(setState, alertStore, authenticator)
   }, [authenticator])
 
   return {
-    agency: agencyState.agency,
-    updateAgency: async (payload) => await updateAgency(payload, authenticator, setAgencyState, alertStore),
-    removeAgency: async () => await removeAgency(authenticator, setAgencyState),
-    errorMessages: agencyState.errorMessages
+    errorMessages: state.errorMessages,
+    agency: state.agency,
+    updateAgency: async (payload) => await updateAgency(payload, setState, alertStore, authenticator),
+    removeAgency: async () => await removeAgency(setState, alertStore, authenticator)
   }
 }
 
 const fetchAgency = async (
-  authenticator: Authenticator,
-  setState: (state: AgencyState) => void
+  setState: Dispatch<SetStateAction<State>>,
+  alertStore: AlertStore,
+  authenticator: Authenticator
 ): Promise<void> => {
   return await axios.get<Agency>(agencyUrl, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(({ data }) => setState({
@@ -58,48 +59,54 @@ const fetchAgency = async (
         agency: undefined,
         errorMessages: parseErrorMessage(e?.response?.data?.message)
       })
+      alertStore.add('error', 'Could not fetch agency')
     })
 }
 
 const updateAgency = async (
   payload: Object,
-  authenticator: Authenticator,
-  setAgencyState: Dispatch<SetStateAction<AgencyState>>,
-  alertStore: AlertStore
+  setState: Dispatch<SetStateAction<State>>,
+  alertStore: AlertStore,
+  authenticator: Authenticator
 ): Promise<void> => {
   return await axios.patch<Agency>(agencyUrl, payload, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(({ data }) => {
-      alertStore.add('success', 'Agency successfully updated')
-      setAgencyState({
+      setState({
         agency: data,
         errorMessages: []
       })
+      alertStore.add('success', 'Agency updated successfully')
     })
     .catch(e => {
       if (authenticator.isAuthError(e)) {
         return
       }
-      setAgencyState((prevState) => ({
+      setState((prevState) => ({
         agency: prevState.agency,
         errorMessages: parseErrorMessage(e?.response?.data?.message)
       }))
+      alertStore.add('success', 'Could not update agency')
     })
 }
 
 const removeAgency = async (
-  authenticator: Authenticator,
-  setAgencyState: Dispatch<SetStateAction<AgencyState>>
+  setState: Dispatch<SetStateAction<State>>,
+  alertStore: AlertStore,
+  authenticator: Authenticator
 ): Promise<void> => {
   return await axios.delete<Agency>(agencyUrl, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(() => {
-      setAgencyState({
+      setState({
         agency: undefined,
         errorMessages: []
       })
       void authenticator.signOut()
     })
-    .catch(e => setAgencyState((prevState) => ({
-      agency: prevState.agency,
-      errorMessages: parseErrorMessage(e?.response?.data?.message)
-    })))
+    .catch(e => {
+      setState((prevState) => ({
+        agency: prevState.agency,
+        errorMessages: parseErrorMessage(e?.response?.data?.message)
+      }))
+      alertStore.add('error', 'Could not remove agency')
+    })
 }

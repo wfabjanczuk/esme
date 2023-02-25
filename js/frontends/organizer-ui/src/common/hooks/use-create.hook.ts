@@ -2,6 +2,8 @@ import { Dispatch, FormEvent, SetStateAction, useContext, useState } from 'react
 import { Authenticator, AuthenticatorContext } from '../authenticator/authenticator.context'
 import axios from 'axios'
 import { parseErrorMessage } from '../utils'
+import { AlertStore, AlertStoreContext } from '../alert-bar/alert-store.context'
+import { useNavigate } from 'react-router-dom'
 
 export interface CreateHook {
   errorMessages: string[]
@@ -12,9 +14,12 @@ interface State {
   errorMessages: string[]
 }
 
-export const useCreate = (baseUrl: string): CreateHook => {
+export const useCreate = (baseUrl: string, onCreateRedirectUrl: string): CreateHook => {
   const authenticator = useContext(AuthenticatorContext)
+  const alertStore = useContext(AlertStoreContext)
+  const navigate = useNavigate()
 
+  const onCreate = (): void => navigate(onCreateRedirectUrl)
   const [state, setState] = useState<State>({
     errorMessages: []
   })
@@ -23,30 +28,31 @@ export const useCreate = (baseUrl: string): CreateHook => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const payload = Object.fromEntries(formData)
-    void createAsync(baseUrl, payload, authenticator, setState)
+    void createAsync(baseUrl, payload, onCreate, setState, alertStore, authenticator)
   }
 
   return { ...state, create }
 }
 
-const createAsync = async <T> (
+const createAsync = async (
   url: string,
   payload: Object,
-  authenticator: Authenticator,
-  setState: Dispatch<SetStateAction<State>>
+  onCreate: () => void,
+  setState: Dispatch<SetStateAction<State>>,
+  alertStore: AlertStore,
+  authenticator: Authenticator
 ): Promise<void> => {
-  return await axios.post<T>(url, payload, { headers: { Authorization: authenticator.authorizationHeader } })
+  return await axios.post(url, payload, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(({ data }) => {
-      setState({
-        errorMessages: []
-      })
+      setState({ errorMessages: [] })
+      alertStore.add('success', 'Entity created successfully')
+      onCreate()
     })
     .catch(e => {
       if (authenticator.isAuthError(e)) {
         return
       }
-      setState({
-        errorMessages: parseErrorMessage(e?.response?.data?.message)
-      })
+      setState({ errorMessages: parseErrorMessage(e?.response?.data?.message) })
+      alertStore.add('error', 'Could not create entity')
     })
 }

@@ -4,13 +4,13 @@ import { config } from '../../app/config'
 import { ListHook, useList } from '../../common/hooks/use-list.hook'
 import { CreateHook, useCreate } from '../../common/hooks/use-create.hook'
 
-const eventsUrl = `${config.organizerApiUrl}/agency/events`
-const onDeleteRedirectUrl = '/events'
+const eventsApiUrl = `${config.organizerApiUrl}/agency/events`
+const eventsViewUrl = '/events'
 
-export const useCreateEvent = (): CreateHook => useCreate(eventsUrl)
+export const useCreateEvent = (): CreateHook => useCreate(eventsApiUrl, eventsViewUrl)
 
 export const useEditEvent = (id: number): EditHook<EsmeEvent> =>
-  useEdit<EsmeEvent>(id, eventsUrl, onDeleteRedirectUrl)
+  useEdit<EsmeEvent>(id, eventsApiUrl, eventsViewUrl)
 
 export const useEventsList = (): ListHook<EsmeEvent> =>
-  useList<EsmeEvent>(eventsUrl)
+  useList<EsmeEvent>(eventsApiUrl)
