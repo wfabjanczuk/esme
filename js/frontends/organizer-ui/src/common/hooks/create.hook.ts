@@ -43,7 +43,7 @@ const createAsync = async (
   authenticator: Authenticator
 ): Promise<void> => {
   return await axios.post(url, payload, { headers: { Authorization: authenticator.authorizationHeader } })
-    .then(({ data }) => {
+    .then(() => {
       setState({ errorMessages: [] })
       alertStore.add('success', 'Entity created successfully')
       onCreate()

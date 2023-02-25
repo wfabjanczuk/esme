@@ -8,6 +8,7 @@ import { SupportView } from '../pages/support/support.view'
 import { EventsView } from '../pages/events/events.view'
 import { EditEventView } from '../pages/events/edit-event.view'
 import { CreateEventView } from '../pages/events/create-event.view'
+import { UsersView } from '../pages/users/users.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -24,7 +25,7 @@ export const RouterInternal = createBrowserRouter([
           },
           {
             path: 'users',
-            element: <PlaceholderView text={'Users'}/>
+            element: <UsersView/>
           },
           {
             path: 'events',
