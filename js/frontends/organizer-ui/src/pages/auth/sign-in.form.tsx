@@ -1,20 +1,17 @@
 import { Box, Button, TextField } from '@mui/material'
-import React, { FormEvent } from 'react'
+import React from 'react'
 import { FormErrors } from '../../common/form-errors.component'
 import { styles } from '../../common/styles'
 import { ButtonGroup } from '../../common/button-group.component'
 import { Link } from 'react-router-dom'
 import { Login, PersonAdd } from '@mui/icons-material'
+import { useSignIn } from './sign-in.hook'
 
-interface SignInFormProps {
-  handleSubmit: (e: FormEvent<HTMLFormElement>) => void
-  errorMessages: string[]
-}
-
-export const SignInForm = ({ handleSubmit, errorMessages }: SignInFormProps): JSX.Element => {
+export const SignInForm = (): JSX.Element => {
+  const { signIn, errorMessages } = useSignIn()
   const isError = errorMessages.length > 0
 
-  return <form onSubmit={handleSubmit}>
+  return <form onSubmit={signIn}>
     <Box sx={styles.form}>
       <TextField
         name='email'

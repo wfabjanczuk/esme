@@ -4,7 +4,7 @@ import { FormErrors } from '../../common/form-errors.component'
 import { DeleteForever, Save } from '@mui/icons-material'
 import React from 'react'
 import { utcdayjs } from '../../common/utils'
-import { useEditEvent } from './hooks'
+import { useEditEvent } from './event.entity'
 
 interface EditEventFormProps {
   id: number

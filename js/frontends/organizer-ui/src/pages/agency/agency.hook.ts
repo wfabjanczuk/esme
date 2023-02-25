@@ -1,18 +1,18 @@
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
+import { Dispatch, FormEvent, SetStateAction, useContext, useEffect, useState } from 'react'
 import { Authenticator, AuthenticatorContext } from '../../common/authenticator/authenticator.context'
 import axios from 'axios'
 import { config } from '../../app/config'
-import { Agency } from './agency'
+import { Agency } from './agency.entity'
 import { parseErrorMessage } from '../../common/utils'
 import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-store.context'
 
 const agencyUrl = `${config.organizerApiUrl}/agency`
 
-export interface AgencyHook {
+interface AgencyHook {
   errorMessages: string[]
   agency?: Agency
-  updateAgency: (payload: Object) => Promise<void>
-  removeAgency: () => Promise<void>
+  update: (e: FormEvent<HTMLFormElement>) => void
+  remove: () => void
 }
 
 interface State {
@@ -33,11 +33,22 @@ export const useAgency = (): AgencyHook => {
     void fetchAgency(setState, alertStore, authenticator)
   }, [authenticator])
 
+  const update = (e: FormEvent<HTMLFormElement>): void => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const payload = Object.fromEntries(formData)
+    void updateAsync(payload, setState, alertStore, authenticator)
+  }
+
+  const remove = (): void => {
+    void removeAsync(setState, alertStore, authenticator)
+  }
+
   return {
     errorMessages: state.errorMessages,
     agency: state.agency,
-    updateAgency: async (payload) => await updateAgency(payload, setState, alertStore, authenticator),
-    removeAgency: async () => await removeAgency(setState, alertStore, authenticator)
+    update,
+    remove
   }
 }
 
@@ -63,7 +74,7 @@ const fetchAgency = async (
     })
 }
 
-const updateAgency = async (
+const updateAsync = async (
   payload: Object,
   setState: Dispatch<SetStateAction<State>>,
   alertStore: AlertStore,
@@ -89,7 +100,7 @@ const updateAgency = async (
     })
 }
 
-const removeAgency = async (
+const removeAsync = async (
   setState: Dispatch<SetStateAction<State>>,
   alertStore: AlertStore,
   authenticator: Authenticator

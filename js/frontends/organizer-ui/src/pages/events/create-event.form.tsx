@@ -3,13 +3,10 @@ import { styles } from '../../common/styles'
 import { FormErrors } from '../../common/form-errors.component'
 import { Add } from '@mui/icons-material'
 import React from 'react'
-import { useCreateEvent } from './hooks'
+import { useCreateEvent } from './event.entity'
 
 export const CreateEventForm = (): JSX.Element => {
-  const {
-    errorMessages,
-    create
-  } = useCreateEvent()
+  const { errorMessages, create } = useCreateEvent()
   const isError = errorMessages.length > 0
 
   return <form onSubmit={create}>

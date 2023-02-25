@@ -1,20 +1,17 @@
-import React, { FormEvent } from 'react'
+import React from 'react'
 import { styles } from '../../common/styles'
 import { Box, Button, TextField, Typography } from '@mui/material'
 import { FormErrors } from '../../common/form-errors.component'
 import { ButtonGroup } from '../../common/button-group.component'
 import { Link } from 'react-router-dom'
 import { Close, PersonAdd } from '@mui/icons-material'
+import { useSignUp } from './sign-up.hook'
 
-interface SignUpFormProps {
-  handleSubmit: (e: FormEvent<HTMLFormElement>) => void
-  errorMessages: string[]
-}
-
-export const SignUpForm = ({ handleSubmit, errorMessages }: SignUpFormProps): JSX.Element => {
+export const SignUpForm = (): JSX.Element => {
+  const { signUp, errorMessages } = useSignUp()
   const isError = errorMessages.length > 0
 
-  return <form onSubmit={handleSubmit}>
+  return <form onSubmit={signUp}>
     <Box style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '30px' }}>
       <Box sx={{ maxWidth: '420px', flexGrow: 1 }}>
         <Typography>new agency:</Typography>

@@ -1,10 +1,9 @@
 import { Dispatch, FormEvent, SetStateAction, useContext, useEffect, useState } from 'react'
 import { Authenticator, AuthenticatorContext } from '../authenticator/authenticator.context'
-import axios from 'axios'
 import { parseErrorMessage } from '../utils'
-import { Agency } from '../../pages/agency/agency'
 import { useNavigate } from 'react-router-dom'
 import { AlertStore, AlertStoreContext } from '../alert-bar/alert-store.context'
+import axios from 'axios'
 
 export interface EditHook<T> {
   errorMessages: string[]
@@ -46,7 +45,11 @@ export const useEdit = <T> (id: number, baseUrl: string, onDeleteRedirectUrl: st
     void removeAsync(url, onDelete, authenticator, setState, alertStore)
   }
 
-  return { ...state, update, remove }
+  return {
+    ...state,
+    update,
+    remove
+  }
 }
 
 const fetchAsync = async <T> (
@@ -106,7 +109,7 @@ const removeAsync = async <T> (
   setState: Dispatch<SetStateAction<State<T>>>,
   alertStore: AlertStore
 ): Promise<void> => {
-  return await axios.delete<Agency>(url, { headers: { Authorization: authenticator.authorizationHeader } })
+  return await axios.delete<T>(url, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(() => {
       setState({
         entity: undefined,

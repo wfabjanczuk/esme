@@ -10,7 +10,7 @@ import { Add, Edit } from '@mui/icons-material'
 import { NavLink } from 'react-router-dom'
 import { GridRowId } from '@mui/x-data-grid/models/gridRows'
 import { GridValueGetterParams } from '@mui/x-data-grid/models/params/gridCellParams'
-import { useEventsList } from './hooks'
+import { useEventsList } from './event.entity'
 import { utcdayjs } from '../../common/utils'
 
 const linkStyle = {

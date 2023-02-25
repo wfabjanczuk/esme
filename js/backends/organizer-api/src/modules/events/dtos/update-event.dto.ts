@@ -3,6 +3,7 @@ import {
   IsDateString,
   IsLatitude,
   IsLongitude,
+  IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
@@ -10,18 +11,21 @@ import {
 
 export class UpdateEventDto {
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
   @MaxLength(200)
   @ApiProperty({ example: 'Rap Concert' })
   name: string;
 
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
   @MaxLength(2000)
   @ApiProperty({ example: 'Annual music event' })
   description: string;
 
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
   @MaxLength(400)
   @ApiProperty({ example: 'Concert Street 1, Warsaw 01-234, Poland' })
