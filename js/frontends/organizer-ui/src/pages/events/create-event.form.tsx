@@ -1,5 +1,5 @@
 import { Box, Button, TextField } from '@mui/material'
-import { styles } from '../../common/styles'
+import { styles } from '../../layout/styles'
 import { FormErrors } from '../../common/form-errors.component'
 import { Add } from '@mui/icons-material'
 import React from 'react'
@@ -10,25 +10,25 @@ export const CreateEventForm = (): JSX.Element => {
   const isError = errorMessages.length > 0
 
   return <form onSubmit={create}>
-    <Box sx={styles.form}>
+    <Box sx={styles.forms.component}>
       <TextField
         name='name'
         label='name'
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
       />
       <TextField
         name='description'
         label='description'
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
         multiline
       />
       <TextField
         name='address'
         label='address'
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
         multiline
       />
       <TextField
@@ -36,7 +36,7 @@ export const CreateEventForm = (): JSX.Element => {
         name='timeStart'
         label='start time'
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
         InputLabelProps={{ shrink: true }}
       />
       <TextField
@@ -44,7 +44,7 @@ export const CreateEventForm = (): JSX.Element => {
         name='timeEnd'
         label='end time'
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
         InputLabelProps={{ shrink: true }}
       />
       <TextField
@@ -53,7 +53,7 @@ export const CreateEventForm = (): JSX.Element => {
         name='lat'
         label='latitude'
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
       />
       <TextField
         type='number'
@@ -61,7 +61,7 @@ export const CreateEventForm = (): JSX.Element => {
         name='lng'
         label='longitude'
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
       />
       <FormErrors errorMessages={errorMessages}/>
       <Button type='submit' variant='contained' color='success' sx={{ width: '200px', my: 2 }}

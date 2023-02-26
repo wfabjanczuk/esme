@@ -1,5 +1,5 @@
 import { Box, Button, TextField } from '@mui/material'
-import { styles } from '../../common/styles'
+import { styles } from '../../layout/styles'
 import { FormErrors } from '../../common/form-errors.component'
 import { DeleteForever, Save } from '@mui/icons-material'
 import React from 'react'
@@ -19,13 +19,13 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
   }
 
   return <form onSubmit={update}>
-    <Box sx={styles.form}>
+    <Box sx={styles.forms.component}>
       <TextField
         type='number'
         name='id'
         label='id'
         defaultValue={entity.id}
-        sx={styles.formField}
+        sx={styles.forms.field}
         disabled
       />
       <TextField
@@ -33,14 +33,14 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         label='name'
         defaultValue={entity.name}
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
       />
       <TextField
         name='description'
         label='description'
         defaultValue={entity.description}
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
         multiline
       />
       <TextField
@@ -48,7 +48,7 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         label='address'
         defaultValue={entity.address}
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
         multiline
       />
       <TextField
@@ -57,7 +57,7 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         label='start time'
         defaultValue={utcdayjs(entity.timeStart).format('YYYY-MM-DDTHH:mm')}
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
         InputLabelProps={{ shrink: true }}
       />
       <TextField
@@ -66,7 +66,7 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         label='end time'
         defaultValue={utcdayjs(entity.timeEnd).format('YYYY-MM-DDTHH:mm')}
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
         InputLabelProps={{ shrink: true }}
       />
       <TextField
@@ -75,7 +75,7 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         name='lat'
         label='latitude'
         defaultValue={entity.lat}
-        sx={styles.formField}
+        sx={styles.forms.field}
       />
       <TextField
         type='number'
@@ -83,19 +83,19 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         name='lng'
         label='longitude'
         defaultValue={entity.lng}
-        sx={styles.formField}
+        sx={styles.forms.field}
       />
       <FormErrors errorMessages={errorMessages}/>
       <Box style={{
         display: 'flex',
         gap: 40
       }}>
-        <Button type='submit' variant='contained' color='success' sx={styles.buttonGroupElement}
+        <Button type='submit' variant='contained' color='success' sx={styles.buttons.groupElement}
           startIcon={<Save/>}
         >
           Save
         </Button>
-        <Button type='button' variant='contained' color='error' sx={styles.buttonGroupElement}
+        <Button type='button' variant='contained' color='error' sx={styles.buttons.groupElement}
           onClick={remove}
           startIcon={<DeleteForever/>}>
           Delete

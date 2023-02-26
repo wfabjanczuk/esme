@@ -1,8 +1,7 @@
 import React from 'react'
 import { useRouteError } from 'react-router-dom'
 import { Alert, Box } from '@mui/material'
-import Paper from '@mui/material/Paper'
-import { styles } from '../common/styles'
+import { styles } from '../layout/styles'
 
 interface RouteError {
   statusText?: string
@@ -12,14 +11,11 @@ interface RouteError {
 export const ErrorView = (): JSX.Element => {
   const error = useRouteError() as RouteError
 
-  return (<Box style={styles.root}>
-    <Box component='main' sx={{ flex: 1, py: 6, px: 4, backgroundColor: '#eaeff1' }}>
-      <Paper sx={{ maxWidth: 936, margin: 'auto', overflow: 'hidden', display: 'flex', flexDirection: 'row' }}
-        elevation={0}>
-        <Alert variant='filled' severity='error' sx={{ width: '100%' }}>
-          {getDisplayMessage(error)}
-        </Alert>
-      </Paper>
+  return (<Box style={styles.layout.root}>
+    <Box component='main' sx={styles.layout.content}>
+      <Alert variant='filled' severity='error' sx={styles.layout.fullWidth}>
+        {getDisplayMessage(error)}
+      </Alert>
     </Box>
   </Box>
   )

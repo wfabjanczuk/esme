@@ -1,13 +1,12 @@
 import React, { Fragment } from 'react'
-import { NavLink, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { EditEventForm } from './edit-event.form'
 import Header from '../../layout/header'
 import { AlertBar } from '../../common/alert-bar/alert-bar.component'
-import { Box, Typography } from '@mui/material'
-import { styles } from '../../common/styles'
+import { Box } from '@mui/material'
+import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
-import Button from '@mui/material/Button'
-import { ArrowBack } from '@mui/icons-material'
+import { EditCardTitle } from '../../common/edit-card-title.component'
 
 export const EditEventView = (): JSX.Element => {
   const { id: idFromRoute } = useParams()
@@ -15,12 +14,8 @@ export const EditEventView = (): JSX.Element => {
 
   return <Fragment>
     <Header title='Event'/>
-    <Box component='main' sx={{
-      flex: 1,
-      py: 2,
-      px: 4,
-      backgroundColor: '#eaeff1'
-    }}>
+    <Box component='main' sx={styles.layout.content}>
+      <AlertBar size='medium'/>
       {id !== undefined
         ? <EditEventCard id={id}/>
         : <></>
@@ -29,42 +24,13 @@ export const EditEventView = (): JSX.Element => {
   </Fragment>
 }
 
-const linkStyle = {
-  color: 'inherit',
-  textDecoration: 'inherit'
-}
-
 interface EditEventCardProps {
   id: number
 }
 
 const EditEventCard = ({ id }: EditEventCardProps): JSX.Element => {
-  return <Box component='main' sx={{
-    flex: 1,
-    py: 2,
-    px: 4,
-    backgroundColor: '#eaeff1'
-  }}>
-    <AlertBar maxWidth='936px'/>
-    <Paper sx={{
-      maxWidth: '936px',
-      margin: 'auto',
-      px: 4,
-      py: 2
-    }}>
-      <Typography component='h2' variant='h5' sx={{
-        ...styles.header,
-        display: 'flex',
-        justifyContent: 'space-between'
-      }}>
-        Edit event
-        <NavLink to={'/events/'} style={linkStyle}>
-          <Button variant='contained' color='primary' startIcon={<ArrowBack/>}>
-            Go to events list
-          </Button>
-        </NavLink>
-      </Typography>
-      <EditEventForm id={id}/>
-    </Paper>
-  </Box>
+  return <Paper sx={styles.layout.cardMedium}>
+    <EditCardTitle action='Edit' entityName='event' listUrl='/events'/>
+    <EditEventForm id={id}/>
+  </Paper>
 }

@@ -18,12 +18,7 @@ import CellTowerIcon from '@mui/icons-material/CellTower'
 import { NavLink, useLocation } from 'react-router-dom'
 import { AuthenticatorContext } from '../common/authenticator/authenticator.context'
 import { useContext } from 'react'
-
-const linkStyle = {
-  color: 'inherit',
-  textDecoration: 'inherit',
-  width: '100%'
-}
+import { styles } from './styles'
 
 const categories = [
   {
@@ -100,7 +95,7 @@ export default function Menu (props: DrawerProps): JSX.Element {
             </ListItem>
             {children.map(({ id: childId, icon, url }) => (
               <ListItem disablePadding key={childId}>
-                <NavLink to={url} style={linkStyle}>
+                <NavLink to={url} style={styles.links.componentFull}>
                   <ListItemButton selected={location.pathname === url} sx={item}>
                     <ListItemIcon>{icon}</ListItemIcon>
                     <ListItemText>{childId}</ListItemText>
@@ -126,7 +121,7 @@ const AccountCategory = (): JSX.Element => {
       <ListItemText sx={{ color: '#fff' }}>Account</ListItemText>
     </ListItem>
     <ListItem disablePadding>
-      <NavLink to={'/profile'} style={linkStyle} >
+      <NavLink to={'/profile'} style={styles.links.componentFull} >
         <ListItemButton selected={location.pathname === '/profile'} sx={item}>
           <ListItemIcon><AccountCircleOutlinedIcon/></ListItemIcon>
           <ListItemText>Profile</ListItemText>

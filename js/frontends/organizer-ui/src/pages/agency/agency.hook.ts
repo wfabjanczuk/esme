@@ -96,7 +96,7 @@ const updateAsync = async (
         agency: prevState.agency,
         errorMessages: parseErrorMessage(e?.response?.data?.message)
       }))
-      alertStore.add('success', 'Could not update agency')
+      alertStore.add('error', 'Could not update agency')
     })
 }
 

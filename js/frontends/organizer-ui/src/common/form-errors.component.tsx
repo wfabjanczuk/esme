@@ -1,6 +1,6 @@
 import { Alert, Typography } from '@mui/material'
 import React from 'react'
-import { styles } from './styles'
+import { styles } from '../layout/styles'
 
 interface FormErrorsProps {
   errorMessages: string[]
@@ -11,7 +11,7 @@ export const FormErrors = ({ errorMessages }: FormErrorsProps): JSX.Element => {
     return <></>
   }
 
-  return <Alert severity='error' icon={false} sx={styles.formAlert}>
+  return <Alert severity='error' icon={false} sx={styles.forms.error}>
     {errorMessages.map((m, i) => (
       <Typography key={i} component='div' variant='caption'>{m}</Typography>
     ))}

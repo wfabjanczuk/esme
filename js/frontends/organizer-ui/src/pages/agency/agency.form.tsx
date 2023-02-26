@@ -1,9 +1,10 @@
 import React from 'react'
 import { Box, Button, TextField } from '@mui/material'
 import { FormErrors } from '../../common/form-errors.component'
-import { styles } from '../../common/styles'
+import { styles } from '../../layout/styles'
 import { DeleteForever, Save } from '@mui/icons-material'
 import { useAgency } from './agency.hook'
+import { ButtonGroup } from '../../common/button-group.component'
 
 export const AgencyForm = (): JSX.Element => {
   const { errorMessages, agency, update, remove } = useAgency()
@@ -14,13 +15,13 @@ export const AgencyForm = (): JSX.Element => {
   }
 
   return <form onSubmit={update}>
-    <Box sx={styles.form}>
+    <Box sx={styles.forms.component}>
       <TextField
         type='number'
         name='id'
         label='id'
         defaultValue={agency.id}
-        sx={styles.formField}
+        sx={styles.forms.field}
         disabled
       />
       <TextField
@@ -28,42 +29,39 @@ export const AgencyForm = (): JSX.Element => {
         label='name'
         defaultValue={agency.name}
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
       />
       <TextField
         name='address'
         label='address'
         defaultValue={agency.address}
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
       />
       <TextField
         name='website'
         label='website'
         defaultValue={agency.website}
         error={isError}
-        sx={styles.formField}
+        sx={styles.forms.field}
       />
       <TextField
         name='approved'
         label='approved'
         defaultValue={agency.approved ? 'true' : 'false'}
-        sx={styles.formField}
+        sx={styles.forms.field}
         disabled
       />
       <FormErrors errorMessages={errorMessages}/>
-      <Box style={{
-        display: 'flex',
-        gap: 40
-      }}>
-        <Button type='submit' variant='contained' color='success' sx={styles.buttonGroupElement} startIcon={<Save/>}>
+      <ButtonGroup>
+        <Button type='submit' variant='contained' color='success' sx={styles.buttons.groupElement} startIcon={<Save/>}>
           Save
         </Button>
-        <Button type='button' onClick={remove} variant='contained' color='error' sx={styles.buttonGroupElement}
+        <Button type='button' onClick={remove} variant='contained' color='error' sx={styles.buttons.groupElement}
           startIcon={<DeleteForever/>}>
           Delete
         </Button>
-      </Box>
+      </ButtonGroup>
     </Box>
   </form>
 }

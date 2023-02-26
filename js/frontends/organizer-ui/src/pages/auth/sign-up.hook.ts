@@ -54,7 +54,7 @@ const signUpAsync = async (
 ): Promise<void> => {
   await axios.post<Agency>(signUpUrl, payload)
     .then(() => {
-      alertStore.add('success', 'Agency successfully created')
+      alertStore.add('success', 'Agency created successfully')
       onSignUp()
     })
     .catch(e => {
