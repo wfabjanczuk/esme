@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsEnum,
+  IsNotEmpty,
   IsPhoneNumber,
   IsString,
   MaxLength,
@@ -9,6 +10,7 @@ import {
 } from 'class-validator';
 import { Match } from '../../../common/decorators/match.decorator';
 import { UserRole } from '../user-role.enum';
+import { Transform } from 'class-transformer';
 
 export class CreateAgencyUserDto {
   @IsEmail()
@@ -27,11 +29,13 @@ export class CreateAgencyUserDto {
   confirmPassword: string;
 
   @IsString()
+  @IsNotEmpty()
   @MaxLength(100)
   @ApiProperty({ example: 'Jan' })
   firstName: string;
 
   @IsString()
+  @IsNotEmpty()
   @MaxLength(100)
   @ApiProperty({ example: 'Kowalski' })
   lastName: string;
@@ -42,6 +46,7 @@ export class CreateAgencyUserDto {
   phoneNumber: string;
 
   @IsEnum(UserRole)
+  @Transform(({ value }) => parseInt(value, 10))
   @ApiProperty({ example: UserRole.agencyOwner })
   role: UserRole;
 }

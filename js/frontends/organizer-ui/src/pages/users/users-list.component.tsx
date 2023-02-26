@@ -6,13 +6,13 @@ import { EditTableRowButton } from '../../common/edit-table-row-button.component
 import { styles } from '../../layout/styles'
 import { Box } from '@mui/material'
 
+const parseRole = ({ row: { role } }: { row: User }): string => UserRoleLabels[role]
 const parseFullName = ({
   row: {
     firstName,
     lastName
   }
 }: { row: User }): string => `${firstName} ${lastName}`
-const parseRole = ({ row: { role } }: { row: User }): string => UserRoleLabels[role]
 
 const columns: Array<GridColDef | GridActionsColDef> = [
   {

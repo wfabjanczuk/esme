@@ -9,6 +9,8 @@ import { EventsView } from '../pages/events/events.view'
 import { EditEventView } from '../pages/events/edit-event.view'
 import { CreateEventView } from '../pages/events/create-event.view'
 import { UsersView } from '../pages/users/users.view'
+import { CreateUserView } from '../pages/users/create-user.view'
+import { EditUserView } from '../pages/users/edit-user.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -26,6 +28,14 @@ export const RouterInternal = createBrowserRouter([
           {
             path: 'users',
             element: <UsersView/>
+          },
+          {
+            path: 'users/add',
+            element: <CreateUserView/>
+          },
+          {
+            path: 'users/:id',
+            element: <EditUserView/>
           },
           {
             path: 'events',

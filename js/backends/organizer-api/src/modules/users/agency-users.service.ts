@@ -43,7 +43,11 @@ export class AgencyUsersService {
     if (existingUser) {
       throw new BadRequestException('Email is already taken');
     }
-    const user = this.repo.create(props);
+    const user = this.repo.create({
+      ...props,
+      timeCreated: new Date(),
+      timeSignOut: new Date(),
+    });
     validateRole('create', user, createdBy);
 
     user.agencyId = createdBy.agencyId;

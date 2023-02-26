@@ -86,10 +86,7 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         sx={styles.forms.field}
       />
       <FormErrors errorMessages={errorMessages}/>
-      <Box style={{
-        display: 'flex',
-        gap: 40
-      }}>
+      <Box style={styles.buttons.group}>
         <Button type='submit' variant='contained' color='success' sx={styles.buttons.groupElement}
           startIcon={<Save/>}
         >
