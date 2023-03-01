@@ -5,7 +5,7 @@ import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
 import { styles } from '../../layout/styles'
 import { CreateEventForm } from './create-event.form'
-import { EditCardTitle } from '../../common/edit-card-title.component'
+import { CardTitle } from '../../common/card-title.component'
 
 export const CreateEventView = (): JSX.Element => {
   return <Fragment>
@@ -13,7 +13,7 @@ export const CreateEventView = (): JSX.Element => {
     <Box component='main' sx={styles.layout.content}>
       <AlertBar size='medium'/>
       <Paper sx={styles.layout.cardMedium}>
-        <EditCardTitle action='Add' entityName='event' listUrl='/events'/>
+        <CardTitle title='Add event' entityName='event' listUrl='/events'/>
         <CreateEventForm/>
       </Paper>
     </Box>

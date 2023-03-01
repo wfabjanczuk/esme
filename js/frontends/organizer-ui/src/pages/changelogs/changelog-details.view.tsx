@@ -6,27 +6,35 @@ import { Box } from '@mui/material'
 import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
 import { CardTitle } from '../../common/card-title.component'
-import { EditUserForm } from './edit-user.form'
+import { JsonViewer } from '@textea/json-viewer'
+import { useChangelog } from './changelog.entity'
 
-export const EditUserView = (): JSX.Element => {
+export const ChangelogDetailsView = (): JSX.Element => {
   const { id: idFromRoute } = useParams()
   const id = idFromRoute === undefined ? undefined : parseInt(idFromRoute, 10)
 
   return <Fragment>
-    <Header title='User'/>
+    <Header title='Event'/>
     <Box component='main' sx={styles.layout.content}>
       <AlertBar size='medium'/>
       {id !== undefined
-        ? <EditUserCard id={id}/>
+        ? <ChangelogDetailsCard id={id}/>
         : <></>
       }
     </Box>
   </Fragment>
 }
 
-const EditUserCard = ({ id }: { id: number }): JSX.Element => {
+const ChangelogDetailsCard = ({ id }: { id: number }): JSX.Element => {
+  const { errorMessages, entity } = useChangelog(id)
+  console.log(errorMessages)
+
+  if (entity === undefined) {
+    return <></>
+  }
+
   return <Paper sx={styles.layout.cardMedium}>
-    <CardTitle title='Edit user' entityName='user' listUrl='/users'/>
-    <EditUserForm id={id}/>
+    <CardTitle title='Changelog details' entityName='changelog' listUrl='/changelogs'/>
+    <JsonViewer value={entity.valueAfter}/>
   </Paper>
 }

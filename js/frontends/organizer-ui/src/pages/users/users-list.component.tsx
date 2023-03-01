@@ -2,9 +2,10 @@ import React from 'react'
 import { User, UserRoleLabels, useUsersList } from './user.entity'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { GridActionsColDef } from '@mui/x-data-grid/models/colDef/gridColDef'
-import { EditTableRowButton } from '../../common/edit-table-row-button.component'
+import { TableRowLinkButton } from '../../common/table-row-link-button.component'
 import { styles } from '../../layout/styles'
 import { Box } from '@mui/material'
+import { Edit } from '@mui/icons-material'
 
 const parseRole = ({ row: { role } }: { row: User }): string => UserRoleLabels[role]
 const parseFullName = ({
@@ -50,7 +51,11 @@ const columns: Array<GridColDef | GridActionsColDef> = [
     headerName: 'Actions',
     field: 'actions',
     type: 'actions',
-    renderCell: ({ id }: GridRenderCellParams) => <EditTableRowButton editUrl={`/users/${id}`}/>
+    renderCell: ({ id }: GridRenderCellParams) => <TableRowLinkButton
+      label='Edit'
+      url={`/users/${id}`}
+      icon={<Edit/>}
+    />
   }
 ]
 

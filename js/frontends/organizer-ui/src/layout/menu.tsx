@@ -45,9 +45,9 @@ const categories = [
         url: '/issues'
       },
       {
-        id: 'Logs',
+        id: 'Changelogs',
         icon: <HistoryOutlinedIcon/>,
-        url: '/logs'
+        url: '/changelogs'
       }
     ]
   },

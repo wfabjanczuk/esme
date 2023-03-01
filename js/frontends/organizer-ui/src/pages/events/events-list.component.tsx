@@ -2,13 +2,11 @@ import { styles } from '../../layout/styles'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import React from 'react'
 import { useEventsList } from './event.entity'
-import { GridValueGetterParams } from '@mui/x-data-grid/models/params/gridCellParams'
-import { utcdayjs } from '../../common/utils'
+import { parseDateTimeColumn } from '../../common/utils'
 import { GridActionsColDef } from '@mui/x-data-grid/models/colDef/gridColDef'
-import { EditTableRowButton } from '../../common/edit-table-row-button.component'
+import { TableRowLinkButton } from '../../common/table-row-link-button.component'
 import { Box } from '@mui/material'
-
-const parseDate = ({ value }: GridValueGetterParams<string>): string => utcdayjs(value).format('YYYY-MM-DD HH:mm')
+import { Edit } from '@mui/icons-material'
 
 const columns: Array<GridColDef | GridActionsColDef> = [
   {
@@ -31,20 +29,24 @@ const columns: Array<GridColDef | GridActionsColDef> = [
   {
     field: 'timeStart',
     headerName: 'Time start',
-    valueGetter: parseDate,
+    valueGetter: parseDateTimeColumn,
     width: 150
   },
   {
     field: 'timeEnd',
     headerName: 'Time end',
-    valueGetter: parseDate,
+    valueGetter: parseDateTimeColumn,
     width: 150
   },
   {
     headerName: 'Actions',
     field: 'actions',
     type: 'actions',
-    renderCell: ({ id }: GridRenderCellParams) => <EditTableRowButton editUrl={`/events/${id}`}/>
+    renderCell: ({ id }: GridRenderCellParams) => <TableRowLinkButton
+      label='Edit'
+      url={`/events/${id}`}
+      icon={<Edit/>}
+    />
   }
 ]
 

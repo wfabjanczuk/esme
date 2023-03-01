@@ -6,7 +6,7 @@ import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import { Box } from '@mui/material'
 import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
-import { EditCardTitle } from '../../common/edit-card-title.component'
+import { CardTitle } from '../../common/card-title.component'
 
 export const EditEventView = (): JSX.Element => {
   const { id: idFromRoute } = useParams()
@@ -26,7 +26,7 @@ export const EditEventView = (): JSX.Element => {
 
 const EditEventCard = ({ id }: { id: number }): JSX.Element => {
   return <Paper sx={styles.layout.cardMedium}>
-    <EditCardTitle action='Edit' entityName='event' listUrl='/events'/>
+    <CardTitle title='Edit event' entityName='event' listUrl='/events'/>
     <EditEventForm id={id}/>
   </Paper>
 }

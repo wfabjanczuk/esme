@@ -3,7 +3,7 @@ import { styles } from '../../layout/styles'
 import { FormErrors } from '../../common/form-errors.component'
 import { DeleteForever, Save } from '@mui/icons-material'
 import React from 'react'
-import { utcdayjs } from '../../common/utils'
+import { parseDateTimeValue } from '../../common/utils'
 import { useEditEvent } from './event.entity'
 
 interface EditEventFormProps {
@@ -55,7 +55,7 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         type='datetime-local'
         name='timeStart'
         label='start time'
-        defaultValue={utcdayjs(entity.timeStart).format('YYYY-MM-DDTHH:mm')}
+        defaultValue={parseDateTimeValue(entity.timeStart)}
         error={isError}
         sx={styles.forms.field}
         InputLabelProps={{ shrink: true }}
@@ -64,7 +64,7 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         type='datetime-local'
         name='timeEnd'
         label='end time'
-        defaultValue={utcdayjs(entity.timeEnd).format('YYYY-MM-DDTHH:mm')}
+        defaultValue={parseDateTimeValue(entity.timeEnd)}
         error={isError}
         sx={styles.forms.field}
         InputLabelProps={{ shrink: true }}

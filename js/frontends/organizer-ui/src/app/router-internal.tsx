@@ -11,6 +11,8 @@ import { CreateEventView } from '../pages/events/create-event.view'
 import { UsersView } from '../pages/users/users.view'
 import { CreateUserView } from '../pages/users/create-user.view'
 import { EditUserView } from '../pages/users/edit-user.view'
+import { ChangelogsView } from '../pages/changelogs/changelogs.view'
+import { ChangelogDetailsView } from '../pages/changelogs/changelog-details.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -54,12 +56,12 @@ export const RouterInternal = createBrowserRouter([
             element: <PlaceholderView text={'Issues'}/>
           },
           {
-            path: 'logs',
-            element: <PlaceholderView text={'Logs'}/>
+            path: 'changelogs',
+            element: <ChangelogsView/>
           },
           {
-            path: 'logs',
-            element: <PlaceholderView text={'Logs'}/>
+            path: 'changelogs/:id',
+            element: <ChangelogDetailsView/>
           },
           {
             path: 'support',
