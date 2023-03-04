@@ -26,7 +26,7 @@ export const EditUserView = (): JSX.Element => {
 
 const EditUserCard = ({ id }: { id: number }): JSX.Element => {
   return <Paper sx={styles.layout.cardMedium}>
-    <CardTitle title='Edit user' entityName='user' listUrl='/users'/>
+    <CardTitle title='Edit user' redirectLabel='Go to users list' redirectUrl='/users'/>
     <EditUserForm id={id}/>
   </Paper>
 }

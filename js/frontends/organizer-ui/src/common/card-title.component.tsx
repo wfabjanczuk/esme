@@ -7,17 +7,20 @@ import React from 'react'
 
 interface CardTitleProps {
   title: string
-  entityName: string
-  listUrl: string
+  redirectUrl?: string
+  redirectLabel?: string
 }
 
-export const CardTitle = ({ title, entityName, listUrl }: CardTitleProps): JSX.Element => {
+export const CardTitle = ({ title, redirectLabel, redirectUrl }: CardTitleProps): JSX.Element => {
   return <Typography component='h2' variant='h5' sx={styles.layout.editCardTitle}>
     {title}
-    <NavLink to={listUrl} style={styles.links.component}>
-      <Button variant='contained' color='primary' startIcon={<ArrowBack/>}>
-        Go to {entityName}s list
-      </Button>
-    </NavLink>
+    {redirectUrl === undefined
+      ? <></>
+      : <NavLink to={redirectUrl} style={styles.links.component}>
+        <Button variant='contained' color='primary' startIcon={<ArrowBack/>}>
+          {redirectLabel}
+        </Button>
+      </NavLink>
+    }
   </Typography>
 }

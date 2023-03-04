@@ -3,7 +3,7 @@ const card = {
   margin: 'auto',
   px: 4,
   py: 2,
-  mb: 2
+  mb: 4
 }
 
 const title = {

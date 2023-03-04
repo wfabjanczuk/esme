@@ -7,6 +7,8 @@ import { Box } from '@mui/material'
 import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
 import { CardTitle } from '../../common/card-title.component'
+import { ContactsList } from './contacts/contacts-list.component'
+import { CardFooter } from '../../common/card-footer.component'
 
 export const EditEventView = (): JSX.Element => {
   const { id: idFromRoute } = useParams()
@@ -17,7 +19,10 @@ export const EditEventView = (): JSX.Element => {
     <Box component='main' sx={styles.layout.content}>
       <AlertBar size='medium'/>
       {id !== undefined
-        ? <EditEventCard id={id}/>
+        ? <Fragment>
+          <EditEventCard id={id}/>
+          <EventContactsCard id={id}/>
+        </Fragment>
         : <></>
       }
     </Box>
@@ -26,7 +31,15 @@ export const EditEventView = (): JSX.Element => {
 
 const EditEventCard = ({ id }: { id: number }): JSX.Element => {
   return <Paper sx={styles.layout.cardMedium}>
-    <CardTitle title='Edit event' entityName='event' listUrl='/events'/>
+    <CardTitle title='Edit event' redirectLabel='Go to events list' redirectUrl='/events'/>
     <EditEventForm id={id}/>
+  </Paper>
+}
+
+const EventContactsCard = ({ id }: { id: number }): JSX.Element => {
+  return <Paper sx={styles.layout.cardMedium}>
+    <CardTitle title='Event contacts'/>
+    <ContactsList eventId={id}/>
+    <CardFooter redirectLabel='Add contact' redirectUrl={`/events/${id}/contacts/add`}/>
   </Paper>
 }

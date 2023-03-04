@@ -37,6 +37,9 @@ const usersViewUrl = '/users'
 
 export const useCreateUser = (): CreateHook => useCreate(usersApiUrl, usersViewUrl)
 
+export const useUserDetails = (id: number): Pick<EditHook<User>, 'errorMessages' | 'entity'> =>
+  useEdit<User>(id, usersApiUrl, '')
+
 export const useEditUser = (id: number): EditHook<User> =>
   useEdit<User>(id, usersApiUrl, usersViewUrl)
 

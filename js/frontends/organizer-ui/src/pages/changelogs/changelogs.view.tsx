@@ -5,6 +5,7 @@ import { styles } from '../../layout/styles'
 import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
 import { ChangelogsList } from './changelogs-list.component'
+import { CardFooter } from '../../common/card-footer.component'
 
 export const ChangelogsView = (): JSX.Element => {
   return <Fragment>
@@ -14,7 +15,7 @@ export const ChangelogsView = (): JSX.Element => {
       <Paper sx={styles.layout.cardLarge}>
         <Typography component='h2' variant='h5' sx={styles.layout.title}>Browse changelogs</Typography>
         <ChangelogsList/>
-        <Box sx={styles.tables.footer}/>
+        <CardFooter />
       </Paper>
     </Box>
   </Fragment>

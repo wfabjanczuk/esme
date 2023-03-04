@@ -9,6 +9,7 @@ import { CardTitle } from '../../common/card-title.component'
 import { JsonViewer } from '@textea/json-viewer'
 import { useChangelog } from './changelog.entity'
 import { parseDateTimeLabel } from '../../common/utils'
+import { useUserDetails } from '../users/user.entity'
 
 export const ChangelogDetailsView = (): JSX.Element => {
   const { id: idFromRoute } = useParams()
@@ -34,12 +35,16 @@ const ChangelogDetailsCard = ({ id }: { id: number }): JSX.Element => {
   }
 
   return <Paper sx={styles.layout.cardMedium}>
-    <CardTitle title='Changelog details' entityName='changelog' listUrl='/changelogs'/>
+    <CardTitle title='Changelog details' redirectLabel='Go to changelogs list' redirectUrl='/changelogs'/>
 
     <ChangelogField name='action' value={changelog.type} bold={true}/>
     <ChangelogField name='id' value={changelog.id}/>
     <ChangelogField name='entity' value={`${changelog.entityClass} ${changelog.entityId}`}/>
-    <ChangelogField name='user id' value={changelog.userId}/>
+
+    {changelog.userId === undefined
+      ? <ChangelogField name='user' value='unknown user'/>
+      : <ChangelogUser userId={changelog.userId}/>
+    }
     <ChangelogField name='time' value={parseDateTimeLabel(changelog.changedAt)}/>
 
     {changelog.valueAfter == null
@@ -66,4 +71,18 @@ const ChangelogField = ({ name, value, bold = false }: ChangelogFieldProps): JSX
     </Box>
     <Typography component='span' fontWeight={fontWeight}>{value}</Typography>
   </Box>
+}
+
+interface ChangelogUserProps {
+  userId: number
+}
+
+const ChangelogUser = ({ userId }: ChangelogUserProps): JSX.Element => {
+  const { entity: user } = useUserDetails(userId)
+
+  if (user === undefined) {
+    return <ChangelogField name='user id' value={userId}/>
+  }
+
+  return <ChangelogField name='user' value={`${user.firstName} ${user.lastName}`}/>
 }

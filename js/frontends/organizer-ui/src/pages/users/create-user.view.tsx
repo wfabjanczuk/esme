@@ -13,7 +13,7 @@ export const CreateUserView = (): JSX.Element => {
     <Box component='main' sx={styles.layout.content}>
       <AlertBar size='medium'/>
       <Paper sx={styles.layout.cardMedium}>
-        <CardTitle title='Add user' entityName='user' listUrl='/users'/>
+        <CardTitle title='Add user' redirectLabel='Go to users list' redirectUrl='/users'/>
         <CreateUserForm/>
       </Paper>
     </Box>
