@@ -7,12 +7,14 @@ import { EditAgencyView } from '../pages/agency/edit-agency.view'
 import { SupportView } from '../pages/support/support.view'
 import { EventsView } from '../pages/events/events.view'
 import { EditEventView } from '../pages/events/edit-event.view'
-import { CreateEventView } from '../pages/events/create-event.view'
+import { AddEventView } from '../pages/events/add-event.view'
 import { UsersView } from '../pages/users/users.view'
-import { CreateUserView } from '../pages/users/create-user.view'
+import { AddUserView } from '../pages/users/add-user.view'
 import { EditUserView } from '../pages/users/edit-user.view'
 import { ChangelogsView } from '../pages/changelogs/changelogs.view'
 import { ChangelogDetailsView } from '../pages/changelogs/changelog-details.view'
+import { AddContactView } from '../pages/events/contacts/add-contact.view'
+import { EditContactView } from '../pages/events/contacts/edit-contact.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -33,10 +35,10 @@ export const RouterInternal = createBrowserRouter([
           },
           {
             path: 'users/add',
-            element: <CreateUserView/>
+            element: <AddUserView/>
           },
           {
-            path: 'users/:id',
+            path: 'users/:userId',
             element: <EditUserView/>
           },
           {
@@ -45,11 +47,19 @@ export const RouterInternal = createBrowserRouter([
           },
           {
             path: 'events/add',
-            element: <CreateEventView/>
+            element: <AddEventView/>
           },
           {
-            path: 'events/:id',
+            path: 'events/:eventId',
             element: <EditEventView/>
+          },
+          {
+            path: 'events/:eventId/contacts/add',
+            element: <AddContactView/>
+          },
+          {
+            path: 'events/:eventId/contacts/:contactId',
+            element: <EditContactView/>
           },
           {
             path: 'issues',
@@ -60,7 +70,7 @@ export const RouterInternal = createBrowserRouter([
             element: <ChangelogsView/>
           },
           {
-            path: 'changelogs/:id',
+            path: 'changelogs/:changelogId',
             element: <ChangelogDetailsView/>
           },
           {

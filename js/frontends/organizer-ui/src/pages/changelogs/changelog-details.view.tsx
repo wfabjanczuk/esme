@@ -12,8 +12,8 @@ import { parseDateTimeLabel } from '../../common/utils'
 import { useUserDetails } from '../users/user.entity'
 
 export const ChangelogDetailsView = (): JSX.Element => {
-  const { id: idFromRoute } = useParams()
-  const id = idFromRoute === undefined ? undefined : parseInt(idFromRoute, 10)
+  const { changelogId: changelogIdFromRoute } = useParams()
+  const id = changelogIdFromRoute === undefined ? undefined : parseInt(changelogIdFromRoute, 10)
 
   return <Fragment>
     <Header title='Event'/>

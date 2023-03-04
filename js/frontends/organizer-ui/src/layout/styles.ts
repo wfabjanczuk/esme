@@ -68,6 +68,9 @@ const forms = {
   field: {
     my: 1.5
   },
+  fieldHidden: {
+    display: 'none'
+  },
   error: {
     display: 'flex',
     alignItems: 'center',

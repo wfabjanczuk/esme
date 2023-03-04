@@ -9,8 +9,8 @@ import { CardTitle } from '../../common/card-title.component'
 import { EditUserForm } from './edit-user.form'
 
 export const EditUserView = (): JSX.Element => {
-  const { id: idFromRoute } = useParams()
-  const id = idFromRoute === undefined ? undefined : parseInt(idFromRoute, 10)
+  const { userId: userIdFromRoute } = useParams()
+  const id = userIdFromRoute === undefined ? undefined : parseInt(userIdFromRoute, 10)
 
   return <Fragment>
     <Header title='User'/>

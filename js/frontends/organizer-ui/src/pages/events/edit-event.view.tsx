@@ -11,8 +11,8 @@ import { ContactsList } from './contacts/contacts-list.component'
 import { CardFooter } from '../../common/card-footer.component'
 
 export const EditEventView = (): JSX.Element => {
-  const { id: idFromRoute } = useParams()
-  const id = idFromRoute === undefined ? undefined : parseInt(idFromRoute, 10)
+  const { eventId: eventIdFromRoute } = useParams()
+  const id = eventIdFromRoute === undefined ? undefined : parseInt(eventIdFromRoute, 10)
 
   return <Fragment>
     <Header title='Event'/>

@@ -4,17 +4,17 @@ import { Box } from '@mui/material'
 import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
 import { styles } from '../../layout/styles'
+import { AddEventForm } from './add-event.form'
 import { CardTitle } from '../../common/card-title.component'
-import { CreateUserForm } from './create-user.form'
 
-export const CreateUserView = (): JSX.Element => {
+export const AddEventView = (): JSX.Element => {
   return <Fragment>
-    <Header title='User'/>
+    <Header title='Event'/>
     <Box component='main' sx={styles.layout.content}>
       <AlertBar size='medium'/>
       <Paper sx={styles.layout.cardMedium}>
-        <CardTitle title='Add user' redirectLabel='Go to users list' redirectUrl='/users'/>
-        <CreateUserForm/>
+        <CardTitle title='Add event' redirectLabel='Go to events list' redirectUrl='/events'/>
+        <AddEventForm/>
       </Paper>
     </Box>
   </Fragment>

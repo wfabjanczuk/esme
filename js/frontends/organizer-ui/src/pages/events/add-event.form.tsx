@@ -3,54 +3,66 @@ import { styles } from '../../layout/styles'
 import { FormErrors } from '../../common/form-errors.component'
 import { Add } from '@mui/icons-material'
 import React from 'react'
-import { useCreateUser } from './user.entity'
-import { UserRoleSelect } from './user-role-select.component'
+import { useCreateEvent } from './event.entity'
 
-export const CreateUserForm = (): JSX.Element => {
-  const { errorMessages, create } = useCreateUser()
+export const AddEventForm = (): JSX.Element => {
+  const { errorMessages, create } = useCreateEvent()
   const isError = errorMessages.length > 0
 
   return <form onSubmit={create}>
     <Box sx={styles.forms.component}>
       <TextField
-        name='email'
-        label='email'
+        name='name'
+        label='name'
         error={isError}
         sx={styles.forms.field}
       />
       <TextField
-        type='password'
-        name='password'
-        label='password'
+        name='description'
+        label='description'
+        error={isError}
+        sx={styles.forms.field}
+        multiline
+      />
+      <TextField
+        name='address'
+        label='address'
+        error={isError}
+        sx={styles.forms.field}
+        multiline
+      />
+      <TextField
+        type='datetime-local'
+        name='timeStart'
+        label='start time'
+        error={isError}
+        sx={styles.forms.field}
+        InputLabelProps={{ shrink: true }}
+      />
+      <TextField
+        type='datetime-local'
+        name='timeEnd'
+        label='end time'
+        error={isError}
+        sx={styles.forms.field}
+        InputLabelProps={{ shrink: true }}
+      />
+      <TextField
+        type='number'
+        inputProps={{ step: 'any' }}
+        name='lat'
+        label='latitude'
         error={isError}
         sx={styles.forms.field}
       />
       <TextField
-        type='password'
-        name='confirmPassword'
-        label='confirm password'
+        type='number'
+        inputProps={{ step: 'any' }}
+        name='lng'
+        label='longitude'
         error={isError}
         sx={styles.forms.field}
       />
-      <TextField
-        name='firstName'
-        label='first name'
-        error={isError}
-        sx={styles.forms.field}
-      />
-      <TextField
-        name='lastName'
-        label='last name'
-        error={isError}
-        sx={styles.forms.field}
-      />
-      <TextField
-        name='phoneNumber'
-        label='phone number'
-        error={isError}
-        sx={styles.forms.field}
-      />
-      <UserRoleSelect isError={isError}/>
       <FormErrors errorMessages={errorMessages}/>
       <Button type='submit' variant='contained' color='success' sx={{ width: '200px', my: 2 }}
         startIcon={<Add/>}

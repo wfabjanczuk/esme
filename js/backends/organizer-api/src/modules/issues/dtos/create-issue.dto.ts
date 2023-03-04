@@ -1,6 +1,7 @@
 import { IsEnum, IsInt, IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IssuePriority, IssueStatus } from '../issue.entity';
+import { Transform } from 'class-transformer';
 
 export class CreateIssueDto {
   @IsString()
@@ -24,6 +25,7 @@ export class CreateIssueDto {
   priority: IssuePriority;
 
   @IsInt()
+  @Transform(({ value }) => parseInt(value, 10))
   @ApiProperty({ example: 1 })
   eventId: number;
 }

@@ -15,7 +15,7 @@ const parseFullName = ({
   }
 }: { row: User }): string => `${firstName} ${lastName}`
 
-const columns: Array<GridColDef | GridActionsColDef> = [
+const columns = (eventId: number): Array<GridColDef | GridActionsColDef> => [
   {
     field: 'id',
     headerName: 'ID',
@@ -46,7 +46,7 @@ const columns: Array<GridColDef | GridActionsColDef> = [
     type: 'actions',
     renderCell: ({ id }: GridRenderCellParams) => <TableRowLinkButton
       label='Edit'
-      url={`/contacts/${id}`}
+      url={`/events/${eventId}/contacts/${id}`}
       icon={<Edit/>}
     />
   }
@@ -62,7 +62,7 @@ export const ContactsList = ({ eventId }: ContactsListProps): JSX.Element => {
   return <Box style={styles.tables.container}>
     <DataGrid
       rows={contacts}
-      columns={columns}
+      columns={columns(eventId)}
       pageSize={5}
       rowsPerPageOptions={[5]}
       disableSelectionOnClick
