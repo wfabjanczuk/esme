@@ -19,6 +19,7 @@ import { AddAnnouncementView } from '../pages/events/announcements/add-announcem
 import { EditAnnouncementView } from '../pages/events/announcements/edit-announcement.view'
 import { IssuesView } from '../pages/issues/issues.view'
 import { AddIssueView } from '../pages/issues/add-issue.view'
+import { EditIssueView } from '../pages/issues/edit-issue.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -80,6 +81,10 @@ export const RouterInternal = createBrowserRouter([
           {
             path: 'issues/add',
             element: <AddIssueView/>
+          },
+          {
+            path: 'issues/:issueId',
+            element: <EditIssueView/>
           },
           {
             path: 'changelogs',

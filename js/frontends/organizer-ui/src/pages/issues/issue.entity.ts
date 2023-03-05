@@ -1,6 +1,7 @@
 import { ListHook, useList } from '../../common/hooks/list.hook'
 import { config } from '../../app/config'
 import { CreateHook, useCreate } from '../../common/hooks/create.hook'
+import { EditHook, useEdit } from '../../common/hooks/edit.hook'
 
 export enum IssueStatus {
   toDo = 'to_do',
@@ -43,6 +44,9 @@ const issuesApiUrl = `${config.organizerApiUrl}/agency/issues`
 const issuesViewUrl = '/issues'
 
 export const useCreateIssue = (): CreateHook => useCreate(issuesApiUrl, issuesViewUrl)
+
+export const useEditIssue = (id: number): EditHook<Issue> =>
+  useEdit<Issue>(id, issuesApiUrl, issuesViewUrl)
 
 export const useIssuesList = (): ListHook<Issue> =>
   useList<Issue>(issuesApiUrl)

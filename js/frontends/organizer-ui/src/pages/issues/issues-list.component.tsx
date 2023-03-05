@@ -5,7 +5,10 @@ import { GridActionsColDef } from '@mui/x-data-grid/models/colDef/gridColDef'
 import { TableRowLinkButton } from '../../common/table-row-link-button.component'
 import { Box } from '@mui/material'
 import { Edit } from '@mui/icons-material'
-import { useIssuesList } from './issue.entity'
+import { Issue, IssuePriorityLabels, IssueStatusLabels, useIssuesList } from './issue.entity'
+
+const parsePriority = ({ row: { priority } }: { row: Issue }): string => IssuePriorityLabels[priority]
+const parseStatus = ({ row: { status } }: { row: Issue }): string => IssueStatusLabels[status]
 
 const columns: Array<GridColDef | GridActionsColDef> = [
   {
@@ -28,12 +31,14 @@ const columns: Array<GridColDef | GridActionsColDef> = [
   {
     field: 'priority',
     headerName: 'Priority',
-    width: 150
+    valueGetter: parsePriority,
+    width: 100
   },
   {
     field: 'status',
     headerName: 'Status',
-    width: 150
+    valueGetter: parseStatus,
+    width: 100
   },
   {
     headerName: 'Actions',

@@ -1,10 +1,10 @@
 import React from 'react'
 import { FormControl, MenuItem, TextField } from '@mui/material'
 import { styles } from '../../layout/styles'
-import { IssuePrioritiesList, IssuePriority, IssuePriorityLabels, IssueStatus } from './issue.entity'
+import { IssuePrioritiesList, IssuePriority, IssuePriorityLabels } from './issue.entity'
 
 interface IssuePrioritySelectProps {
-  currentValue?: IssueStatus
+  currentValue?: IssuePriority
   isError: boolean
 }
 
