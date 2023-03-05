@@ -1,12 +1,11 @@
 import { Box, Button, TextField } from '@mui/material'
-import React, { useContext } from 'react'
+import React from 'react'
 import { FormErrors } from '../../common/form-errors.component'
 import { styles } from '../../layout/styles'
 import { ButtonGroup } from '../../common/button-group.component'
 import { Link } from 'react-router-dom'
 import { Login, PersonAdd } from '@mui/icons-material'
 import { useSignIn } from './sign-in.hook'
-import { AuthenticatorContext } from '../../common/authenticator/authenticator.context'
 
 export const SignInForm = (): JSX.Element => {
   const {
@@ -14,10 +13,6 @@ export const SignInForm = (): JSX.Element => {
     errorMessages
   } = useSignIn()
   const isError = errorMessages.length > 0
-
-  const authenticator = useContext(AuthenticatorContext)
-  // console.log(authenticator)
-  void authenticator.signIn('jan@kowalski.com', '&Y+sFaS{&d>8ycO)FLhF41qiQk{IYEb?')
 
   return <form onSubmit={signIn}>
     <Box sx={styles.forms.component}>

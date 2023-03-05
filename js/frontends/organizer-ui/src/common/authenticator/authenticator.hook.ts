@@ -8,5 +8,9 @@ export const useNewAuthenticator = (): Authenticator => {
     setAuthenticator(new Authenticator(setAuthenticator))
   }, [])
 
+  useEffect(() => {
+    authenticator.checkCookie()
+  }, [authenticator.hasState()])
+
   return authenticator
 }
