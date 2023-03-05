@@ -41,7 +41,7 @@ export const ChatInput = ({ chatId }: ChatInputProps): JSX.Element => {
       }}>
         <AddCircleIcon/>
       </IconButton>
-      <TextField multiline={true} sx={{ flexGrow: 1 }} maxRows={5} value={message} size='small'
+      <TextField multiline={true} sx={{ flexGrow: 1 }} minRows={2} maxRows={5} value={message} size='small'
         onChange={e => setMessage(e.target.value)}
         onKeyDown={handleKeyDown}
       />

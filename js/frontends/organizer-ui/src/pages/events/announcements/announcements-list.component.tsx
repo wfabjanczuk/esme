@@ -51,6 +51,11 @@ export const AnnouncementsList = ({ eventId }: AnnouncementsListProps): JSX.Elem
       columns={columns(eventId)}
       pageSize={5}
       rowsPerPageOptions={[5]}
+      initialState={{
+        sorting: {
+          sortModel: [{ field: 'id', sort: 'desc' }]
+        }
+      }}
       disableSelectionOnClick
     />
   </Box>

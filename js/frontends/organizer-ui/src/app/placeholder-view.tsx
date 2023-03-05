@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react'
-import Content from '../layout/content'
 import Header from '../layout/header'
 
 interface Props {
@@ -13,6 +12,5 @@ export const PlaceholderView = ({ text }: Props): JSX.Element => {
 
   return <Fragment>
     <Header title={text}/>
-    <Content />
   </Fragment>
 }

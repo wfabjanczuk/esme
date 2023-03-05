@@ -41,6 +41,7 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         defaultValue={entity.description}
         error={isError}
         sx={styles.forms.field}
+        minRows={5}
         multiline
       />
       <TextField

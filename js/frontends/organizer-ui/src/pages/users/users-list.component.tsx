@@ -68,6 +68,11 @@ export const UsersList = (): JSX.Element => {
       columns={columns}
       pageSize={5}
       rowsPerPageOptions={[5]}
+      initialState={{
+        sorting: {
+          sortModel: [{ field: 'id', sort: 'desc' }]
+        }
+      }}
       disableSelectionOnClick
     />
   </Box>

@@ -22,6 +22,7 @@ export const AddEventForm = (): JSX.Element => {
         label='description'
         error={isError}
         sx={styles.forms.field}
+        minRows={5}
         multiline
       />
       <TextField
