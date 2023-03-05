@@ -15,6 +15,8 @@ import { ChangelogsView } from '../pages/changelogs/changelogs.view'
 import { ChangelogDetailsView } from '../pages/changelogs/changelog-details.view'
 import { AddContactView } from '../pages/events/contacts/add-contact.view'
 import { EditContactView } from '../pages/events/contacts/edit-contact.view'
+import { AddAnnouncementView } from '../pages/events/announcements/add-announcement.view'
+import { EditAnnouncementView } from '../pages/events/announcements/edit-announcement.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -60,6 +62,14 @@ export const RouterInternal = createBrowserRouter([
           {
             path: 'events/:eventId/contacts/:contactId',
             element: <EditContactView/>
+          },
+          {
+            path: 'events/:eventId/announcements/add',
+            element: <AddAnnouncementView/>
+          },
+          {
+            path: 'events/:eventId/announcements/:announcementId',
+            element: <EditAnnouncementView/>
           },
           {
             path: 'issues',

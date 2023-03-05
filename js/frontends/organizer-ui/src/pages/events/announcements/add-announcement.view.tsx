@@ -6,31 +6,31 @@ import Paper from '@mui/material/Paper'
 import { styles } from '../../../layout/styles'
 import { CardTitle } from '../../../common/card-title.component'
 import { useParams } from 'react-router-dom'
-import { AddContactForm } from './add-contact.form'
+import { AddAnnouncementForm } from './add-announcement.form'
 
-export const AddContactView = (): JSX.Element => {
+export const AddAnnouncementView = (): JSX.Element => {
   const { eventId: eventIdFromRoute } = useParams()
   const eventId = eventIdFromRoute === undefined ? undefined : parseInt(eventIdFromRoute, 10)
 
   return <Fragment>
-    <Header title='Event contact'/>
+    <Header title='Event announcement'/>
     <Box component='main' sx={styles.layout.content}>
       <AlertBar size='medium'/>
       {eventId !== undefined
-        ? <CreateContactCard eventId={eventId}/>
+        ? <CreateAnnouncementCard eventId={eventId}/>
         : <></>
       }
     </Box>
   </Fragment>
 }
 
-interface CreateContactCardProps {
+interface CreateAnnouncementCardProps {
   eventId: number
 }
 
-const CreateContactCard = ({ eventId }: CreateContactCardProps): JSX.Element => {
+const CreateAnnouncementCard = ({ eventId }: CreateAnnouncementCardProps): JSX.Element => {
   return <Paper sx={styles.layout.cardMedium}>
-    <CardTitle title='Add contact' redirectLabel='Go to event' redirectUrl={`/events/${eventId}`}/>
-    <AddContactForm eventId={eventId}/>
+    <CardTitle title='Add announcement' redirectLabel='Go to event' redirectUrl={`/events/${eventId}`}/>
+    <AddAnnouncementForm eventId={eventId}/>
   </Paper>
 }

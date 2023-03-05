@@ -17,7 +17,7 @@ export const EditContactView = (): JSX.Element => {
   const contactId = contactIdFromRoute === undefined ? undefined : parseInt(contactIdFromRoute, 10)
 
   return <Fragment>
-    <Header title='Contact'/>
+    <Header title='Event contact'/>
     <Box component='main' sx={styles.layout.content}>
       <AlertBar size='medium'/>
       {eventId !== undefined && contactId !== undefined
