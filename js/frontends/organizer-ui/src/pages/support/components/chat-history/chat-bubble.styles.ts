@@ -1,11 +1,11 @@
 const organizerStyles = {
-  backgroundColor: '#006494',
+  backgroundColor: '#006db3',
   color: '#FFFFFF'
 }
 
 const participantStyles = {
   backgroundColor: '#E8F1F2',
-  color: '#13293D'
+  color: '#001523'
 }
 
 export const getChatBubbleStyle = (isOrganizer: boolean): Object => ({

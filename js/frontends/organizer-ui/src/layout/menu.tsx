@@ -27,27 +27,27 @@ const categories = [
       {
         id: 'Agency',
         icon: <WorkOutlineIcon/>,
-        url: '/'
+        route: '/'
       },
       {
         id: 'Users',
         icon: <PeopleIcon/>,
-        url: '/users'
+        route: '/users'
       },
       {
         id: 'Events',
         icon: <StarOutlineIcon/>,
-        url: '/events'
+        route: '/events'
       },
       {
         id: 'Issues',
         icon: <AssignmentOutlinedIcon/>,
-        url: '/issues'
+        route: '/issues'
       },
       {
         id: 'Changelogs',
         icon: <HistoryOutlinedIcon/>,
-        url: '/changelogs'
+        route: '/changelogs'
       }
     ]
   },
@@ -57,7 +57,7 @@ const categories = [
       {
         id: 'Live support',
         icon: <CellTowerIcon/>,
-        url: '/support'
+        route: '/support'
       }
     ]
   }
@@ -82,6 +82,13 @@ export default function Menu (props: DrawerProps): JSX.Element {
   const location = useLocation()
   const { ...other } = props
 
+  const isRouteMatching = (route: string): boolean => {
+    if (route === '/') {
+      return location.pathname === route
+    }
+    return location.pathname.startsWith(route)
+  }
+
   return (
     <Drawer variant='permanent' {...other}>
       <List disablePadding>
@@ -93,10 +100,10 @@ export default function Menu (props: DrawerProps): JSX.Element {
             <ListItem sx={{ py: 2, px: 3 }}>
               <ListItemText sx={{ color: '#fff' }}>{id}</ListItemText>
             </ListItem>
-            {children.map(({ id: childId, icon, url }) => (
+            {children.map(({ id: childId, icon, route }) => (
               <ListItem disablePadding key={childId}>
-                <NavLink to={url} style={styles.links.componentFull}>
-                  <ListItemButton selected={location.pathname === url} sx={item}>
+                <NavLink to={route} style={styles.links.componentFull}>
+                  <ListItemButton selected={isRouteMatching(route)} sx={item}>
                     <ListItemIcon>{icon}</ListItemIcon>
                     <ListItemText>{childId}</ListItemText>
                   </ListItemButton>

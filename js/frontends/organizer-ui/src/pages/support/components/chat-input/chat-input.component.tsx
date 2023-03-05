@@ -37,7 +37,7 @@ export const ChatInput = ({ chatId }: ChatInputProps): JSX.Element => {
     }}>
       <IconButton sx={{
         mr: 1,
-        color: '#006494'
+        color: '#006db3'
       }}>
         <AddCircleIcon/>
       </IconButton>
@@ -47,7 +47,7 @@ export const ChatInput = ({ chatId }: ChatInputProps): JSX.Element => {
       />
       <IconButton onClick={handleSend} sx={{
         ml: 1,
-        color: '#006494'
+        color: '#006db3'
       }}>
         <SendIcon/>
       </IconButton>
