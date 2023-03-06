@@ -7,6 +7,8 @@ import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
 import { CardTitle } from '../../common/card-title.component'
 import { EditIssueForm } from './edit-issue.form'
+import { CardFooter } from '../../common/card-footer.component'
+import { CommentsList } from './comments/comments-list.component'
 
 export const EditIssueView = (): JSX.Element => {
   const { issueId: issueIdFromRoute } = useParams()
@@ -19,6 +21,7 @@ export const EditIssueView = (): JSX.Element => {
       {id !== undefined
         ? <Fragment>
           <EditIssueCard id={id}/>
+          <IssueCommentsCard issueId={id}/>
         </Fragment>
         : <></>
       }
@@ -30,5 +33,13 @@ const EditIssueCard = ({ id }: { id: number }): JSX.Element => {
   return <Paper sx={styles.layout.cardMedium}>
     <CardTitle title='Edit issue' redirectLabel='Go to issues list' redirectUrl='/issues'/>
     <EditIssueForm id={id}/>
+  </Paper>
+}
+
+const IssueCommentsCard = ({ issueId }: { issueId: number }): JSX.Element => {
+  return <Paper sx={styles.layout.cardMedium}>
+    <CardTitle title='Issue comments'/>
+    <CommentsList issueId={issueId}/>
+    <CardFooter redirectLabel='Add comment' redirectUrl={`/issues/${issueId}/comments/add`}/>
   </Paper>
 }
