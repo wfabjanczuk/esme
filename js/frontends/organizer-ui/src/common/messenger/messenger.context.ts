@@ -3,27 +3,17 @@ import { Action } from './structures'
 import { newWebSocket } from './websocket'
 
 export class Messenger {
-  private webSocket: WebSocket
-  private dispatch: React.Dispatch<Action>
-
-  constructor () {
-    this.webSocket = undefined as unknown as WebSocket
-    this.dispatch = undefined as unknown as React.Dispatch<Action>
-  }
+  private webSocket: WebSocket = undefined as unknown as WebSocket
 
   isInitialized (): boolean {
-    return this.webSocket !== undefined && this.dispatch !== undefined
+    return this.webSocket?.readyState === WebSocket.OPEN
   }
 
-  setDispatch (dispatch: React.Dispatch<Action>): void {
-    this.dispatch = dispatch
-  }
-
-  connect (authorizationHeader: string): void {
-    if (this.webSocket !== undefined) {
+  initialize (authorizationHeader: string, dispatch: React.Dispatch<Action>): void {
+    if (this.isInitialized()) {
       this.webSocket.close()
     }
-    this.webSocket = newWebSocket(authorizationHeader, this.dispatch)
+    this.webSocket = newWebSocket(authorizationHeader, dispatch)
   }
 
   getChats (): void {

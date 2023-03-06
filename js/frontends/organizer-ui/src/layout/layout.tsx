@@ -19,10 +19,6 @@ export const Layout = (): JSX.Element => {
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const isSmUp = useMediaQuery(Theme.breakpoints.up('sm'))
 
-  if (!messenger.isInitialized()) {
-    return <></>
-  }
-
   const handleDrawerToggle = (): void => setMobileOpen(!mobileOpen)
   const outletContext: LayoutOutletContext = {
     onDrawerToggle: handleDrawerToggle

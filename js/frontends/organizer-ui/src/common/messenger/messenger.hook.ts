@@ -15,8 +15,7 @@ export const useNewMessenger = (): NewMessengerHook => {
   const messenger = useContext(MessengerContext)
 
   useEffect(() => {
-    messenger.setDispatch(dispatch)
-    messenger.connect(authorizationHeader)
+    messenger.initialize(authorizationHeader, dispatch)
   }, [])
 
   useEffect(() => {
