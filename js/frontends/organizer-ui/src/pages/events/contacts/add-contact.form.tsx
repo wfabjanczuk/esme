@@ -49,12 +49,11 @@ export const AddContactForm = ({ eventId }: AddContactFormProps): JSX.Element =>
       <TextField
         name='eventId'
         label='event id'
-        error={isError}
         value={eventId}
         sx={styles.forms.fieldHidden}
       />
       <FormErrors errorMessages={errorMessages}/>
-      <Button type='submit' variant='contained' color='success' sx={{ width: '200px', my: 2 }}
+      <Button type='submit' variant='contained' color='success' sx={styles.buttons.single}
         startIcon={<Add/>}
       >
         Add

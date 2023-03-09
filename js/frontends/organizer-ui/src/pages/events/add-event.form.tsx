@@ -65,7 +65,7 @@ export const AddEventForm = (): JSX.Element => {
         sx={styles.forms.field}
       />
       <FormErrors errorMessages={errorMessages}/>
-      <Button type='submit' variant='contained' color='success' sx={{ width: '200px', my: 2 }}
+      <Button type='submit' variant='contained' color='success' sx={styles.buttons.single}
         startIcon={<Add/>}
       >
         Add

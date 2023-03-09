@@ -1,7 +1,6 @@
 import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import { ErrorView } from './error.view'
-import { PlaceholderView } from './placeholder-view'
 import { Layout } from '../layout/layout'
 import { EditAgencyView } from '../pages/agency/edit-agency.view'
 import { SupportView } from '../pages/support/support.view'
@@ -22,6 +21,7 @@ import { AddIssueView } from '../pages/issues/add-issue.view'
 import { EditIssueView } from '../pages/issues/edit-issue.view'
 import { AddCommentView } from '../pages/issues/comments/add-comment.view'
 import { EditCommentView } from '../pages/issues/comments/edit-comment.view'
+import { ProfileView } from '../pages/profile/profile.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -110,11 +110,7 @@ export const RouterInternal = createBrowserRouter([
           },
           {
             path: 'profile',
-            element: <PlaceholderView text={'Profile'}/>
-          },
-          {
-            path: 'error',
-            element: <PlaceholderView text={'Error'}/>
+            element: <ProfileView/>
           }
         ]
       }

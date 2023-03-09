@@ -26,12 +26,11 @@ export const AddCommentForm = ({ issueId }: AddCommentFormProps): JSX.Element =>
       <TextField
         name='issueId'
         label='issue id'
-        error={isError}
         value={issueId}
         sx={styles.forms.fieldHidden}
       />
       <FormErrors errorMessages={errorMessages}/>
-      <Button type='submit' variant='contained' color='success' sx={{ width: '200px', my: 2 }}
+      <Button type='submit' variant='contained' color='success' sx={styles.buttons.single}
         startIcon={<Add/>}
       >
         Add

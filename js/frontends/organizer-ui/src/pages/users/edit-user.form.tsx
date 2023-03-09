@@ -22,22 +22,22 @@ export const EditUserForm = ({ id }: EditUserFormProps): JSX.Element => {
       <TextField
         name='firstName'
         label='first name'
-        error={isError}
         defaultValue={entity.firstName}
+        error={isError}
         sx={styles.forms.field}
       />
       <TextField
         name='lastName'
         label='last name'
-        error={isError}
         defaultValue={entity.lastName}
+        error={isError}
         sx={styles.forms.field}
       />
       <TextField
         name='phoneNumber'
         label='phone number'
-        error={isError}
         defaultValue={entity.phoneNumber}
+        error={isError}
         sx={styles.forms.field}
       />
       <FormErrors errorMessages={errorMessages}/>

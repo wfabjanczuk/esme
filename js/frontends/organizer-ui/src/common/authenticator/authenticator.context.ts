@@ -2,7 +2,7 @@ import React from 'react'
 import Cookies from 'js-cookie'
 import axios, { AxiosError } from 'axios'
 import { config } from '../../app/config'
-import { Profile } from './profile'
+import { Profile } from '../../pages/profile/profile.entity'
 import { parseErrorMessage } from '../utils'
 
 const authCookieName = 'esme_authorization'
@@ -28,7 +28,7 @@ export class Authenticator {
   }
 
   isAuthorized (): boolean {
-    return this.profile !== undefined
+    return this.authorizationHeader !== ''
   }
 
   checkCookie (): void {

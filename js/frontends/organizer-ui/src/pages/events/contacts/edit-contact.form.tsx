@@ -31,36 +31,36 @@ export const EditContactForm = ({ contactId, eventId }: EditContactFormProps): J
       <TextField
         name='firstName'
         label='first name'
-        error={isError}
         defaultValue={entity.firstName}
+        error={isError}
         sx={styles.forms.field}
       />
       <TextField
         name='lastName'
         label='last name'
-        error={isError}
         defaultValue={entity.lastName}
+        error={isError}
         sx={styles.forms.field}
       />
       <TextField
         name='email'
         label='email'
-        error={isError}
         defaultValue={entity.email}
+        error={isError}
         sx={styles.forms.field}
       />
       <TextField
         name='phoneNumber'
         label='phone number'
-        error={isError}
         defaultValue={entity.phoneNumber}
+        error={isError}
         sx={styles.forms.field}
       />
       <TextField
         name='additionalNotes'
         label='additional notes'
-        error={isError}
         defaultValue={entity.additionalNotes}
+        error={isError}
         sx={styles.forms.field}
         multiline
       />

@@ -23,8 +23,8 @@ export const EditAnnouncementForm = ({ announcementId, eventId }: EditAnnounceme
       <TextField
         name='content'
         label='content'
-        error={isError}
         defaultValue={entity.content}
+        error={isError}
         sx={styles.forms.field}
         minRows={5}
         multiline

@@ -90,6 +90,11 @@ const forms = {
 }
 
 const buttons = {
+  single: {
+    minWidth: '200px',
+    maxWidth: '45%',
+    my: 2
+  },
   group: {
     display: 'flex',
     gap: '30px'

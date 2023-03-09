@@ -76,6 +76,7 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         name='lat'
         label='latitude'
         defaultValue={entity.lat}
+        error={isError}
         sx={styles.forms.field}
       />
       <TextField
@@ -84,6 +85,7 @@ export const EditEventForm = ({ id }: EditEventFormProps): JSX.Element => {
         name='lng'
         label='longitude'
         defaultValue={entity.lng}
+        error={isError}
         sx={styles.forms.field}
       />
       <FormErrors errorMessages={errorMessages}/>

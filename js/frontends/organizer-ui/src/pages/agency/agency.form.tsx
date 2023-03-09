@@ -3,11 +3,11 @@ import { Box, Button, TextField } from '@mui/material'
 import { FormErrors } from '../../common/form-errors.component'
 import { styles } from '../../layout/styles'
 import { DeleteForever, Save } from '@mui/icons-material'
-import { useAgency } from './agency.hook'
+import { useEditAgency } from './agency.hook'
 import { ButtonGroup } from '../../common/button-group.component'
 
 export const AgencyForm = (): JSX.Element => {
-  const { errorMessages, agency, update, remove } = useAgency()
+  const { errorMessages, agency, update, remove } = useEditAgency()
   const isError = errorMessages.length > 0
 
   if (agency === undefined) {

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { AuthenticatorContext } from '../../common/authenticator/authenticator.context'
 import { FormControl, MenuItem, TextField } from '@mui/material'
-import { Profile } from '../../common/authenticator/profile'
+import { Profile } from '../profile/profile.entity'
 import { UserRole, UserRoleLabels } from './user.entity'
 import { styles } from '../../layout/styles'
 
