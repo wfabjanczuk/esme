@@ -1,9 +1,9 @@
-import React, { useContext } from 'react'
-import { AuthenticatorContext } from '../../common/authenticator/authenticator.context'
+import React from 'react'
 import { FormControl, MenuItem, TextField } from '@mui/material'
 import { Profile } from '../profile/profile.entity'
 import { UserRole, UserRoleLabels } from './user.entity'
 import { styles } from '../../layout/styles'
+import { useProfileDetails } from '../profile/profile.hook'
 
 interface UserRoleSelectProps {
   currentValue?: UserRole
@@ -11,7 +11,7 @@ interface UserRoleSelectProps {
 }
 
 export const UserRoleSelect = ({ currentValue, isError }: UserRoleSelectProps): JSX.Element => {
-  const { profile } = useContext(AuthenticatorContext)
+  const { profile } = useProfileDetails()
   if (profile === undefined) {
     return <></>
   }

@@ -2,7 +2,6 @@ import React from 'react'
 import Cookies from 'js-cookie'
 import axios, { AxiosError } from 'axios'
 import { config } from '../../app/config'
-import { Profile } from '../../pages/profile/profile.entity'
 import { parseErrorMessage } from '../utils'
 
 const authCookieName = 'esme_authorization'
@@ -11,15 +10,13 @@ const signOutUrl = `${config.organizerApiUrl}/auth/sign-out`
 const emptySetState = (): void => {}
 
 interface SignInResponse {
-  user: Profile
   token: string
 }
 
 export class Authenticator {
   constructor (
     private readonly setState: (authenticator: Authenticator) => void = emptySetState,
-    public readonly authorizationHeader: string = '',
-    public readonly profile?: Profile
+    public readonly authorizationHeader: string = ''
   ) {
   }
 
@@ -41,8 +38,8 @@ export class Authenticator {
       return
     }
 
-    const { token, user } = JSON.parse(authCookie) as SignInResponse
-    this.update(`Bearer ${token}`, user)
+    const { token } = JSON.parse(authCookie) as SignInResponse
+    this.update(`Bearer ${token}`)
   }
 
   async signIn (email: string, password: string): Promise<string[]> {
@@ -50,12 +47,12 @@ export class Authenticator {
       .then(({ data }) => {
         // TODO: use Secure, HttpOnly and SameSite attributes in cookie
         Cookies.set(authCookieName, JSON.stringify(data), { expires: 1 })
-        this.update(`Bearer ${data.token}`, data.user)
+        this.update(`Bearer ${data.token}`)
         return [] as string[]
       })
       .catch(e => {
         Cookies.remove(authCookieName)
-        this.update(undefined, undefined)
+        this.update('')
         return parseErrorMessage(e?.response?.data?.message)
       })
   }
@@ -65,7 +62,7 @@ export class Authenticator {
       headers: { Authorization: this.authorizationHeader }
     }).finally(() => {
       Cookies.remove(authCookieName)
-      this.update(undefined, undefined)
+      this.update('')
       window.location.replace('/')
     })
   }
@@ -84,8 +81,8 @@ export class Authenticator {
     return false
   }
 
-  private update (authorizationHeader?: string, profile?: Profile): void {
-    this.setState(new Authenticator(this.setState, authorizationHeader, profile))
+  private update (authorizationHeader: string): void {
+    this.setState(new Authenticator(this.setState, authorizationHeader))
   }
 }
 
