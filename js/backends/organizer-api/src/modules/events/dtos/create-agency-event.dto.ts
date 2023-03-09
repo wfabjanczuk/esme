@@ -3,21 +3,25 @@ import {
   IsDateString,
   IsLatitude,
   IsLongitude,
+  IsNotEmpty,
   IsString,
   MaxLength,
 } from 'class-validator';
 
 export class CreateAgencyEventDto {
+  @IsNotEmpty()
   @IsString()
   @MaxLength(200)
   @ApiProperty({ example: 'Rap Concert' })
   name: string;
 
+  @IsNotEmpty()
   @IsString()
   @MaxLength(2000)
   @ApiProperty({ example: 'Annual music event' })
   description: string;
 
+  @IsNotEmpty()
   @IsString()
   @MaxLength(400)
   @ApiProperty({ example: 'Concert Street 1, Warsaw 01-234, Poland' })

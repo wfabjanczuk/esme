@@ -2,18 +2,22 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsInt,
+  IsNotEmpty,
   IsPhoneNumber,
   IsString,
   MaxLength,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateContactDto {
   @IsString()
+  @IsNotEmpty()
   @MaxLength(100)
   @ApiProperty({ example: 'Jan' })
   firstName: string;
 
   @IsString()
+  @IsNotEmpty()
   @MaxLength(100)
   @ApiProperty({ example: 'Kowalski' })
   lastName: string;
@@ -34,6 +38,7 @@ export class CreateContactDto {
   additionalNotes: string;
 
   @IsInt()
+  @Transform(({ value }) => parseInt(value, 10))
   @ApiProperty({ example: 1 })
   eventId: number;
 }

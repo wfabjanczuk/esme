@@ -10,6 +10,7 @@ import (
 	"participant-api/internal/modules/api/controllers/chat_requests"
 	"participant-api/internal/modules/api/controllers/events"
 	"participant-api/internal/modules/api/controllers/profile"
+	"participant-api/internal/modules/api/controllers/users"
 	"participant-api/internal/modules/infrastructure"
 )
 
@@ -19,6 +20,7 @@ type Module struct {
 	profile      *profile.Controller
 	events       *events.Controller
 	chatRequests *chat_requests.Controller
+	users        *users.Controller
 }
 
 func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Logger) *Module {
@@ -31,6 +33,7 @@ func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Log
 		profile:      profile.NewController(infra.UsersRepository, logger),
 		events:       events.NewController(infra.EventsRepository, infra.SubscriptionsRepository, logger),
 		chatRequests: chat_requests.NewController(infra.EventsRepository, infra.ChatRequestsRepository, logger),
+		users:        users.NewController(infra.UsersRepository, logger),
 	}
 
 	module.attachRoutes(router, mw.CurrentUser.HandlerFunc)
@@ -54,4 +57,6 @@ func (m *Module) attachRoutes(r *httprouter.Router, cu func(http.HandlerFunc) ht
 
 	r.HandlerFunc(http.MethodGet, "/chat-requests", cu(m.chatRequests.DoesChatRequestExist))
 	r.HandlerFunc(http.MethodPost, "/chat-requests", cu(m.chatRequests.RequestChat))
+
+	r.HandlerFunc(http.MethodGet, "/users/:id", m.users.GetUser)
 }

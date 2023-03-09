@@ -46,6 +46,7 @@ func (c *Consumer) ListenOnConnection(conn *connections.OrganizerConnection) {
 		}
 	}()
 
+	c.consumeGetChats(conn)
 	for {
 		msg, err := conn.Read()
 		if err != nil {
@@ -63,10 +64,10 @@ func (c *Consumer) ListenOnConnection(conn *connections.OrganizerConnection) {
 
 func (c *Consumer) consumeMessage(conn *connections.OrganizerConnection, msg *protocol.Message) {
 	switch msg.Type {
+	case in.MsgTypeGetChats:
+		c.consumeGetChats(conn)
 	case in.MsgTypeStartChat:
 		c.consumeStartChat(conn, msg)
-	case in.MsgTypeGetChats:
-		c.consumeGetChats(conn, msg)
 	case in.MsgTypeSendMessage:
 		c.consumeSendMessage(conn, msg)
 	case in.MsgTypeGetChatHistory:

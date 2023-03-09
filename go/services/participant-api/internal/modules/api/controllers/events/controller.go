@@ -80,7 +80,7 @@ func (c *Controller) getEvent(w http.ResponseWriter, r *http.Request, onSuccess 
 	id, err := strconv.Atoi(idString)
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, api_errors.ErrInvalidQueryId, http.StatusBadRequest)
+		c.responder.WriteError(w, api_errors.ErrInvalidRouteId, http.StatusBadRequest)
 		return
 	}
 

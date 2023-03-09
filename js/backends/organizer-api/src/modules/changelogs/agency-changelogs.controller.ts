@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { Changelog } from './changelog.entity';
@@ -7,6 +7,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../users/user.entity';
 import { FindAgencyChangelogsOptionsDto } from './dtos/find-agency-changelogs-options.dto';
 import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
+import { IdDto } from '../../common/dtos/id.dto';
 
 @Controller('agency/changelogs')
 @UseGuards(AuthenticationGuard, AgencySupportGuard)
@@ -14,7 +15,6 @@ import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
 export class AgencyChangelogsController {
   constructor(private changelogsService: ChangelogsService) {}
 
-  @Get()
   @Get()
   @ApiResponse({
     status: 200,
@@ -28,5 +28,14 @@ export class AgencyChangelogsController {
       ...options,
       agencyId: agencyId,
     });
+  }
+
+  @Get(':id')
+  @ApiResponse({
+    status: 200,
+    type: Changelog,
+  })
+  findOne(@CurrentUser() { agencyId }: User, @Param() { id }: IdDto) {
+    return this.changelogsService.findOne(id, agencyId);
   }
 }

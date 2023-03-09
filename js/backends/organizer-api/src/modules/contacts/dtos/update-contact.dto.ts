@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
   IsString,
@@ -10,12 +11,14 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateContactDto {
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   @MaxLength(100)
   @ApiProperty({ example: 'Jan' })
   firstName: string;
 
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   @MaxLength(100)
   @ApiProperty({ example: 'Kowalski' })
   lastName: string;

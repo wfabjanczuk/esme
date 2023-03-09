@@ -14,7 +14,7 @@ var (
 	ErrInvalidEmail       = errors.New("invalid email address")
 	ErrInvalidPassword    = errors.New("invalid password")
 	ErrInvalidCredentials = errors.New("invalid email or password")
-	ErrInvalidQueryId     = errors.New("invalid `id` query parameter")
+	ErrInvalidRouteId     = errors.New("invalid `id` route parameter")
 
 	ErrPasswordTooShort    = errors.New("password must be at least 8 characters")
 	ErrNewPasswordTooShort = errors.New("newPassword must be at least 8 characters")
@@ -33,4 +33,8 @@ func NewErrInvalidTimeFilter(field string) error {
 
 func NewErrEventNotFound(id int) error {
 	return errors.New(fmt.Sprintf("event with id %d not found", id))
+}
+
+func NewErrUserNotFound(id int) error {
+	return errors.New(fmt.Sprintf("user with id %d not found", id))
 }

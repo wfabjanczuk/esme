@@ -7,6 +7,7 @@ import (
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/out"
+	"sync"
 	"time"
 )
 
@@ -16,6 +17,7 @@ type ParticipantConnection struct {
 	Participant  *authentication.Participant
 	wsConnection *websocket.Conn
 	logger       *log.Logger
+	outMutex     sync.Mutex
 }
 
 func NewParticipantConnection(
@@ -51,6 +53,9 @@ func (c *ParticipantConnection) Read() (*protocol.Message, error) {
 }
 
 func (c *ParticipantConnection) Send(outMsg *protocol.Message) {
+	c.outMutex.Lock()
+	defer c.outMutex.Unlock()
+
 	err := c.wsConnection.WriteJSON(outMsg)
 	if err != nil {
 		c.logger.Printf("could not send %s to %s: %s\n", outMsg.Type, c.GetInfo(), err)
@@ -64,12 +69,7 @@ func (c *ParticipantConnection) SendInfo(info string) {
 		c.logger.Printf("could not parse info for %s: %s\n", c.GetInfo(), e)
 		return
 	}
-
-	e = c.wsConnection.WriteJSON(outMsg)
-	if e != nil {
-		c.logger.Printf("could not send info to %s: %s\n", c.GetInfo(), e)
-		return
-	}
+	c.Send(outMsg)
 }
 
 func (c *ParticipantConnection) SendError(err error) {
@@ -78,12 +78,7 @@ func (c *ParticipantConnection) SendError(err error) {
 		c.logger.Printf("could not parse error for %s: %s\n", c.GetInfo(), e)
 		return
 	}
-
-	e = c.wsConnection.WriteJSON(outMsg)
-	if e != nil {
-		c.logger.Printf("could not send error to %s: %s\n", c.GetInfo(), e)
-		return
-	}
+	c.Send(outMsg)
 }
 
 func (c *ParticipantConnection) Close() {

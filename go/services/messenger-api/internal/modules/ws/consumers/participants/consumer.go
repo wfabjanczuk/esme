@@ -41,6 +41,7 @@ func (c *Consumer) ListenOnConnection(conn *connections.ParticipantConnection) {
 		}
 	}()
 
+	c.consumeGetChats(conn)
 	for {
 		msg, err := conn.Read()
 		if err != nil {
@@ -59,7 +60,7 @@ func (c *Consumer) ListenOnConnection(conn *connections.ParticipantConnection) {
 func (c *Consumer) consumeMessage(conn *connections.ParticipantConnection, msg *protocol.Message) {
 	switch msg.Type {
 	case in.MsgTypeGetChats:
-		c.consumeGetChats(conn, msg)
+		c.consumeGetChats(conn)
 	case in.MsgTypeSendMessage:
 		c.consumeSendMessage(conn, msg)
 	case in.MsgTypeGetChatHistory:
