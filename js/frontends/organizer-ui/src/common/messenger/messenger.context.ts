@@ -1,19 +1,35 @@
-import React from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { Action } from './structures'
 import { newWebSocket } from './websocket'
 
+const emptySetState = (): void => {}
+
 export class Messenger {
-  private webSocket: WebSocket = undefined as unknown as WebSocket
+  constructor (
+    private readonly setState: Dispatch<SetStateAction<Messenger>> = emptySetState,
+    private webSocket: WebSocket = undefined as unknown as WebSocket
+  ) {
+  }
+
+  hasState (): boolean {
+    return this.setState !== emptySetState
+  }
 
   isInitialized (): boolean {
     return this.webSocket?.readyState === WebSocket.OPEN
   }
 
   initialize (authorizationHeader: string, dispatch: React.Dispatch<Action>): void {
-    if (this.isInitialized()) {
-      this.webSocket.close()
+    if (this.webSocket !== undefined) {
+      return
     }
-    this.webSocket = newWebSocket(authorizationHeader, dispatch)
+
+    this.webSocket = newWebSocket(authorizationHeader, dispatch, () => {
+      this.webSocket.send(JSON.stringify({
+        Authorization: authorizationHeader
+      }))
+      this.refreshState()
+    })
   }
 
   getChats (): void {
@@ -33,8 +49,15 @@ export class Messenger {
   sendMessage (chatId: string, message: string): void {
     this.webSocket.send(JSON.stringify({
       type: 'send_message',
-      payload: { chatId, message }
+      payload: {
+        chatId,
+        message
+      }
     }))
+  }
+
+  private refreshState (): void {
+    this.setState(new Messenger(this.setState, this.webSocket))
   }
 }
 

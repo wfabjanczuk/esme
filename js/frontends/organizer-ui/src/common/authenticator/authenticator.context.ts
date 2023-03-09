@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import Cookies from 'js-cookie'
 import axios, { AxiosError } from 'axios'
 import { config } from '../../app/config'
@@ -15,7 +15,7 @@ interface SignInResponse {
 
 export class Authenticator {
   constructor (
-    private readonly setState: (authenticator: Authenticator) => void = emptySetState,
+    private readonly setState: Dispatch<SetStateAction<Authenticator>> = emptySetState,
     public readonly authorizationHeader: string = ''
   ) {
   }
@@ -39,7 +39,7 @@ export class Authenticator {
     }
 
     const { token } = JSON.parse(authCookie) as SignInResponse
-    this.update(`Bearer ${token}`)
+    this.refreshState(`Bearer ${token}`)
   }
 
   async signIn (email: string, password: string): Promise<string[]> {
@@ -47,12 +47,12 @@ export class Authenticator {
       .then(({ data }) => {
         // TODO: use Secure, HttpOnly and SameSite attributes in cookie
         Cookies.set(authCookieName, JSON.stringify(data), { expires: 1 })
-        this.update(`Bearer ${data.token}`)
+        this.refreshState(`Bearer ${data.token}`)
         return [] as string[]
       })
       .catch(e => {
         Cookies.remove(authCookieName)
-        this.update('')
+        this.refreshState('')
         return parseErrorMessage(e?.response?.data?.message)
       })
   }
@@ -62,7 +62,7 @@ export class Authenticator {
       headers: { Authorization: this.authorizationHeader }
     }).finally(() => {
       Cookies.remove(authCookieName)
-      this.update('')
+      this.refreshState('')
       window.location.replace('/')
     })
   }
@@ -81,7 +81,7 @@ export class Authenticator {
     return false
   }
 
-  private update (authorizationHeader: string): void {
+  private refreshState (authorizationHeader: string): void {
     this.setState(new Authenticator(this.setState, authorizationHeader))
   }
 }

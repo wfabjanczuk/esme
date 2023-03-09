@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { AlertColor } from '@mui/material/Alert/Alert'
 
 const emptySetState = (): void => {}
@@ -11,7 +11,7 @@ interface Alert {
 
 export class AlertStore {
   constructor (
-    private readonly setState: (alertStore: AlertStore) => void = emptySetState,
+    private readonly setState: Dispatch<SetStateAction<AlertStore>> = emptySetState,
     public readonly alerts: Alert[] = []
   ) {
   }
@@ -27,12 +27,12 @@ export class AlertStore {
     })
     setTimeout(() => {
       this.alerts.shift()
-      this.update()
+      this.refreshState()
     }, alertDisplayTime)
-    this.update()
+    this.refreshState()
   }
 
-  private update (): void {
+  private refreshState (): void {
     this.setState(new AlertStore(this.setState, this.alerts))
   }
 }

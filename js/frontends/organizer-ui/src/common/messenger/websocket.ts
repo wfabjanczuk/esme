@@ -6,15 +6,12 @@ const connectUrl = `${config.messengerApiUrl}/connect`
 
 export const newWebSocket = (
   authorizationHeader: string,
-  dispatch: React.Dispatch<Action>
+  dispatch: React.Dispatch<Action>,
+  onOpen: () => void
 ): WebSocket => {
   const webSocket = new WebSocket(connectUrl)
 
-  webSocket.addEventListener('open', () => {
-    webSocket.send(JSON.stringify({
-      Authorization: authorizationHeader
-    }))
-  })
+  webSocket.addEventListener('open', onOpen)
 
   webSocket.addEventListener('message', (e) => {
     dispatch(JSON.parse(e.data))

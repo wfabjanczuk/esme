@@ -1,5 +1,5 @@
-import { Reducer, useContext, useEffect, useReducer } from 'react'
-import { Messenger, MessengerContext } from './messenger.context'
+import { Reducer, useContext, useEffect, useReducer, useState } from 'react'
+import { Messenger } from './messenger.context'
 import { AuthenticatorContext } from '../authenticator/authenticator.context'
 import { emptyInbox, Inbox, InboxReducer } from './inbox.context'
 import { Action } from './structures'
@@ -10,13 +10,19 @@ export interface NewMessengerHook {
 }
 
 export const useNewMessenger = (): NewMessengerHook => {
+  const [messenger, setMessenger] = useState<Messenger>(new Messenger())
   const [inbox, dispatch] = useReducer<Reducer<Inbox, Action>>(InboxReducer, emptyInbox)
   const { authorizationHeader } = useContext(AuthenticatorContext)
-  const messenger = useContext(MessengerContext)
 
   useEffect(() => {
-    messenger.initialize(authorizationHeader, dispatch)
+    setMessenger(new Messenger(setMessenger))
   }, [])
+
+  useEffect(() => {
+    if (messenger.hasState()) {
+      messenger.initialize(authorizationHeader, dispatch)
+    }
+  }, [messenger.hasState()])
 
   useEffect(() => {
     inbox.chats.forEach(chat => {
