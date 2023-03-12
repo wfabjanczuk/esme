@@ -1,13 +1,14 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { EventsScreen } from '../modules/events/screens/events.screen'
-import { HelpScreen } from '../modules/help/screens/help.screen'
-import { AnnouncementsScreen } from '../modules/messages/screens/announcements.screen'
-import { ConversationScreen } from '../modules/messages/screens/conversation.screen'
-import { ThreadsScreen } from '../modules/messages/screens/threads.screen'
-import { SettingsScreen } from '../modules/settings/screens/settings.screen'
-import { getScreenOptions } from './app.styles'
+import { EventsScreen } from '../../../modules/events/screens/events.screen'
+import { HelpScreen } from '../../../modules/help/screens/help.screen'
+import { AnnouncementsScreen } from '../../../modules/messages/screens/announcements.screen'
+import { ConversationScreen } from '../../../modules/messages/screens/conversation.screen'
+import { ThreadsScreen } from '../../../modules/messages/screens/threads.screen'
+import { SettingsScreen } from '../../../modules/settings/screens/settings.screen'
+import { getScreenOptions } from './styles'
+import { NavigationContainer } from '@react-navigation/native'
 
 const FrontStack = createNativeStackNavigator()
 const MainTabs = createBottomTabNavigator()
@@ -23,7 +24,7 @@ const MainNavigator = (): JSX.Element => (
   </MainTabs.Navigator>
 )
 
-export const AppNavigator = (): JSX.Element => (
+const InternalNavigator = (): JSX.Element => (
   <FrontStack.Navigator screenOptions={getScreenOptions}>
     <FrontStack.Screen name='Main' component={MainNavigator} />
     <FrontStack.Screen
@@ -37,4 +38,10 @@ export const AppNavigator = (): JSX.Element => (
       options={{ headerShown: true }}
     />
   </FrontStack.Navigator>
+)
+
+export const NavigationInternal = (): JSX.Element => (
+  <NavigationContainer>
+    <InternalNavigator />
+  </NavigationContainer>
 )
