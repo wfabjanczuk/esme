@@ -51,6 +51,10 @@ const title: textStyleProvider = theme => `
   margin: ${theme.spaces[3]} 0;
 `
 
+const error: textStyleProvider = theme => `
+  color: ${theme.colors.text.error};
+`
+
 type variantKey = keyof typeof variants
 
 const variants = {
@@ -61,7 +65,8 @@ const variants = {
   activeCaption,
   placeholder,
   checkboxLabel,
-  title
+  title,
+  error
 }
 
 interface StyledTextProps {

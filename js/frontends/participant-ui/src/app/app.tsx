@@ -17,12 +17,6 @@ export const App = (): JSX.Element => {
     return <></>
   }
 
-  if (authenticator.isAuthorized()) {
-    console.log('Authorized')
-  } else {
-    console.log('Not authorized')
-  }
-
   return (
     <ThemeProvider theme={globalTheme}>
       <PaperProvider theme={paperTheme} settings={{
@@ -34,7 +28,7 @@ export const App = (): JSX.Element => {
               backgroundColor={globalTheme.colors.bg.primary}
               barStyle='dark-content'
             />
-            {!authenticator.isAuthorized()
+            {authenticator.isAuthorized()
               ? <NavigationInternal />
               : <NavigationExternal />
             }

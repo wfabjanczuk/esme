@@ -5,10 +5,14 @@ import { ButtonGroup, CancelButton, Form, FormScrollView, RegisterButton, Styled
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ParamListBase } from '@react-navigation/native'
 import { useValues } from '../../common/hooks/values.hook'
+import { useSignUp } from './sign-up.hook'
+import { FormErrors } from '../../common/components/form-errors.component'
 
 type SignUpScreenProps = NativeStackScreenProps<ParamListBase, 'Registration'>
 
 export const SignUpScreen = ({ navigation }: SignUpScreenProps): JSX.Element => {
+  const { signUp, errorMessages } = useSignUp()
+  const isError = errorMessages.length > 0
   const {
     values,
     newSetter
@@ -24,32 +28,17 @@ export const SignUpScreen = ({ navigation }: SignUpScreenProps): JSX.Element => 
       <FormScrollView>
         <StyledText variant='title'>Register as a participant</StyledText>
         <Form>
-          <StyledTextInput label='email' mode='outlined'
+          <StyledTextInput label='email' mode='outlined' error={isError}
             onChangeText={newSetter('email')}/>
-          <StyledTextInput label='phone number' mode='outlined'
+          <StyledTextInput label='phone number' mode='outlined' error={isError}
             onChangeText={newSetter('phoneNumber')}/>
-          <StyledTextInput label='password' mode='outlined' secureTextEntry
+          <StyledTextInput label='password' mode='outlined' error={isError} secureTextEntry
             onChangeText={newSetter('password')}/>
-          <StyledTextInput label='confirm password' mode='outlined' secureTextEntry
+          <StyledTextInput label='confirm password' mode='outlined' error={isError} secureTextEntry
             onChangeText={newSetter('confirmPassword')}/>
-          <StyledTextInput label='email' mode='outlined'
-            onChangeText={newSetter('email')}/>
-          <StyledTextInput label='phone number' mode='outlined'
-            onChangeText={newSetter('phoneNumber')}/>
-          <StyledTextInput label='password' mode='outlined' secureTextEntry
-            onChangeText={newSetter('password')}/>
-          <StyledTextInput label='confirm password' mode='outlined' secureTextEntry
-            onChangeText={newSetter('confirmPassword')}/>
-          <StyledTextInput label='email' mode='outlined'
-            onChangeText={newSetter('email')}/>
-          <StyledTextInput label='phone number' mode='outlined'
-            onChangeText={newSetter('phoneNumber')}/>
-          <StyledTextInput label='password' mode='outlined' secureTextEntry
-            onChangeText={newSetter('password')}/>
-          <StyledTextInput label='confirm password' mode='outlined' secureTextEntry
-            onChangeText={newSetter('confirmPassword')}/>
+          <FormErrors errorMessages={errorMessages} />
           <ButtonGroup>
-            <RegisterButton icon='person-add' onPress={() => console.log(values)}>
+            <RegisterButton icon='person-add' onPress={() => signUp(values)}>
               Register
             </RegisterButton>
             <CancelButton icon='close' onPress={() => navigation.navigate('Authentication')}>

@@ -6,15 +6,16 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ParamListBase } from '@react-navigation/native'
 import { useValues } from '../../common/hooks/values.hook'
 import { useSignIn } from './sign-in.hook'
+import { FormErrors } from '../../common/components/form-errors.component'
 
 type SignInScreenProps = NativeStackScreenProps<ParamListBase, 'Authentication'>
 
 export const SignInScreen = ({ navigation }: SignInScreenProps): JSX.Element => {
   const { signIn, errorMessages } = useSignIn()
+  const isError = errorMessages.length > 0
   const { values, newSetter } = useValues({
     email: '', password: ''
   })
-  console.log(errorMessages)
 
   return (
     <SafeAreaCentered>
@@ -22,8 +23,13 @@ export const SignInScreen = ({ navigation }: SignInScreenProps): JSX.Element => 
         <StyledText variant='title'>Emergency service</StyledText>
         <StyledText variant='placeholder'>Sign in as a participant</StyledText>
         <Form>
-          <StyledTextInput label='email' mode='outlined' onChangeText={newSetter('email')}/>
-          <StyledTextInput label='password' mode='outlined' onChangeText={newSetter('password')} secureTextEntry/>
+          <StyledTextInput label='email' mode='outlined' error={isError}
+            onChangeText={newSetter('email')}
+          />
+          <StyledTextInput label='password' mode='outlined' error={isError} secureTextEntry
+            onChangeText={newSetter('password')}
+          />
+          <FormErrors errorMessages={errorMessages} />
           <ButtonGroup>
             <SignInButton icon='login' onPress={() => signIn(values)}>
               Sign in
