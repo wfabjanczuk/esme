@@ -1,5 +1,5 @@
 import styled from 'styled-components/native'
-import { PaperListItem } from '../../../../shared/components/overrides'
+import { PaperListItem } from '../../../../common/components/overrides'
 
 export const ThreadCardContent = styled(PaperListItem)`
   padding-left: ${props => props.theme.spaces[2]};

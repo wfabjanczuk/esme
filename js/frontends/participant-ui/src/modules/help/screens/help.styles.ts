@@ -1,6 +1,6 @@
 import styled from 'styled-components/native'
-import { theme as globalTheme } from '../../../theme'
-import { PaperButton, PaperTextInput } from '../../../shared/components/overrides'
+import { theme as globalTheme } from '../../../layout'
+import { PaperButton, PaperTextInput } from '../../../common/components/overrides'
 
 export const HelpFormButton = styled(PaperButton).attrs({
   mode: 'contained',

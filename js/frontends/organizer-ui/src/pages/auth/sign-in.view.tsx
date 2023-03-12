@@ -11,6 +11,7 @@ export const SignInView = (): JSX.Element => {
       <AlertBar size='small'/>
       <Paper sx={styles.layout.cardSmall}>
         <Typography variant='h4' component='h1' sx={styles.layout.title}>Emergency service</Typography>
+        <Typography sx={styles.layout.placeholderText}>Sign in as an organizer</Typography>
         <SignInForm/>
       </Paper>
     </Box>

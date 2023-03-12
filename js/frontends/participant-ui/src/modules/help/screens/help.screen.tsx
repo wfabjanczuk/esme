@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { Checkbox } from 'react-native-paper'
-import { StyledText } from '../../../shared/components/typography/styled-text.component'
-import { SafeArea } from '../../../shared/containers/safe-area.component'
+import { StyledText } from '../../../common/components/typography/styled-text.component'
+import { SafeArea } from '../../../common/components/containers/safe-area.component'
 import {
   HelpFormButton,
   HelpFormCheckboxInputContainer,
   HelpFormInput
 } from './help.styles'
-import { Spacer } from '../../../shared/components/spacer/spacer.component'
+import { Spacer } from '../../../common/components/spacer/spacer.component'
 
 export const HelpScreen = (): JSX.Element => {
   const [checked, setChecked] = useState(false)
@@ -31,7 +31,7 @@ export const HelpScreen = (): JSX.Element => {
           Start conversation with support team
         </StyledText>
       </HelpFormCheckboxInputContainer>
-      <HelpFormButton icon='phone-outgoing' onPress={() => null}>
+      <HelpFormButton icon='phone-forwarded' onPress={() => null}>
         Request help
       </HelpFormButton>
     </SafeArea>

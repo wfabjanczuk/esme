@@ -1,9 +1,9 @@
 import React from 'react'
 import { ScrollView } from 'react-native'
 import { Divider, List } from 'react-native-paper'
-import { Spacer } from '../../../shared/components/spacer/spacer.component'
-import { StyledText } from '../../../shared/components/typography/styled-text.component'
-import { SafeArea } from '../../../shared/containers/safe-area.component'
+import { Spacer } from '../../../common/components/spacer/spacer.component'
+import { StyledText } from '../../../common/components/typography/styled-text.component'
+import { SafeArea } from '../../../common/components/containers/safe-area.component'
 import {
   AvatarContainer,
   AvatarPlaceholder,
@@ -31,14 +31,14 @@ export const SettingsScreen = (): JSX.Element => (
         <SettingsItem
           title={<StyledText>Edit profile data</StyledText>}
           left={props => (
-            <SettingsItemIcon {...props} icon='square-edit-outline' />
+            <SettingsItemIcon {...props} icon='edit' />
           )}
           onPress={() => null}
         />
         <Divider />
         <SettingsItem
           title={<StyledText>Logout</StyledText>}
-          left={props => <SettingsItemIcon {...props} icon='door' />}
+          left={props => <SettingsItemIcon {...props} icon='logout' />}
           onPress={() => null}
         />
         <Divider />

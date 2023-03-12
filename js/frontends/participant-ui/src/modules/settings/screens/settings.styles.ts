@@ -1,6 +1,6 @@
 import styled from 'styled-components/native'
-import { colors } from '../../../theme/colors'
-import { PaperAvatarIcon, PaperListIcon, PaperListItem } from '../../../shared/components/overrides'
+import { colors } from '../../../layout/colors'
+import { PaperAvatarIcon, PaperListIcon, PaperListItem } from '../../../common/components/overrides'
 
 export const AvatarContainer = styled.View`
   align-items: center;
@@ -9,7 +9,7 @@ export const AvatarContainer = styled.View`
 
 export const AvatarPlaceholder = styled(PaperAvatarIcon).attrs({
   size: 180,
-  icon: 'account',
+  icon: 'person',
   backgroundColor: colors.brand.primary
 })``
 

@@ -40,6 +40,10 @@ const layout = {
     display: 'flex',
     justifyContent: 'space-between'
   },
+  placeholderText: {
+    color: '#8393A0',
+    fontStyle: 'italic'
+  },
   content: {
     flex: 1,
     py: 2,

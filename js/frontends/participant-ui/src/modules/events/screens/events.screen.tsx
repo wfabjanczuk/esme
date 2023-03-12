@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import { FlatList, Text, TouchableOpacity } from 'react-native'
 
-import { SafeArea } from '../../../shared/containers/safe-area.component'
-import { MockContext } from '../../../shared/services/mock/mock.context'
+import { SafeArea } from '../../../common/components/containers/safe-area.component'
+import { MockContext } from '../../../common/services/mock/mock.context'
 
 export const EventsScreen = (): JSX.Element => {
   const { events } = useContext(MockContext)

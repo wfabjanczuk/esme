@@ -1,6 +1,6 @@
 import styled from 'styled-components/native'
-import { colors } from '../../../../theme/colors'
-import { PaperIconButton } from '../../../../shared/components/overrides'
+import { colors } from '../../../../layout/colors'
+import { PaperIconButton } from '../../../../common/components/overrides'
 import { Platform } from 'react-native'
 
 const isIos = Platform.OS === 'ios'

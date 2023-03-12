@@ -7,7 +7,7 @@ import { ThreadCardTitle } from './thread-card-title.component'
 import { ThreadCardContent } from './thread-card.styles'
 import { ThreadDescription } from './thread-description.component'
 import { ThreadIcon } from './thread-icon.component'
-import { Thread } from '../../../../shared/services/mock/mock.context'
+import { Thread } from '../../../../common/services/mock/mock.context'
 
 interface ThreadCardProps {
   thread: Thread

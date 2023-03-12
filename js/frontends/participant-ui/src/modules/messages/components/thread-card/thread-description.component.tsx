@@ -1,6 +1,6 @@
 import React from 'react'
 import { format } from 'date-fns'
-import { StyledText } from '../../../../shared/components/typography/styled-text.component'
+import { StyledText } from '../../../../common/components/typography/styled-text.component'
 
 const formatThreadDateLastUpdated = (date: Date): string => {
   const today = new Date()

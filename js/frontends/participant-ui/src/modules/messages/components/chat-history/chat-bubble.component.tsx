@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTheme } from 'styled-components/native'
 
-import { StyledText } from '../../../../shared/components/typography/styled-text.component'
+import { StyledText } from '../../../../common/components/typography/styled-text.component'
 import { ChatBubbleView, getBubbleVariant } from './chat-bubble.styles'
 
 interface ChatBubbleProps {

@@ -1,5 +1,5 @@
 import styled from 'styled-components/native'
-import { PaperBadge } from '../../../../shared/components/overrides'
+import { PaperBadge } from '../../../../common/components/overrides'
 
 export const ThreadBadgeContainer = styled.View`
   justify-content: center;

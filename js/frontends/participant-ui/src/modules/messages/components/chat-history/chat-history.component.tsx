@@ -1,9 +1,9 @@
 import React from 'react'
 import { ScrollView } from 'react-native'
 
-import { Spacer } from '../../../../shared/components/spacer/spacer.component'
+import { Spacer } from '../../../../common/components/spacer/spacer.component'
 import { ChatBubble } from './chat-bubble.component'
-import { Message } from '../../../../shared/services/mock/mock.context'
+import { Message } from '../../../../common/services/mock/mock.context'
 
 interface ChatHistoryProps {
   conversation: Message[]

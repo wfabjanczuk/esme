@@ -1,6 +1,6 @@
 import React from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { theme as globalTheme } from '../../../../theme'
+import { theme as globalTheme } from '../../../../layout'
 import { ThreadCardIconContainer } from './thread-icon.styles'
 
 interface ThreadIconProps {
