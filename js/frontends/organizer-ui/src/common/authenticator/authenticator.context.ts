@@ -44,10 +44,10 @@ export class Authenticator {
 
   async signIn (email: string, password: string): Promise<string[]> {
     return await axios.post<SignInResponse>(signInUrl, { email, password })
-      .then(({ data }) => {
+      .then(({ data: { token } }) => {
         // TODO: use Secure, HttpOnly and SameSite attributes in cookie
-        Cookies.set(authCookieName, JSON.stringify(data), { expires: 1 })
-        this.refreshState(`Bearer ${data.token}`)
+        Cookies.set(authCookieName, JSON.stringify({ token }), { expires: 1 })
+        this.refreshState(`Bearer ${token}`)
         return [] as string[]
       })
       .catch(e => {
