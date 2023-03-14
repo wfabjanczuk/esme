@@ -1,18 +1,23 @@
 import React from 'react'
 import { SafeAreaCentered } from '../../common/components/containers/safe-area.component'
 import { StyledText } from '../../common/components/typography/styled-text.component'
-import { ButtonGroup, CancelButton, Form, FormScrollView, RegisterButton, StyledTextInput } from './styles'
+import { ButtonGroup, CancelButton, Form, RegisterButton, StyledTextInput } from './styles'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ParamListBase } from '@react-navigation/native'
 import { useValues } from '../../common/hooks/values.hook'
 import { useSignUp } from './sign-up.hook'
 import { FormErrors } from '../../common/components/form-errors.component'
+import { FullScreenScrollView } from '../../common/components/containers/full-screen-scroll-view.component'
 
 type SignUpScreenProps = NativeStackScreenProps<ParamListBase, 'Registration'>
 
 export const SignUpScreen = ({ navigation }: SignUpScreenProps): JSX.Element => {
-  const { signUp, errorMessages } = useSignUp()
+  const {
+    signUp,
+    errorMessages
+  } = useSignUp()
   const isError = errorMessages.length > 0
+
   const {
     values,
     newSetter
@@ -25,7 +30,7 @@ export const SignUpScreen = ({ navigation }: SignUpScreenProps): JSX.Element => 
 
   return (
     <SafeAreaCentered>
-      <FormScrollView>
+      <FullScreenScrollView>
         <StyledText variant='title'>Register as a participant</StyledText>
         <Form>
           <StyledTextInput label='email' mode='outlined' error={isError}
@@ -36,7 +41,7 @@ export const SignUpScreen = ({ navigation }: SignUpScreenProps): JSX.Element => 
             onChangeText={newSetter('password')}/>
           <StyledTextInput label='confirm password' mode='outlined' error={isError} secureTextEntry
             onChangeText={newSetter('confirmPassword')}/>
-          <FormErrors errorMessages={errorMessages} />
+          <FormErrors errorMessages={errorMessages}/>
           <ButtonGroup>
             <RegisterButton icon='person-add' onPress={() => signUp(values)}>
               Register
@@ -46,7 +51,7 @@ export const SignUpScreen = ({ navigation }: SignUpScreenProps): JSX.Element => 
             </CancelButton>
           </ButtonGroup>
         </Form>
-      </FormScrollView>
+      </FullScreenScrollView>
     </SafeAreaCentered>
   )
 }

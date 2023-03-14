@@ -1,25 +1,33 @@
 import React from 'react'
 import { SafeAreaCentered } from '../../common/components/containers/safe-area.component'
 import { StyledText } from '../../common/components/typography/styled-text.component'
-import { ButtonGroup, Form, FormScrollView, RegisterButton, SignInButton, StyledTextInput } from './styles'
+import { ButtonGroup, Form, RegisterButton, SignInButton, StyledTextInput } from './styles'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ParamListBase } from '@react-navigation/native'
 import { useValues } from '../../common/hooks/values.hook'
 import { useSignIn } from './sign-in.hook'
 import { FormErrors } from '../../common/components/form-errors.component'
+import { FullScreenScrollView } from '../../common/components/containers/full-screen-scroll-view.component'
 
 type SignInScreenProps = NativeStackScreenProps<ParamListBase, 'Authentication'>
 
 export const SignInScreen = ({ navigation }: SignInScreenProps): JSX.Element => {
-  const { signIn, errorMessages } = useSignIn()
+  const {
+    signIn,
+    errorMessages
+  } = useSignIn()
   const isError = errorMessages.length > 0
-  const { values, newSetter } = useValues({
-    email: '', password: ''
+  const {
+    values,
+    newSetter
+  } = useValues({
+    email: '',
+    password: ''
   })
 
   return (
     <SafeAreaCentered>
-      <FormScrollView>
+      <FullScreenScrollView>
         <StyledText variant='title'>Emergency service</StyledText>
         <StyledText variant='placeholder'>Sign in as a participant</StyledText>
         <Form>
@@ -29,7 +37,7 @@ export const SignInScreen = ({ navigation }: SignInScreenProps): JSX.Element => 
           <StyledTextInput label='password' mode='outlined' error={isError} secureTextEntry
             onChangeText={newSetter('password')}
           />
-          <FormErrors errorMessages={errorMessages} />
+          <FormErrors errorMessages={errorMessages}/>
           <ButtonGroup>
             <SignInButton icon='login' onPress={() => signIn(values)}>
               Sign in
@@ -39,7 +47,7 @@ export const SignInScreen = ({ navigation }: SignInScreenProps): JSX.Element => 
             </RegisterButton>
           </ButtonGroup>
         </Form>
-      </FormScrollView>
+      </FullScreenScrollView>
     </SafeAreaCentered>
   )
 }

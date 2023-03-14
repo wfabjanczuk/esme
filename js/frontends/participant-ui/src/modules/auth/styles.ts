@@ -1,16 +1,6 @@
 import styled from 'styled-components/native'
 import { PaperButton, PaperTextInput } from '../../common/components/overrides'
 import { theme as globalTheme } from '../../layout'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-
-export const FormScrollView = styled(KeyboardAwareScrollView).attrs({
-  contentContainerStyle: {
-    minHeight: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center'
-  }
-})``
 
 export const Form = styled.View`
   margin: ${props => props.theme.spaces[1]} ${props => props.theme.spaces[0]};
