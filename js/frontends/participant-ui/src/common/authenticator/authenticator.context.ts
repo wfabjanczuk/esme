@@ -63,7 +63,6 @@ export class Authenticator {
     }).finally(() => {
       void SecureStore.deleteItemAsync(secureItemName)
       this.refreshState('')
-      window.location.replace('/')
     })
   }
 
