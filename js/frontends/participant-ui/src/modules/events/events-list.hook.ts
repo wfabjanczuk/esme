@@ -2,8 +2,8 @@ import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react
 import { Authenticator, AuthenticatorContext } from '../../common/authenticator/authenticator.context'
 import { Event } from './event.entity'
 import axios from 'axios'
-import { parseErrorMessage } from '../../common/utils'
 import { config } from '../../app/config'
+import { parseErrorData } from '../../common/utils'
 
 const eventsUrl = `${config.participantApiUrl}/events`
 
@@ -29,7 +29,10 @@ export const useEventsList = (): EventsListHook => {
   })
 
   const setQuery = (query: string): void => {
-    setState({ ...state, query })
+    setState({
+      ...state,
+      query
+    })
   }
 
   useEffect(() => {
@@ -37,7 +40,11 @@ export const useEventsList = (): EventsListHook => {
     void fetchAsync(state.query, setState, authenticator)
   }, [authenticator, state.query])
 
-  return { events: state.events, errorMessages: state.errorMessages, setQuery }
+  return {
+    events: state.events,
+    errorMessages: state.errorMessages,
+    setQuery
+  }
 }
 
 const fetchAsync = async (
@@ -64,7 +71,7 @@ const fetchAsync = async (
       setState(prevState => ({
         ...prevState,
         events: [],
-        errorMessages: parseErrorMessage(e?.response?.data?.message)
+        errorMessages: parseErrorData(e?.response?.data)
       }))
     })
 }

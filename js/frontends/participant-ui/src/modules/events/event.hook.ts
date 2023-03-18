@@ -3,13 +3,15 @@ import { Event } from './event.entity'
 import axios from 'axios'
 import { Authenticator, AuthenticatorContext } from '../../common/authenticator/authenticator.context'
 import { config } from '../../app/config'
-import { parseErrorMessage } from '../../common/utils'
+import { parseErrorData } from '../../common/utils'
 
 const eventsUrl = `${config.participantApiUrl}/events`
 
 export interface EventHook {
   errorMessages: string[]
   event?: Event
+  subscribe: () => void
+  unsubscribe: () => void
 }
 
 interface State {
@@ -30,8 +32,18 @@ export const useEvent = (id: number): EventHook => {
     void fetchAsync(url, authenticator, setState)
   }, [authenticator])
 
+  const subscribe = (): void => {
+    void subscribeAsync(url, authenticator, setState)
+  }
+
+  const unsubscribe = (): void => {
+    void unsubscribeAsync(url, authenticator, setState)
+  }
+
   return {
-    ...state
+    ...state,
+    subscribe,
+    unsubscribe
   }
 }
 
@@ -51,7 +63,49 @@ const fetchAsync = async (
       }
       setState({
         event: undefined,
-        errorMessages: parseErrorMessage(e?.response?.data?.message)
+        errorMessages: parseErrorData(e?.response?.data)
       })
+    })
+}
+
+const subscribeAsync = async (
+  url: string,
+  authenticator: Authenticator,
+  setState: Dispatch<SetStateAction<State>>
+): Promise<void> => {
+  const subscribeUrl = `${url}/subscribes`
+  return await axios.post(subscribeUrl, {}, { headers: { Authorization: authenticator.authorizationHeader } })
+    .then(({ data }) => {
+      console.log('successfully subscribed on', subscribeUrl)
+    })
+    .catch(e => {
+      if (authenticator.isAuthError(e)) {
+        return
+      }
+      setState(prevState => ({
+        ...prevState,
+        errorMessages: parseErrorData(e?.response?.data)
+      }))
+    })
+}
+
+const unsubscribeAsync = async (
+  url: string,
+  authenticator: Authenticator,
+  setState: Dispatch<SetStateAction<State>>
+): Promise<void> => {
+  const unsubscribeUrl = `${url}/unsubscribes`
+  return await axios.post(unsubscribeUrl, {}, { headers: { Authorization: authenticator.authorizationHeader } })
+    .then(({ data }) => {
+      console.log('successfully unsubscribed from', unsubscribeUrl)
+    })
+    .catch(e => {
+      if (authenticator.isAuthError(e)) {
+        return
+      }
+      setState(prevState => ({
+        ...prevState,
+        errorMessages: parseErrorData(e?.response?.data)
+      }))
     })
 }

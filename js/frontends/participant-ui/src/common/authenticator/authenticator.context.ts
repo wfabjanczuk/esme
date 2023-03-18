@@ -1,13 +1,14 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import axios, { AxiosError } from 'axios'
 import { config } from '../../app/config'
-import { parseErrorMessage } from '../utils'
+import { parseErrorData } from '../utils'
 import * as SecureStore from 'expo-secure-store'
 
 const secureItemName = 'esme_authorization'
 const signInUrl = `${config.participantApiUrl}/auth/sign-in`
 const signOutUrl = `${config.participantApiUrl}/auth/sign-out`
-const emptySetState = (): void => {}
+const emptySetState = (): void => {
+}
 
 interface SignInResponse {
   token: string
@@ -44,7 +45,10 @@ export class Authenticator {
   }
 
   async signIn (email: string, password: string): Promise<string[]> {
-    return await axios.post<SignInResponse>(signInUrl, { email, password })
+    return await axios.post<SignInResponse>(signInUrl, {
+      email,
+      password
+    })
       .then(async ({ data: { token } }) => {
         void SecureStore.setItemAsync(secureItemName, JSON.stringify({ token }))
         this.refreshState(`Bearer ${token}`)
@@ -53,7 +57,7 @@ export class Authenticator {
       .catch(e => {
         void SecureStore.deleteItemAsync(secureItemName)
         this.refreshState('')
-        return parseErrorMessage(e?.response?.data?.message)
+        return parseErrorData(e?.response?.data)
       })
   }
 

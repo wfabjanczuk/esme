@@ -1,13 +1,14 @@
 import React from 'react'
 import { SafeAreaCentered } from '../../common/components/containers/safe-area.component'
 import { StyledText } from '../../common/components/typography/styled-text.component'
-import { ButtonGroup, CancelButton, Form, RegisterButton, StyledTextInput } from './styles'
+import { ButtonGroup, Form, StyledTextInput } from './styles'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useValues } from '../../common/hooks/values.hook'
 import { useSignUp } from './sign-up.hook'
 import { FormErrors } from '../../common/components/form-errors.component'
 import { FullScreenScrollView } from '../../common/components/containers/full-screen-scroll-view.component'
 import { FrontStackParamsList } from '../../app/navigation/navigation-external'
+import { ErrorButton, SuccessButton } from '../../common/components/button.component'
 
 type SignUpScreenProps = NativeStackScreenProps<FrontStackParamsList, 'Registration'>
 
@@ -43,12 +44,12 @@ export const SignUpScreen = ({ navigation }: SignUpScreenProps): JSX.Element => 
             onChangeText={newSetter('confirmPassword')}/>
           <FormErrors errorMessages={errorMessages}/>
           <ButtonGroup>
-            <RegisterButton icon='person-add' onPress={() => signUp(values)}>
+            <SuccessButton icon='person-add' onPress={() => signUp(values)}>
               Register
-            </RegisterButton>
-            <CancelButton icon='close' onPress={() => navigation.navigate('Authentication')}>
+            </SuccessButton>
+            <ErrorButton icon='close' onPress={() => navigation.navigate('Authentication')}>
               Cancel
-            </CancelButton>
+            </ErrorButton>
           </ButtonGroup>
         </Form>
       </FullScreenScrollView>

@@ -58,5 +58,6 @@ func (m *Module) attachRoutes(r *httprouter.Router, cu func(http.HandlerFunc) ht
 	r.HandlerFunc(http.MethodGet, "/chat-requests", cu(m.chatRequests.DoesChatRequestExist))
 	r.HandlerFunc(http.MethodPost, "/chat-requests", cu(m.chatRequests.RequestChat))
 
+	// TODO: secure GetUser endpoint
 	r.HandlerFunc(http.MethodGet, "/users/:id", m.users.GetUser)
 }

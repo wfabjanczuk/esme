@@ -1,13 +1,14 @@
 import React from 'react'
 import { SafeAreaCentered } from '../../common/components/containers/safe-area.component'
 import { StyledText } from '../../common/components/typography/styled-text.component'
-import { ButtonGroup, Form, RegisterButton, SignInButton, StyledTextInput } from './styles'
+import { ButtonGroup, Form, StyledTextInput } from './styles'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useValues } from '../../common/hooks/values.hook'
 import { useSignIn } from './sign-in.hook'
 import { FormErrors } from '../../common/components/form-errors.component'
 import { FullScreenScrollView } from '../../common/components/containers/full-screen-scroll-view.component'
 import { FrontStackParamsList } from '../../app/navigation/navigation-external'
+import { PrimaryButton, SuccessButton } from '../../common/components/button.component'
 
 type SignInScreenProps = NativeStackScreenProps<FrontStackParamsList, 'Authentication'>
 
@@ -40,12 +41,12 @@ export const SignInScreen = ({ navigation }: SignInScreenProps): JSX.Element => 
           />
           <FormErrors errorMessages={errorMessages}/>
           <ButtonGroup>
-            <SignInButton icon='login' onPress={() => signIn(values)}>
+            <PrimaryButton icon='login' onPress={() => signIn(values)}>
               Sign in
-            </SignInButton>
-            <RegisterButton icon='person-add' onPress={() => navigation.navigate('Registration')}>
+            </PrimaryButton>
+            <SuccessButton icon='person-add' onPress={() => navigation.navigate('Registration')}>
               Register
-            </RegisterButton>
+            </SuccessButton>
           </ButtonGroup>
         </Form>
       </FullScreenScrollView>

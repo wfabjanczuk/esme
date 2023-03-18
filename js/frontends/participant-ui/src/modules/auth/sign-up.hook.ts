@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from 'react'
 import { config } from '../../app/config'
 import axios from 'axios'
-import { parseErrorMessage } from '../../common/utils'
+import { parseErrorData } from '../../common/utils'
 
 const signUpUrl = `${config.participantApiUrl}/auth/sign-up`
 
@@ -37,5 +37,5 @@ const signUpAsync = async (
 ): Promise<void> => {
   await axios.post(signUpUrl, formValues)
     .then(() => setState({ errorMessages: [] }))
-    .catch(e => setState({ errorMessages: parseErrorMessage(e?.response?.data?.message) }))
+    .catch(e => setState({ errorMessages: parseErrorData(e?.response?.data) }))
 }
