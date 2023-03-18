@@ -5,7 +5,7 @@ dayjs.extend(utc)
 const utcdayjs = (date?: dayjs.ConfigType): dayjs.Dayjs => dayjs(date).utc()
 
 export const parseDateTimeLabel = (value?: string): string =>
-  utcdayjs(value).format('YYYY-MM-DD HH:mm')
+  utcdayjs(value).format('HH:mm, DD MMM YYYY')
 export const parseDateTimeValue = (value?: string): string =>
   utcdayjs(value).format('YYYY-MM-DDTHH:mm')
 

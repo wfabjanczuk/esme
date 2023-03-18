@@ -3,13 +3,13 @@ import { SafeAreaCentered } from '../../common/components/containers/safe-area.c
 import { StyledText } from '../../common/components/typography/styled-text.component'
 import { ButtonGroup, Form, RegisterButton, SignInButton, StyledTextInput } from './styles'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { ParamListBase } from '@react-navigation/native'
 import { useValues } from '../../common/hooks/values.hook'
 import { useSignIn } from './sign-in.hook'
 import { FormErrors } from '../../common/components/form-errors.component'
 import { FullScreenScrollView } from '../../common/components/containers/full-screen-scroll-view.component'
+import { FrontStackParamsList } from '../../app/navigation/navigation-external'
 
-type SignInScreenProps = NativeStackScreenProps<ParamListBase, 'Authentication'>
+type SignInScreenProps = NativeStackScreenProps<FrontStackParamsList, 'Authentication'>
 
 export const SignInScreen = ({ navigation }: SignInScreenProps): JSX.Element => {
   const {
@@ -17,6 +17,7 @@ export const SignInScreen = ({ navigation }: SignInScreenProps): JSX.Element => 
     errorMessages
   } = useSignIn()
   const isError = errorMessages.length > 0
+
   const {
     values,
     newSetter

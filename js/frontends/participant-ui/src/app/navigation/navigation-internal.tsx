@@ -8,10 +8,20 @@ import { ConversationScreen } from '../../modules/messages/screens/conversation.
 import { ThreadsScreen } from '../../modules/messages/screens/threads.screen'
 import { SettingsScreen } from '../../modules/settings/screens/settings.screen'
 import { getScreenOptions } from './styles'
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer, ParamListBase } from '@react-navigation/native'
+import { EventDetailsScreen } from '../../modules/events/event-details.screen'
 
-const FrontStack = createNativeStackNavigator()
-const MainTabs = createBottomTabNavigator()
+export type FrontStackParamsList = {
+  'Main': undefined
+  'Conversation': undefined
+  'Announcements': undefined
+  'Event details': { id: number }
+} & ParamListBase
+
+export type MainTabsParamsList = ParamListBase
+
+const FrontStack = createNativeStackNavigator<FrontStackParamsList>()
+const MainTabs = createBottomTabNavigator<MainTabsParamsList>()
 
 const MainNavigator = (): JSX.Element => (
   <MainTabs.Navigator
@@ -35,6 +45,11 @@ const InternalNavigator = (): JSX.Element => (
     <FrontStack.Screen
       name='Announcements'
       component={AnnouncementsScreen}
+      options={{ headerShown: true }}
+    />
+    <FrontStack.Screen
+      name='Event details'
+      component={EventDetailsScreen}
       options={{ headerShown: true }}
     />
   </FrontStack.Navigator>

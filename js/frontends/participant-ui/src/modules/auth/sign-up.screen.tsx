@@ -3,13 +3,13 @@ import { SafeAreaCentered } from '../../common/components/containers/safe-area.c
 import { StyledText } from '../../common/components/typography/styled-text.component'
 import { ButtonGroup, CancelButton, Form, RegisterButton, StyledTextInput } from './styles'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { ParamListBase } from '@react-navigation/native'
 import { useValues } from '../../common/hooks/values.hook'
 import { useSignUp } from './sign-up.hook'
 import { FormErrors } from '../../common/components/form-errors.component'
 import { FullScreenScrollView } from '../../common/components/containers/full-screen-scroll-view.component'
+import { FrontStackParamsList } from '../../app/navigation/navigation-external'
 
-type SignUpScreenProps = NativeStackScreenProps<ParamListBase, 'Registration'>
+type SignUpScreenProps = NativeStackScreenProps<FrontStackParamsList, 'Registration'>
 
 export const SignUpScreen = ({ navigation }: SignUpScreenProps): JSX.Element => {
   const {

@@ -16,7 +16,10 @@ const positionVariants = {
   top: 'margin-top',
   right: 'margin-right',
   bottom: 'margin-bottom',
-  left: 'margin-left'
+  left: 'margin-left',
+  horizontal: 'margin-horizontal',
+  vertical: 'margin-vertical',
+  all: 'margin'
 }
 
 const getVariant = (

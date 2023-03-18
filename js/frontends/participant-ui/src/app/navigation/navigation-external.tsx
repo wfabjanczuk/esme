@@ -1,10 +1,12 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer, ParamListBase } from '@react-navigation/native'
 import { SignInScreen } from '../../modules/auth/sign-in.screen'
 import { SignUpScreen } from '../../modules/auth/sign-up.screen'
 
-const FrontStack = createNativeStackNavigator()
+export type FrontStackParamsList = ParamListBase
+
+const FrontStack = createNativeStackNavigator<FrontStackParamsList>()
 
 const ExternalNavigator = (): JSX.Element => (
   <FrontStack.Navigator>
