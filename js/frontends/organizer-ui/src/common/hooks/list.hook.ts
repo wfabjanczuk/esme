@@ -19,13 +19,13 @@ export const useList = <T> (baseUrl: string): ListHook<T> => {
   })
 
   useEffect(() => {
-    void fetch(baseUrl, setState, alertStore, authenticator)
+    void fetchAsync(baseUrl, setState, alertStore, authenticator)
   }, [authenticator])
 
   return { ...state }
 }
 
-const fetch = async <T> (
+const fetchAsync = async <T> (
   url: string,
   setState: Dispatch<SetStateAction<ListHook<T>>>,
   alertStore: AlertStore,

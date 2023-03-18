@@ -1,7 +1,7 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { EventsScreen } from '../../modules/events/screens/events.screen'
+import { EventsScreen } from '../../modules/events/events.screen'
 import { HelpScreen } from '../../modules/help/screens/help.screen'
 import { AnnouncementsScreen } from '../../modules/messages/screens/announcements.screen'
 import { ConversationScreen } from '../../modules/messages/screens/conversation.screen'
