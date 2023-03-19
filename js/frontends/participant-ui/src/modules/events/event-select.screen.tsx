@@ -9,22 +9,22 @@ import { Event } from './event.entity'
 import { parseDateTimeLabel } from '../../common/utils'
 import { Spacer } from '../../common/components/spacer/spacer.component'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { MainTabsParamsList } from '../../app/navigation/navigation-internal'
+import { EventStackParamsList } from '../../app/navigation/navigation-internal'
 
-type EventsScreenProps = NativeStackScreenProps<MainTabsParamsList, 'Get help'>
+type EventsScreenProps = NativeStackScreenProps<EventStackParamsList, 'Event select'>
 
-export const EventsScreen = (props: EventsScreenProps): JSX.Element => {
+export const EventSelectScreen = ({ navigation }: EventsScreenProps): JSX.Element => {
   const {
     events,
     setQuery
   } = useEventsList()
   const newOnPress = (id: number) => (): void => {
-    props.navigation.navigate('Event details', { id })
+    navigation.navigate('Event details', { id })
   }
 
   return (
     <SafeArea>
-      <StyledText variant='title'>Select event to get help</StyledText>
+      <StyledText variant='title'>Select event</StyledText>
       <Spacer size='large' position='horizontal'>
         <PaperTextInput label='search' mode='outlined' onChangeText={setQuery}/>
       </Spacer>

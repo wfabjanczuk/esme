@@ -8,3 +8,7 @@ export interface Event {
   timeStart: string
   timeEnd: string
 }
+
+export interface UserEvent extends Event {
+  isChatRequested: boolean
+}

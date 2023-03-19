@@ -5,7 +5,7 @@ import { AuthButtonGroup, AuthForm, AuthTextInput } from './styles'
 import { useValues } from '../../common/hooks/values.hook'
 import { useSignUp } from './sign-up.hook'
 import { FormErrors } from '../../common/components/form-errors.component'
-import { FullScreenScrollView } from '../../common/components/containers/full-screen-scroll-view.component'
+import { FullScreenScrollView } from '../../common/components/containers/scroll-view.component'
 import { SuccessButton } from '../../common/components/button.component'
 
 export const SignUpScreen = (): JSX.Element => {

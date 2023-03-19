@@ -1,22 +1,24 @@
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
-import { Event } from './event.entity'
+import { UserEvent } from './event.entity'
 import axios from 'axios'
 import { Authenticator, AuthenticatorContext } from '../../common/authenticator/authenticator.context'
 import { config } from '../../app/config'
 import { parseErrorData } from '../../common/utils'
 
 const eventsUrl = `${config.participantApiUrl}/events`
+const chatRequestsUrl = `${config.participantApiUrl}/chat-requests`
 
 export interface EventHook {
   errorMessages: string[]
-  event?: Event
+  event?: UserEvent
+  requestChat: () => void
   subscribe: () => void
   unsubscribe: () => void
 }
 
 interface State {
   errorMessages: string[]
-  event?: Event
+  event?: UserEvent
 }
 
 export const useEvent = (id: number): EventHook => {
@@ -32,6 +34,10 @@ export const useEvent = (id: number): EventHook => {
     void fetchAsync(url, authenticator, setState)
   }, [authenticator])
 
+  const requestChat = (): void => {
+    void requestChatAsync(url, authenticator, setState)
+  }
+
   const subscribe = (): void => {
     void subscribeAsync(url, authenticator, setState)
   }
@@ -42,6 +48,7 @@ export const useEvent = (id: number): EventHook => {
 
   return {
     ...state,
+    requestChat,
     subscribe,
     unsubscribe
   }
@@ -52,7 +59,7 @@ const fetchAsync = async (
   authenticator: Authenticator,
   setState: Dispatch<SetStateAction<State>>
 ): Promise<void> => {
-  return await axios.get<Event>(url, { headers: { Authorization: authenticator.authorizationHeader } })
+  return await axios.get<UserEvent>(url, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(({ data }) => setState({
       event: data,
       errorMessages: []
@@ -65,6 +72,26 @@ const fetchAsync = async (
         event: undefined,
         errorMessages: parseErrorData(e?.response?.data)
       })
+    })
+}
+
+const requestChatAsync = async (
+  url: string,
+  authenticator: Authenticator,
+  setState: Dispatch<SetStateAction<State>>
+): Promise<void> => {
+  return await axios.post(chatRequestsUrl, {}, { headers: { Authorization: authenticator.authorizationHeader } })
+    .then(({ data }) => {
+      console.log('successfully send chat request to', chatRequestsUrl)
+    })
+    .catch(e => {
+      if (authenticator.isAuthError(e)) {
+        return
+      }
+      setState(prevState => ({
+        ...prevState,
+        errorMessages: parseErrorData(e?.response?.data)
+      }))
     })
 }
 

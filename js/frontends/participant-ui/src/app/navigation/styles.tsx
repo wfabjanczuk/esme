@@ -10,7 +10,7 @@ const isIos = Platform.OS === 'ios'
 
 const icons = {
   Messages: 'chatbubble-ellipses',
-  'Get help': 'medkit',
+  Help: 'medkit',
   Settings: 'settings'
 }
 
@@ -54,5 +54,6 @@ export const getScreenOptions: screenOptionsGenerator = ({ route }) => ({
     backgroundColor: globalTheme.colors.bg.primary
   },
   tabBarItemStyle: { margin: styles.tabBarItemMargin },
-  tabBarLabelStyle: { fontSize: styles.tabBarLabelFontSize }
+  tabBarLabelStyle: { fontSize: styles.tabBarLabelFontSize },
+  tabBarLabel: route.name === 'Help' ? 'Request help' : route.name
 })

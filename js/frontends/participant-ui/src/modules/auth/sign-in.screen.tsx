@@ -6,7 +6,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useValues } from '../../common/hooks/values.hook'
 import { useSignIn } from './sign-in.hook'
 import { FormErrors } from '../../common/components/form-errors.component'
-import { FullScreenScrollView } from '../../common/components/containers/full-screen-scroll-view.component'
+import { FullScreenScrollView } from '../../common/components/containers/scroll-view.component'
 import { FrontStackParamsList } from '../../app/navigation/navigation-external'
 import { PrimaryButton, SuccessButton } from '../../common/components/button.component'
 
