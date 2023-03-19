@@ -1,7 +1,7 @@
 import React from 'react'
 import { SafeAreaCentered } from '../../common/components/containers/safe-area.component'
 import { StyledText } from '../../common/components/typography/styled-text.component'
-import { ButtonGroup, Form, StyledTextInput } from './styles'
+import { AuthButtonGroup, AuthForm, AuthTextInput } from './styles'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useValues } from '../../common/hooks/values.hook'
 import { useSignIn } from './sign-in.hook'
@@ -32,23 +32,23 @@ export const SignInScreen = ({ navigation }: SignInScreenProps): JSX.Element => 
       <FullScreenScrollView>
         <StyledText variant='title'>Emergency service</StyledText>
         <StyledText variant='placeholder'>Sign in as a participant</StyledText>
-        <Form>
-          <StyledTextInput label='email' mode='outlined' error={isError}
+        <AuthForm>
+          <AuthTextInput label='email' mode='outlined' error={isError}
             onChangeText={newSetter('email')}
           />
-          <StyledTextInput label='password' mode='outlined' error={isError} secureTextEntry
+          <AuthTextInput label='password' mode='outlined' error={isError} secureTextEntry
             onChangeText={newSetter('password')}
           />
           <FormErrors errorMessages={errorMessages}/>
-          <ButtonGroup>
+          <AuthButtonGroup>
             <PrimaryButton icon='login' onPress={() => signIn(values)}>
               Sign in
             </PrimaryButton>
             <SuccessButton icon='person-add' onPress={() => navigation.navigate('Registration')}>
               Register
             </SuccessButton>
-          </ButtonGroup>
-        </Form>
+          </AuthButtonGroup>
+        </AuthForm>
       </FullScreenScrollView>
     </SafeAreaCentered>
   )

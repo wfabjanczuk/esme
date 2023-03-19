@@ -1,14 +1,14 @@
 import styled from 'styled-components/native'
 import { PaperTextInput } from '../../common/components/overrides'
 
-export const Form = styled.View`
+export const AuthForm = styled.View`
   margin: ${props => props.theme.spaces[1]} ${props => props.theme.spaces[0]};
 `
 
-export const ButtonGroup = styled.View`
+export const AuthButtonGroup = styled.View`
   margin: ${props => props.theme.spaces[2]} ${props => props.theme.spaces[0]};
 `
 
-export const StyledTextInput = styled(PaperTextInput)`
+export const AuthTextInput = styled(PaperTextInput)`
   margin: ${props => props.theme.spaces[2]} ${props => props.theme.spaces[3]};
 `

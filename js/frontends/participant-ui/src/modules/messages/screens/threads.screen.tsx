@@ -11,10 +11,7 @@ type ThreadsScreenProps = NativeStackScreenProps<MainTabsParamsList, 'Messages'>
 
 export const ThreadsScreen = ({ navigation }: ThreadsScreenProps): JSX.Element => {
   const { threads } = useContext(MockContext)
-  const onCardPress = (item: Thread): void =>
-    item.type === 'conversation'
-      ? navigation.navigate('Conversation')
-      : navigation.navigate('Announcements')
+  const onCardPress = (): void => navigation.navigate('Conversation')
 
   return (
     <SafeArea>
@@ -22,7 +19,7 @@ export const ThreadsScreen = ({ navigation }: ThreadsScreenProps): JSX.Element =
         data={threads}
         renderItem={({ item }) => (
           <Spacer position='top' size='medium'>
-            <ThreadCard thread={item} onPress={() => onCardPress(item)} />
+            <ThreadCard thread={item} onPress={onCardPress} />
           </Spacer>
         )}
         keyExtractor={item => `${item.event}_${item.type}`}

@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react'
 import { FlatList, TouchableOpacity } from 'react-native'
 import { SafeArea } from '../../common/components/containers/safe-area.component'
-import styled from 'styled-components/native'
 import { PaperTextInput } from '../../common/components/overrides'
 import { Divider } from 'react-native-paper'
 import { useEventsList } from './events-list.hook'
@@ -12,11 +11,7 @@ import { Spacer } from '../../common/components/spacer/spacer.component'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { MainTabsParamsList } from '../../app/navigation/navigation-internal'
 
-export const StyledTextInput = styled(PaperTextInput)`
-  margin: ${props => props.theme.spaces[1]} ${props => props.theme.spaces[2]};
-`
-
-type EventsScreenProps = NativeStackScreenProps<MainTabsParamsList, 'Events'>
+type EventsScreenProps = NativeStackScreenProps<MainTabsParamsList, 'Get help'>
 
 export const EventsScreen = (props: EventsScreenProps): JSX.Element => {
   const {
@@ -29,7 +24,10 @@ export const EventsScreen = (props: EventsScreenProps): JSX.Element => {
 
   return (
     <SafeArea>
-      <StyledTextInput label='search in events' mode='outlined' onChangeText={setQuery}/>
+      <StyledText variant='title'>Select event to get help</StyledText>
+      <Spacer size='large' position='horizontal'>
+        <PaperTextInput label='search' mode='outlined' onChangeText={setQuery}/>
+      </Spacer>
       <FlatList
         data={events}
         renderItem={({ item }) => <EventCard event={item} onPress={newOnPress(item.id)}/>}
@@ -51,13 +49,15 @@ const EventCard = ({
 }: EventCardProps): JSX.Element => {
   return (
     <Fragment>
-      <TouchableOpacity style={{ padding: 10 }} onPress={onPress}>
-        <Spacer size='small' position='bottom'>
-          <StyledText>{event.name}</StyledText>
+      <TouchableOpacity onPress={onPress}>
+        <Spacer size='large' position='all'>
+          <Spacer size='medium' position='bottom'>
+            <StyledText>{event.name}</StyledText>
+          </Spacer>
+          <StyledText variant='caption'>Address: {event.address}</StyledText>
+          <StyledText variant='caption'>Start: {parseDateTimeLabel(event.timeStart)}</StyledText>
+          <StyledText variant='caption'>End: {parseDateTimeLabel(event.timeEnd)}</StyledText>
         </Spacer>
-        <StyledText variant='caption'>Address: {event.address}</StyledText>
-        <StyledText variant='caption'>Start: {parseDateTimeLabel(event.timeStart)}</StyledText>
-        <StyledText variant='caption'>End: {parseDateTimeLabel(event.timeEnd)}</StyledText>
       </TouchableOpacity>
       <Divider/>
     </Fragment>

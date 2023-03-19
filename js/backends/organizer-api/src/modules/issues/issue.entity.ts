@@ -62,3 +62,5 @@ export class Issue {
   @ApiHideProperty()
   agency: Agency;
 }
+
+// TODO: add issue date creation and issue date closed

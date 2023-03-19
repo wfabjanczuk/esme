@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { Divider } from 'react-native-paper'
 
@@ -18,18 +18,20 @@ export const ThreadCard = ({ thread, onPress }: ThreadCardProps): JSX.Element =>
   const date = new Date(thread.updated * 1000)
 
   return (
-    <TouchableOpacity onPress={onPress}>
-      <ThreadCardContent
-        title={
-          <ThreadCardTitle eventName={thread.event} unread={thread.unread} />
-        }
-        description={<ThreadDescription date={date} unread={thread.unread} />}
-        left={() => (
-          <ThreadIcon threadType={thread.type} unread={thread.unread} />
-        )}
-        right={() => thread.unread && <ThreadBadge content='UNREAD' />}
-      />
-      <Divider inset />
-    </TouchableOpacity>
+    <Fragment>
+      <TouchableOpacity onPress={onPress}>
+        <ThreadCardContent
+          title={
+            <ThreadCardTitle eventName={thread.event} unread={thread.unread} />
+          }
+          description={<ThreadDescription date={date} unread={thread.unread} />}
+          left={() => (
+            <ThreadIcon threadType={thread.type} unread={thread.unread} />
+          )}
+          right={() => thread.unread && <ThreadBadge content='UNREAD' />}
+        />
+      </TouchableOpacity>
+      <Divider />
+    </Fragment>
   )
 }
