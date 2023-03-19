@@ -87,6 +87,8 @@ func (c *Controller) RequestChat(w http.ResponseWriter, r *http.Request) {
 		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
 		return
 	}
+
+	c.responder.WriteEmptyResponse(w, http.StatusOK)
 }
 
 func (c *Controller) buildChatRequest(r *http.Request) (*chat_requests.ChatRequestMq, error, int) {
