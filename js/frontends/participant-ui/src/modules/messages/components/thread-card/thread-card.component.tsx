@@ -7,31 +7,40 @@ import { ThreadCardTitle } from './thread-card-title.component'
 import { ThreadCardContent } from './thread-card.styles'
 import { ThreadDescription } from './thread-description.component'
 import { ThreadIcon } from './thread-icon.component'
-import { Thread } from '../../../../common/services/mock/mock.context'
+import { useEvent } from '../../../events/event.hook'
+import { parseDate } from '../../../../common/utils'
+import { Chat } from '../../../../common/messenger/structures'
 
 interface ThreadCardProps {
-  thread: Thread
+  chat: Chat
   onPress: () => void
 }
 
-export const ThreadCard = ({ thread, onPress }: ThreadCardProps): JSX.Element => {
-  const date = new Date(thread.updated * 1000)
+export const ThreadCard = ({
+  chat,
+  onPress
+}: ThreadCardProps): JSX.Element => {
+  const { event } = useEvent(chat.eventId)
+
+  if (event === undefined) {
+    return <></>
+  }
 
   return (
     <Fragment>
       <TouchableOpacity onPress={onPress}>
         <ThreadCardContent
           title={
-            <ThreadCardTitle eventName={thread.event} unread={thread.unread} />
+            <ThreadCardTitle eventName={event.name} unread={false}/>
           }
-          description={<ThreadDescription date={date} unread={thread.unread} />}
+          description={<ThreadDescription date={parseDate(event.timeStart)} unread={false}/>}
           left={() => (
-            <ThreadIcon threadType={thread.type} unread={thread.unread} />
+            <ThreadIcon threadType='conversation' unread={false}/>
           )}
-          right={() => thread.unread && <ThreadBadge content='UNREAD' />}
+          right={() => false && <ThreadBadge content='UNREAD'/>}
         />
       </TouchableOpacity>
-      <Divider />
+      <Divider/>
     </Fragment>
   )
 }

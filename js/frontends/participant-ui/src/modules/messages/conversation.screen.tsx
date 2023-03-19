@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react'
-import { SafeArea } from '../../../common/components/containers/safe-area.component'
-import { MockContext } from '../../../common/services/mock/mock.context'
-import { ChatHistory } from '../components/chat-history/chat-history.component'
-import { ChatInput } from '../components/chat-input/chat-input.component'
+import { SafeArea } from '../../common/components/containers/safe-area.component'
+import { MockContext } from '../../common/services/mock/mock.context'
+import { ChatHistory } from './components/chat-history/chat-history.component'
+import { ChatInput } from './components/chat-input/chat-input.component'
 
 export const ConversationScreen = (): JSX.Element => {
   const { conversation: mockedConversation } = useContext(MockContext)

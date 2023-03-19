@@ -8,6 +8,8 @@ export const parseDateTimeLabel = (value?: string): string =>
   utcdayjs(value).format('HH:mm, DD MMM YYYY')
 export const parseDateTimeValue = (value?: string): string =>
   utcdayjs(value).format('YYYY-MM-DDTHH:mm')
+export const parseDate = (value?: string): Date =>
+  utcdayjs(value).toDate()
 
 interface ErrorDataObject {
   message: string[] | string | undefined

@@ -2,12 +2,15 @@ import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { EventSelectScreen } from '../../modules/events/event-select.screen'
-import { ConversationScreen } from '../../modules/messages/screens/conversation.screen'
-import { ThreadsScreen } from '../../modules/messages/screens/threads.screen'
+import { ConversationScreen } from '../../modules/messages/conversation.screen'
+import { ThreadsScreen } from '../../modules/messages/threads.screen'
 import { SettingsScreen } from '../../modules/settings/screens/settings.screen'
 import { getScreenOptions } from './styles'
 import { NavigationContainer, ParamListBase } from '@react-navigation/native'
 import { EventDetailsScreen } from '../../modules/events/event-details.screen'
+import { InboxContext } from '../../common/messenger/inbox.context'
+import { useNewMessenger } from '../../common/messenger/messenger.hook'
+import { MessengerContext } from '../../common/messenger/messenger.context'
 
 export type FrontStackParamsList = {
   'Main': undefined
@@ -61,8 +64,19 @@ const InternalNavigator = (): JSX.Element => (
   </FrontStack.Navigator>
 )
 
-export const NavigationInternal = (): JSX.Element => (
-  <NavigationContainer>
-    <InternalNavigator/>
-  </NavigationContainer>
-)
+export const NavigationInternal = (): JSX.Element => {
+  const {
+    messenger,
+    inbox
+  } = useNewMessenger()
+
+  return (
+    <MessengerContext.Provider value={messenger}>
+      <InboxContext.Provider value={inbox}>
+        <NavigationContainer>
+          <InternalNavigator/>
+        </NavigationContainer>
+      </InboxContext.Provider>
+    </MessengerContext.Provider>
+  )
+}
