@@ -9,12 +9,11 @@ import { StyledText } from '../../common/components/typography/styled-text.compo
 import { InboxContext } from '../../common/messenger/inbox.context'
 import { ThreadCard } from './components/thread-card/thread-card.component'
 
-type ChatsScreenProps = NativeStackScreenProps<BottomTabsParamsList, 'Messages'>
+type ThreadsScreenProps = NativeStackScreenProps<BottomTabsParamsList, 'Messages'>
 
-export const ThreadsScreen = ({ navigation }: ChatsScreenProps): JSX.Element => {
+export const ThreadsScreen = ({ navigation }: ThreadsScreenProps): JSX.Element => {
   const messenger = useContext(MessengerContext)
   const { chats } = useContext(InboxContext)
-  console.log(chats)
 
   if (!messenger.isInitialized()) {
     return <SafeArea>
@@ -22,7 +21,7 @@ export const ThreadsScreen = ({ navigation }: ChatsScreenProps): JSX.Element => 
     </SafeArea>
   }
 
-  const onCardPress = (): void => navigation.navigate('Conversation')
+  const newOnPressHandler = (chatId: string) => () => navigation.navigate('Conversation', { chatId })
 
   return (
     <SafeArea>
@@ -30,8 +29,7 @@ export const ThreadsScreen = ({ navigation }: ChatsScreenProps): JSX.Element => 
         data={chats}
         renderItem={({ item }) => (
           <Spacer position='top' size='medium'>
-            <StyledText>chuj</StyledText>
-            <ThreadCard chat={item} onPress={onCardPress}/>
+            <ThreadCard chat={item} onPress={newOnPressHandler(item.id)}/>
           </Spacer>
         )}
         keyExtractor={item => `chat_${item.eventId}`}

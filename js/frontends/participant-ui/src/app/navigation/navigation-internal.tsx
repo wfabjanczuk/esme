@@ -14,7 +14,7 @@ import { MessengerContext } from '../../common/messenger/messenger.context'
 
 export type FrontStackParamsList = {
   'Main': undefined
-  'Conversation': undefined
+  'Conversation': { chatId: string }
 } & ParamListBase
 
 export type EventStackParamsList = {

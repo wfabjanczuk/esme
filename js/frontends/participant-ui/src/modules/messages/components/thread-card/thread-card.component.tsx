@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { Divider } from 'react-native-paper'
-
 import { ThreadBadge } from './thread-badge.component'
 import { ThreadCardTitle } from './thread-card-title.component'
 import { ThreadCardContent } from './thread-card.styles'
@@ -31,13 +30,13 @@ export const ThreadCard = ({
       <TouchableOpacity onPress={onPress}>
         <ThreadCardContent
           title={
-            <ThreadCardTitle eventName={event.name} unread={false}/>
+            <ThreadCardTitle eventName={event.name} unread={true}/>
           }
-          description={<ThreadDescription date={parseDate(event.timeStart)} unread={false}/>}
+          description={<ThreadDescription date={parseDate(event.timeStart)} unread={true}/>}
           left={() => (
-            <ThreadIcon threadType='conversation' unread={false}/>
+            <ThreadIcon threadType='conversation' unread={true}/>
           )}
-          right={() => false && <ThreadBadge content='UNREAD'/>}
+          right={() => true && <ThreadBadge content='UNREAD'/>}
         />
       </TouchableOpacity>
       <Divider/>

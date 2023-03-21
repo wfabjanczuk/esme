@@ -83,7 +83,7 @@ func (m *Manager) SetChatParticipant(chatId string, conn *connections.Participan
 	defer m.mu.Unlock()
 
 	cc := m.getSetChatChannel(chatId)
-	if cc.OrganizerConnection != nil {
+	if cc.ParticipantConnection != nil {
 		return common.ErrConnectionExists
 	}
 	cc.ParticipantConnection = conn

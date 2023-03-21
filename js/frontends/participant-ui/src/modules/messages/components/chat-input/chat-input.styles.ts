@@ -13,7 +13,7 @@ export const ChatInputContainer = styled.View`
 
 export const ChatAttachmentButton = styled(PaperIconButton).attrs({
   iconColor: colors.text.inverse,
-  size: 20,
+  size: 14,
   icon: 'add'
 })`
   background-color: ${props => props.theme.colors.brand.primary};

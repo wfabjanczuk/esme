@@ -3,17 +3,17 @@ import { ScrollView } from 'react-native'
 
 import { Spacer } from '../../../../common/components/spacer/spacer.component'
 import { ChatBubble } from './chat-bubble.component'
-import { Message } from '../../../../common/services/mock/mock.context'
+import { Message } from '../../../../common/messenger/structures'
 
 interface ChatHistoryProps {
-  conversation: Message[]
+  messages: Message[]
 }
 
-export const ChatHistory = ({ conversation }: ChatHistoryProps): JSX.Element => (
+export const ChatHistory = ({ messages }: ChatHistoryProps): JSX.Element => (
   <ScrollView>
-    {conversation.map(c => (
-      <Spacer key={c.sent} position='top' size='medium'>
-        <ChatBubble isOwn={c.isOwn} content={c.content}/>
+    {messages.map(m => (
+      <Spacer key={m.id} position='top' size='medium'>
+        <ChatBubble isOwn={m.fromOrganizer === 0} content={m.content}/>
       </Spacer>
     ))}
   </ScrollView>

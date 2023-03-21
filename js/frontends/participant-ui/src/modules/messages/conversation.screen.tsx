@@ -1,29 +1,34 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { SafeArea } from '../../common/components/containers/safe-area.component'
-import { MockContext } from '../../common/services/mock/mock.context'
 import { ChatHistory } from './components/chat-history/chat-history.component'
 import { ChatInput } from './components/chat-input/chat-input.component'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { FrontStackParamsList } from '../../app/navigation/navigation-internal'
+import { InboxContext } from '../../common/messenger/inbox.context'
+import { KeyboardAvoidingView, Platform } from 'react-native'
+import { useHeaderHeight } from '@react-navigation/elements'
 
-export const ConversationScreen = (): JSX.Element => {
-  const { conversation: mockedConversation } = useContext(MockContext)
-  const [conversation, setConversation] = useState(mockedConversation)
-  const addMessage = (message: string): void => {
-    const currentTimestamp = Date.now() / 1000
+type ConversationScreenProps = NativeStackScreenProps<FrontStackParamsList, 'Conversation'>
 
-    setConversation([
-      ...conversation,
-      {
-        sent: currentTimestamp,
-        isOwn: true,
-        content: message
-      }
-    ])
+export const ConversationScreen = ({ route: { params: { chatId } } }: ConversationScreenProps): JSX.Element => {
+  const { messages } = useContext(InboxContext)
+  const headerHeight = useHeaderHeight()
+  const keyboardVerticalOffset = Platform.OS === 'ios' ? headerHeight : 0
+
+  if (messages[chatId] === undefined) {
+    return <></>
   }
 
   return (
     <SafeArea>
-      <ChatHistory conversation={conversation} />
-      <ChatInput addMessage={addMessage} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={keyboardVerticalOffset}
+        style={{ flex: 1 }}
+      >
+        <ChatHistory messages={messages[chatId]}/>
+        <ChatInput chatId={chatId}/>
+      </KeyboardAvoidingView>
     </SafeArea>
   )
 }
