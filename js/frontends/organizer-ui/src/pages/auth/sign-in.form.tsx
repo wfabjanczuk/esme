@@ -15,7 +15,7 @@ export const SignInForm = (): JSX.Element => {
   const isError = errorMessages.length > 0
 
   return <form onSubmit={signIn}>
-    <Box sx={styles.forms.component}>
+    <Box sx={styles.forms.column}>
       <TextField
         name='email'
         label='email'

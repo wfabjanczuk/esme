@@ -22,7 +22,7 @@ export const ConversationScreen = ({ route: { params: { chatId } } }: Conversati
   return (
     <SafeArea>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={keyboardVerticalOffset}
         style={{ flex: 1 }}
       >

@@ -14,7 +14,7 @@ export const AddCommentForm = ({ issueId }: AddCommentFormProps): JSX.Element =>
   const isError = errorMessages.length > 0
 
   return <form onSubmit={create}>
-    <Box sx={styles.forms.component}>
+    <Box sx={styles.forms.column}>
       <TextField
         name='content'
         label='content'

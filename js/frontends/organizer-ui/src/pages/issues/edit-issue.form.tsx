@@ -20,7 +20,7 @@ export const EditIssueForm = ({ id }: EditIssueFormProps): JSX.Element => {
   }
 
   return <form onSubmit={update}>
-    <Box sx={styles.forms.component}>
+    <Box sx={styles.forms.column}>
       <TextField
         type='number'
         name='id'

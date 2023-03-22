@@ -35,6 +35,10 @@ const layout = {
     maxWidth: '1500px'
   },
   title,
+  titleCenter: {
+    ...title,
+    textAlign: 'center'
+  },
   editCardTitle: {
     ...title,
     display: 'flex',
@@ -42,7 +46,9 @@ const layout = {
   },
   placeholderText: {
     color: '#8393A0',
-    fontStyle: 'italic'
+    fontStyle: 'italic',
+    textAlign: 'center',
+    margin: '10px 0'
   },
   content: {
     flex: 1,
@@ -65,7 +71,7 @@ const alertBar = {
 }
 
 const forms = {
-  component: {
+  column: {
     display: 'flex',
     flexDirection: 'column'
   },
@@ -81,13 +87,13 @@ const forms = {
     textAlign: 'left',
     my: 1.5
   },
-  doubleContainer: {
+  doubleColumnContainer: {
     display: 'flex',
     justifyContent: 'space-around',
     flexWrap: 'wrap',
-    gap: '30px'
+    columnGap: '30px'
   },
-  column: {
+  columnContainer: {
     maxWidth: '420px',
     flexGrow: 1
   }

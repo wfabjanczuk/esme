@@ -1,6 +1,6 @@
 import React from 'react'
 import { styles } from '../../layout/styles'
-import { Box, Button, TextField } from '@mui/material'
+import { Box, Button, TextField, Typography } from '@mui/material'
 import { FormErrors } from '../../common/form-errors.component'
 import { ButtonGroup } from '../../common/button-group.component'
 import { Link } from 'react-router-dom'
@@ -15,9 +15,10 @@ export const SignUpForm = (): JSX.Element => {
   const isError = errorMessages.length > 0
 
   return <form onSubmit={signUp}>
-    <Box sx={styles.forms.doubleContainer}>
-      <Box sx={styles.forms.column}>
-        <Box sx={styles.forms.component}>
+    <Box sx={styles.forms.doubleColumnContainer}>
+      <Box sx={styles.forms.columnContainer}>
+        <Typography sx={styles.layout.placeholderText}>Fill agency data</Typography>
+        <Box sx={styles.forms.column}>
           <TextField
             name='name'
             label='agency name'
@@ -39,8 +40,9 @@ export const SignUpForm = (): JSX.Element => {
         </Box>
         <FormErrors errorMessages={errorMessages}/>
       </Box>
-      <Box sx={styles.forms.column}>
-        <Box sx={styles.forms.component}>
+      <Box sx={styles.forms.columnContainer}>
+        <Typography sx={styles.layout.placeholderText}>Fill owner data</Typography>
+        <Box sx={styles.forms.column}>
           <TextField
             name='email'
             label='owner email'
