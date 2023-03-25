@@ -1,12 +1,11 @@
 import React from 'react'
 import { SafeAreaCentered } from '../../common/components/containers/safe-area.component'
 import { StyledText } from '../../common/components/typography/styled-text.component'
-import { AuthButtonGroup, AuthForm, AuthTextInput } from './styles'
 import { useValues } from '../../common/hooks/values.hook'
 import { useSignUp } from './sign-up.hook'
-import { FormErrors } from '../../common/components/form-errors.component'
+import { DefaultForm, DefaultTextInput, FormErrors } from '../../common/components/form.component'
 import { FullScreenScrollView } from '../../common/components/containers/scroll-view.component'
-import { SuccessButton } from '../../common/components/button.component'
+import { ButtonGroup, SuccessButton } from '../../common/components/button.component'
 
 export const SignUpScreen = (): JSX.Element => {
   const {
@@ -29,22 +28,22 @@ export const SignUpScreen = (): JSX.Element => {
     <SafeAreaCentered>
       <FullScreenScrollView>
         <StyledText variant='title'>Register as a participant</StyledText>
-        <AuthForm>
-          <AuthTextInput label='email' mode='outlined' error={isError}
+        <DefaultForm>
+          <DefaultTextInput label='email' mode='outlined' error={isError}
             onChangeText={newSetter('email')}/>
-          <AuthTextInput label='phone number' mode='outlined' error={isError}
+          <DefaultTextInput label='phone number' mode='outlined' error={isError}
             onChangeText={newSetter('phoneNumber')}/>
-          <AuthTextInput label='password' mode='outlined' error={isError} secureTextEntry
+          <DefaultTextInput label='password' mode='outlined' error={isError} secureTextEntry
             onChangeText={newSetter('password')}/>
-          <AuthTextInput label='confirm password' mode='outlined' error={isError} secureTextEntry
+          <DefaultTextInput label='confirm password' mode='outlined' error={isError} secureTextEntry
             onChangeText={newSetter('confirmPassword')}/>
           <FormErrors errorMessages={errorMessages}/>
-          <AuthButtonGroup>
+          <ButtonGroup>
             <SuccessButton icon='person-add' onPress={() => signUp(values)}>
               Register
             </SuccessButton>
-          </AuthButtonGroup>
-        </AuthForm>
+          </ButtonGroup>
+        </DefaultForm>
       </FullScreenScrollView>
     </SafeAreaCentered>
   )

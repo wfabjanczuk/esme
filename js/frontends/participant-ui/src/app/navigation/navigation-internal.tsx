@@ -4,13 +4,15 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { EventSelectScreen } from '../../modules/events/event-select.screen'
 import { ConversationScreen } from '../../modules/messages/conversation.screen'
 import { ThreadsScreen } from '../../modules/messages/threads.screen'
-import { SettingsScreen } from '../../modules/settings/screens/settings.screen'
+import { SettingsScreen } from '../../modules/settings/settings.screen'
 import { getScreenOptions } from './styles'
 import { NavigationContainer, ParamListBase } from '@react-navigation/native'
 import { EventDetailsScreen } from '../../modules/events/event-details.screen'
 import { InboxContext } from '../../common/messenger/inbox.context'
 import { useNewMessenger } from '../../common/messenger/messenger.hook'
 import { MessengerContext } from '../../common/messenger/messenger.context'
+import { ChangePasswordScreen } from '../../modules/settings/change-password.screen'
+import { EditProfileScreen } from '../../modules/settings/edit-profile.screen'
 
 export type FrontStackParamsList = {
   'Main': undefined
@@ -22,6 +24,12 @@ export type EventStackParamsList = {
   'Event details': { id: number }
 } & ParamListBase
 
+export type SettingsStackParamsList = {
+  'Settings menu': undefined
+  'Change password': undefined
+  'Edit profile': undefined
+} & ParamListBase
+
 export type BottomTabsParamsList = {
   'Messages': undefined
   'Help': undefined
@@ -30,6 +38,7 @@ export type BottomTabsParamsList = {
 
 const FrontStack = createNativeStackNavigator<FrontStackParamsList>()
 const EventStack = createNativeStackNavigator<EventStackParamsList>()
+const SettingsStack = createNativeStackNavigator<SettingsStackParamsList>()
 const BottomTabs = createBottomTabNavigator<BottomTabsParamsList>()
 
 const MainNavigator = (): JSX.Element => (
@@ -38,7 +47,7 @@ const MainNavigator = (): JSX.Element => (
     screenOptions={getScreenOptions}>
     <BottomTabs.Screen name='Messages' component={ThreadsScreen}/>
     <BottomTabs.Screen name='Help' component={HelpNavigator}/>
-    <BottomTabs.Screen name='Settings' component={SettingsScreen}/>
+    <BottomTabs.Screen name='Settings' component={SettingsNavigator}/>
   </BottomTabs.Navigator>
 )
 
@@ -51,6 +60,22 @@ const HelpNavigator = (): JSX.Element => (
       options={{ headerShown: true }}
     />
   </EventStack.Navigator>
+)
+
+const SettingsNavigator = (): JSX.Element => (
+  <SettingsStack.Navigator screenOptions={getScreenOptions}>
+    <SettingsStack.Screen name='Settings menu' component={SettingsScreen}/>
+    <SettingsStack.Screen
+      name='Change password'
+      component={ChangePasswordScreen}
+      options={{ headerShown: true }}
+    />
+    <SettingsStack.Screen
+      name='Edit profile'
+      component={EditProfileScreen}
+      options={{ headerShown: true }}
+    />
+  </SettingsStack.Navigator>
 )
 
 const InternalNavigator = (): JSX.Element => (

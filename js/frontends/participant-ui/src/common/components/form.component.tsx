@@ -1,6 +1,16 @@
 import React from 'react'
 import { View } from 'react-native'
+import styled from 'styled-components/native'
 import { StyledText } from './typography/styled-text.component'
+import { PaperTextInput } from './overrides'
+
+export const DefaultForm = styled.View`
+  margin: ${props => props.theme.spaces[1]} ${props => props.theme.spaces[0]};
+`
+
+export const DefaultTextInput = styled(PaperTextInput)`
+  margin: ${props => props.theme.spaces[2]} ${props => props.theme.spaces[3]};
+`
 
 interface FormErrorsProps {
   errorMessages: string[]

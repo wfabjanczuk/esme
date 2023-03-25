@@ -91,7 +91,7 @@ func (c *Controller) ChangePassword(w http.ResponseWriter, r *http.Request) {
 		c.responder.WriteError(w, api_errors.ErrUnexpected, http.StatusInternalServerError)
 		return
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(changePasswordDTO.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(changePasswordDTO.OldPassword))
 	if err != nil {
 		c.responder.WriteError(w, api_errors.ErrInvalidPassword, http.StatusUnauthorized)
 		return

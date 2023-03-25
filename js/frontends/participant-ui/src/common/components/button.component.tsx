@@ -31,3 +31,7 @@ export const ErrorButton = styled(PaperButton).attrs(buttonStyle('error'))`
 export const WarningButton = styled(PaperButton).attrs(buttonStyle('warning'))`
   margin: ${props => props.theme.spaces[2]} ${props => props.theme.spaces[3]};
 `
+
+export const ButtonGroup = styled.View`
+  margin: ${props => props.theme.spaces[2]} ${props => props.theme.spaces[0]};
+`

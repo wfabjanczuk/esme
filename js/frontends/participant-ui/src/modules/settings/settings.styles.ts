@@ -1,6 +1,6 @@
 import styled from 'styled-components/native'
-import { colors } from '../../../layout/colors'
-import { PaperAvatarIcon, PaperListIcon, PaperListItem } from '../../../common/components/overrides'
+import { colors } from '../../layout/colors'
+import { PaperAvatarIcon, PaperListIcon, PaperListItem } from '../../common/components/overrides'
 
 export const AvatarContainer = styled.View`
   align-items: center;
