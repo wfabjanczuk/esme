@@ -19,7 +19,7 @@ interface RequestChatDto {
 export interface EventHook {
   errorMessages: string[]
   event?: UserEvent
-  requestChat: (data: RequestChatDto) => void
+  requestChat: (data: RequestChatDto, onSuccess: () => void) => void
 }
 
 interface State {
@@ -41,8 +41,12 @@ export const useEvent = (id: number): EventHook => {
     void fetchAsync(url, setState, alertStore, authenticator)
   }, [authenticator])
 
-  const requestChat = (data: RequestChatDto): void => {
-    void requestChatAsync(data, url, setState, alertStore, authenticator)
+  const requestChat = (data: RequestChatDto, onSuccess: () => void): void => {
+    const onSuccessWrapped = (): void => {
+      void fetchAsync(url, setState, alertStore, authenticator)
+      onSuccess()
+    }
+    void requestChatAsync(data, onSuccessWrapped, url, setState, alertStore, authenticator)
   }
 
   return {
@@ -76,6 +80,7 @@ const fetchAsync = async (
 
 const requestChatAsync = async (
   data: RequestChatDto,
+  onSuccess: () => void,
   url: string,
   setState: Dispatch<SetStateAction<State>>,
   alertStore: AlertStore,
@@ -84,6 +89,7 @@ const requestChatAsync = async (
   return await axios.post(chatRequestsUrl, data, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(() => {
       alertStore.add('success', 'Request for help sent')
+      onSuccess()
     })
     .catch(e => {
       if (authenticator.isAuthError(e)) {

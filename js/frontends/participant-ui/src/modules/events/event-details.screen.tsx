@@ -23,6 +23,7 @@ export const EventDetailsScreen = ({
   navigation,
   route: { params: { id } }
 }: EventDetailsScreenProps): JSX.Element => {
+  const navigateToMessages = (): void => navigation.navigate('Messages')
   const [location, setLocation] = useState<LocationObject | undefined>(undefined)
   const [description, setDescription] = useState('')
   const {
@@ -64,7 +65,7 @@ export const EventDetailsScreen = ({
     lat,
     lng,
     eventId: id
-  })
+  }, navigateToMessages)
 
   return (
     <SafeArea>
@@ -89,7 +90,7 @@ export const EventDetailsScreen = ({
               <Spacer size='medium' position='all'>
                 <StyledText variant='placeholder'>Help already requested.</StyledText>
               </Spacer>
-              <PrimaryButton icon='arrow-back' onPress={() => navigation.navigate('Messages')}>
+              <PrimaryButton icon='arrow-back' onPress={navigateToMessages}>
                 Go to Messages
               </PrimaryButton>
             </Fragment>

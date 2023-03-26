@@ -33,7 +33,14 @@ export const ThreadsScreen = ({ navigation }: ThreadsScreenProps): JSX.Element =
           </Spacer>
         )}
         keyExtractor={item => `chat_${item.eventId}`}
+        ListEmptyComponent={<NoChatsPlaceholder/>}
       />
     </SafeArea>
   )
+}
+
+const NoChatsPlaceholder = (): JSX.Element => {
+  return <Spacer size='large' position='top'>
+    <StyledText variant='placeholder'>No chats found.</StyledText>
+  </Spacer>
 }
