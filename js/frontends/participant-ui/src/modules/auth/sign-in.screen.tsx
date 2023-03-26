@@ -8,6 +8,7 @@ import { DefaultForm, DefaultTextInput, FormErrors } from '../../common/componen
 import { FullScreenScrollView } from '../../common/components/containers/scroll-view.component'
 import { FrontStackParamsList } from '../../app/navigation/navigation-external'
 import { ButtonGroup, PrimaryButton, SuccessButton } from '../../common/components/button.component'
+import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 
 type SignInScreenProps = NativeStackScreenProps<FrontStackParamsList, 'Authentication'>
 
@@ -28,6 +29,7 @@ export const SignInScreen = ({ navigation }: SignInScreenProps): JSX.Element => 
 
   return (
     <SafeAreaCentered>
+      <AlertBar />
       <FullScreenScrollView>
         <StyledText variant='title'>Emergency service</StyledText>
         <StyledText variant='placeholder'>Sign in as a participant</StyledText>
