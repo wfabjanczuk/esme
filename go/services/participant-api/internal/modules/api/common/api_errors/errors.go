@@ -17,10 +17,11 @@ var (
 	ErrInvalidRouteId     = errors.New("invalid `id` route parameter")
 
 	ErrPasswordTooShort    = errors.New("password must be at least 8 characters")
+	ErrOldPasswordTooShort = errors.New("oldPassword must be at least 8 characters")
 	ErrNewPasswordTooShort = errors.New("newPassword must be at least 8 characters")
 	ErrConfirmPassword     = errors.New("confirmPassword must match password")
 	ErrConfirmNewPassword  = errors.New("confirmNewPassword must match newPassword")
-	ErrSamePasswords       = errors.New("newPassword must be different from current password")
+	ErrSamePasswords       = errors.New("newPassword must be different from oldPassword")
 
 	ErrEmailExists        = errors.New("email already exists")
 	ErrChatRequestExists  = errors.New("chat request already exists")

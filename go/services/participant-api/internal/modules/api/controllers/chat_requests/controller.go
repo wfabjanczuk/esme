@@ -14,20 +14,20 @@ import (
 )
 
 type Controller struct {
-	eventsRepository *events.Repository
-	chatsRepository  *chat_requests.Repository
-	responder        *responses.Responder
-	logger           *log.Logger
+	eventsRepository       *events.Repository
+	chatRequestsRepository *chat_requests.Repository
+	responder              *responses.Responder
+	logger                 *log.Logger
 }
 
 func NewController(
-	eventsRepository *events.Repository, chatsRepository *chat_requests.Repository, logger *log.Logger,
+	eventsRepository *events.Repository, chatRequestsRepository *chat_requests.Repository, logger *log.Logger,
 ) *Controller {
 	return &Controller{
-		eventsRepository: eventsRepository,
-		chatsRepository:  chatsRepository,
-		responder:        responses.NewResponder(logger),
-		logger:           logger,
+		eventsRepository:       eventsRepository,
+		chatRequestsRepository: chatRequestsRepository,
+		responder:              responses.NewResponder(logger),
+		logger:                 logger,
 	}
 }
 
@@ -61,7 +61,7 @@ func (c *Controller) DoesChatRequestExist(w http.ResponseWriter, r *http.Request
 		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
 	}
 
-	doesChatRequestExist, err := c.chatsRepository.DoesChatRequestExist(user.Id, event.Id)
+	doesChatRequestExist, err := c.chatRequestsRepository.DoesChatRequestExist(user.Id, event.Id)
 	if err != nil {
 		c.logger.Println(err)
 		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
@@ -77,7 +77,7 @@ func (c *Controller) RequestChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = c.chatsRepository.RequestChat(chatRequest)
+	err = c.chatRequestsRepository.RequestChat(chatRequest)
 	if err == api_errors.ErrChatRequestExists {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
@@ -87,6 +87,8 @@ func (c *Controller) RequestChat(w http.ResponseWriter, r *http.Request) {
 		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
 		return
 	}
+
+	c.responder.WriteEmptyResponse(w, http.StatusOK)
 }
 
 func (c *Controller) buildChatRequest(r *http.Request) (*chat_requests.ChatRequestMq, error, int) {

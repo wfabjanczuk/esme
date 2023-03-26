@@ -8,6 +8,7 @@ import (
 	"participant-api/internal/modules/api/common/api_errors"
 	"participant-api/internal/modules/api/common/requests"
 	"participant-api/internal/modules/api/common/responses"
+	"participant-api/internal/modules/infrastructure/chat_requests"
 	"participant-api/internal/modules/infrastructure/events"
 	"participant-api/internal/modules/infrastructure/subscriptions"
 	"participant-api/internal/modules/infrastructure/users"
@@ -18,16 +19,19 @@ import (
 type Controller struct {
 	eventsRepository        *events.Repository
 	subscriptionsRepository *subscriptions.Repository
+	chatRequestsRepository  *chat_requests.Repository
 	responder               *responses.Responder
 	logger                  *log.Logger
 }
 
 func NewController(
-	eventsRepository *events.Repository, subscriptionsRepository *subscriptions.Repository, logger *log.Logger,
+	eventsRepository *events.Repository, subscriptionsRepository *subscriptions.Repository,
+	chatRequestsRepository *chat_requests.Repository, logger *log.Logger,
 ) *Controller {
 	return &Controller{
 		eventsRepository:        eventsRepository,
 		subscriptionsRepository: subscriptionsRepository,
+		chatRequestsRepository:  chatRequestsRepository,
 		responder:               responses.NewResponder(logger),
 		logger:                  logger,
 	}
@@ -73,7 +77,11 @@ func (c *Controller) FindEvents(w http.ResponseWriter, r *http.Request) {
 	c.responder.WriteJson(w, http.StatusOK, eventsList)
 }
 
-type getEventOnSuccess func(http.ResponseWriter, *http.Request, *users.User, *events.Event)
+type userEvent struct {
+	events.Event
+	IsChatRequested bool `json:"isChatRequested"`
+}
+type getEventOnSuccess func(http.ResponseWriter, *http.Request, *users.User, *userEvent)
 
 func (c *Controller) getEvent(w http.ResponseWriter, r *http.Request, onSuccess getEventOnSuccess) {
 	idString := httprouter.ParamsFromContext(r.Context()).ByName("id")
@@ -84,7 +92,7 @@ func (c *Controller) getEvent(w http.ResponseWriter, r *http.Request, onSuccess 
 		return
 	}
 
-	event, err := c.eventsRepository.GetEventById(id)
+	rawEvent, err := c.eventsRepository.GetEventById(id)
 	if err == sql.ErrNoRows {
 		c.responder.WriteError(w, api_errors.NewErrEventNotFound(id), http.StatusNotFound)
 		return
@@ -102,11 +110,21 @@ func (c *Controller) getEvent(w http.ResponseWriter, r *http.Request, onSuccess 
 		return
 	}
 
+	event := &userEvent{
+		Event: *rawEvent,
+	}
+	event.IsChatRequested, err = c.chatRequestsRepository.DoesChatRequestExist(user.Id, rawEvent.Id)
+	if err != nil {
+		c.logger.Println(err)
+		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
+		return
+	}
+
 	onSuccess(w, r, user, event)
 }
 
 func (c *Controller) GetEvent(w http.ResponseWriter, r *http.Request) {
-	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
+	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *userEvent) {
 		c.responder.WriteJson(w, http.StatusOK, event)
 	}
 
@@ -114,7 +132,7 @@ func (c *Controller) GetEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) Subscribe(w http.ResponseWriter, r *http.Request) {
-	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
+	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *userEvent) {
 		err := c.subscriptionsRepository.Subscribe(user.Id, event.Id)
 		if err != nil {
 			c.logger.Println(err)
@@ -129,7 +147,7 @@ func (c *Controller) Subscribe(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) Unsubscribe(w http.ResponseWriter, r *http.Request) {
-	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *events.Event) {
+	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *userEvent) {
 		err := c.subscriptionsRepository.Unsubscribe(user.Id, event.Id)
 		if err != nil {
 			c.logger.Println(err)

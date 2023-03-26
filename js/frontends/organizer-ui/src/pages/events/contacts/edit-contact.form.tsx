@@ -19,7 +19,7 @@ export const EditContactForm = ({ contactId, eventId }: EditContactFormProps): J
   }
 
   return <form onSubmit={update}>
-    <Box sx={styles.forms.component}>
+    <Box sx={styles.forms.column}>
       <TextField
         type='number'
         name='id'

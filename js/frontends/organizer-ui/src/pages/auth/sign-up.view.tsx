@@ -10,7 +10,7 @@ export const SignUpView = (): JSX.Element => {
     <Box component='main' sx={styles.layout.background}>
       <AlertBar size='medium'/>
       <Paper sx={styles.layout.cardMedium}>
-        <Typography variant='h4' component='h1' sx={styles.layout.title}>Register event agency</Typography>
+        <Typography variant='h4' component='h1' sx={styles.layout.titleCenter}>Register event agency</Typography>
         <SignUpForm/>
       </Paper>
     </Box>

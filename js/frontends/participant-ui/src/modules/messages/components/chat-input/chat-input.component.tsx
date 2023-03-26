@@ -1,36 +1,30 @@
-import React, { useState } from 'react'
-
-import {
-  ChatAttachmentButton,
-  ChatInputContainer,
-  ChatSendButton,
-  ChatTextInput
-} from './chat-input.styles'
+import React, { useContext, useState } from 'react'
+import { ChatAttachmentButton, ChatInputContainer, ChatSendButton, ChatTextInput } from './chat-input.styles'
+import { MessengerContext } from '../../../../common/messenger/messenger.context'
 
 interface ChatInputProps {
-  addMessage: (message: string) => void
+  chatId: string
 }
 
-export const ChatInput = ({ addMessage }: ChatInputProps): JSX.Element => {
-  const [message, setMessage] = useState('')
-  const onPress = (): void => {
-    if (message.length === 0) {
-      return
+export const ChatInput = ({ chatId }: ChatInputProps): JSX.Element => {
+  const [message, setMessage] = useState<string>('')
+  const messenger = useContext(MessengerContext)
+  const handleSend = (): void => {
+    if (message !== '') {
+      messenger.sendMessage(chatId, message)
+      setMessage('')
     }
-
-    addMessage(message)
-    setMessage('')
   }
 
   return (
     <ChatInputContainer>
-      <ChatAttachmentButton onPress={() => null} />
+      <ChatAttachmentButton onPress={() => null}/>
       <ChatTextInput
         placeholder='Enter your message'
         value={message}
         onChangeText={setMessage}
       />
-      <ChatSendButton onPress={onPress} />
+      <ChatSendButton onPress={handleSend}/>
     </ChatInputContainer>
   )
 }

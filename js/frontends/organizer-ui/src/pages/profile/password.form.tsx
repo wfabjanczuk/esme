@@ -10,7 +10,7 @@ export const ChangePasswordForm = (): JSX.Element => {
   const isError = errorMessages.length > 0
 
   return <form onSubmit={changePassword}>
-    <Box sx={styles.forms.component}>
+    <Box sx={styles.forms.column}>
       <TextField
         type='password'
         name='oldPassword'

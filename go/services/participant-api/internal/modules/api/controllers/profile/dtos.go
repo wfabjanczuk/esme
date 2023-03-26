@@ -9,14 +9,14 @@ type updateProfileDTO struct {
 }
 
 type changePasswordDTO struct {
-	Password           string `json:"password"`
+	OldPassword        string `json:"oldPassword"`
 	NewPassword        string `json:"newPassword"`
 	ConfirmNewPassword string `json:"confirmNewPassword"`
 }
 
 func (d *changePasswordDTO) validate() error {
-	if len(d.Password) < 8 {
-		return api_errors.ErrPasswordTooShort
+	if len(d.OldPassword) < 8 {
+		return api_errors.ErrOldPasswordTooShort
 	}
 	if len(d.NewPassword) < 8 {
 		return api_errors.ErrNewPasswordTooShort
@@ -24,7 +24,7 @@ func (d *changePasswordDTO) validate() error {
 	if d.NewPassword != d.ConfirmNewPassword {
 		return api_errors.ErrConfirmNewPassword
 	}
-	if d.NewPassword == d.Password {
+	if d.NewPassword == d.OldPassword {
 		return api_errors.ErrSamePasswords
 	}
 	return nil

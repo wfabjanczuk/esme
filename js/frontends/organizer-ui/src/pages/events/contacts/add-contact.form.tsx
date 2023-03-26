@@ -14,7 +14,7 @@ export const AddContactForm = ({ eventId }: AddContactFormProps): JSX.Element =>
   const isError = errorMessages.length > 0
 
   return <form onSubmit={create}>
-    <Box sx={styles.forms.component}>
+    <Box sx={styles.forms.column}>
       <TextField
         name='firstName'
         label='first name'

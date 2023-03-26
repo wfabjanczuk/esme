@@ -14,7 +14,7 @@ export const EditProfileForm = (): JSX.Element => {
   }
 
   return <form onSubmit={update}>
-    <Box sx={styles.forms.component}>
+    <Box sx={styles.forms.column}>
       <TextField
         name='email'
         label='email'

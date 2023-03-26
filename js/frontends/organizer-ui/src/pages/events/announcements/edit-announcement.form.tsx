@@ -19,7 +19,7 @@ export const EditAnnouncementForm = ({ announcementId, eventId }: EditAnnounceme
   }
 
   return <form onSubmit={update}>
-    <Box sx={styles.forms.component}>
+    <Box sx={styles.forms.column}>
       <TextField
         name='content'
         label='content'

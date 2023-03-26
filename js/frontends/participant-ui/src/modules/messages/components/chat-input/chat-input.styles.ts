@@ -1,6 +1,6 @@
 import styled from 'styled-components/native'
-import { colors } from '../../../../theme/colors'
-import { PaperIconButton } from '../../../../shared/components/overrides'
+import { colors } from '../../../../layout/colors'
+import { PaperIconButton } from '../../../../common/components/overrides'
 import { Platform } from 'react-native'
 
 const isIos = Platform.OS === 'ios'
@@ -12,9 +12,9 @@ export const ChatInputContainer = styled.View`
 `
 
 export const ChatAttachmentButton = styled(PaperIconButton).attrs({
-  color: colors.text.inverse,
-  size: 20,
-  icon: 'plus'
+  iconColor: colors.text.inverse,
+  size: 14,
+  icon: 'add'
 })`
   background-color: ${props => props.theme.colors.brand.primary};
   position: absolute;
@@ -25,7 +25,7 @@ export const ChatAttachmentButton = styled(PaperIconButton).attrs({
 `
 
 export const ChatSendButton = styled(PaperIconButton).attrs({
-  color: colors.brand.primary,
+  iconColor: colors.brand.primary,
   size: 24,
   icon: 'send'
 })`

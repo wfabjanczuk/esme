@@ -28,10 +28,12 @@ func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Log
 	mw := middlewares.NewModule(cfg.JwtSecret, infra.UsersRepository, logger)
 
 	module := &Module{
-		Router:       mw.EnableCors.Handler(router),
-		auth:         auth.NewController(cfg.JwtSecret, infra.UsersRepository, logger),
-		profile:      profile.NewController(infra.UsersRepository, logger),
-		events:       events.NewController(infra.EventsRepository, infra.SubscriptionsRepository, logger),
+		Router:  mw.EnableCors.Handler(router),
+		auth:    auth.NewController(cfg.JwtSecret, infra.UsersRepository, logger),
+		profile: profile.NewController(infra.UsersRepository, logger),
+		events: events.NewController(
+			infra.EventsRepository, infra.SubscriptionsRepository, infra.ChatRequestsRepository, logger,
+		),
 		chatRequests: chat_requests.NewController(infra.EventsRepository, infra.ChatRequestsRepository, logger),
 		users:        users.NewController(infra.UsersRepository, logger),
 	}
@@ -58,5 +60,6 @@ func (m *Module) attachRoutes(r *httprouter.Router, cu func(http.HandlerFunc) ht
 	r.HandlerFunc(http.MethodGet, "/chat-requests", cu(m.chatRequests.DoesChatRequestExist))
 	r.HandlerFunc(http.MethodPost, "/chat-requests", cu(m.chatRequests.RequestChat))
 
+	// TODO: secure GetUser endpoint
 	r.HandlerFunc(http.MethodGet, "/users/:id", m.users.GetUser)
 }

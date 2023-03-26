@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyledText } from '../../../../shared/components/typography/styled-text.component'
+import { StyledText } from '../../../../common/components/typography/styled-text.component'
 
 interface ThreadCardTitleProps {
   eventName: string

@@ -19,7 +19,7 @@ export const EditCommentForm = ({ commentId, issueId }: EditCommentFormProps): J
   }
 
   return <form onSubmit={update}>
-    <Box sx={styles.forms.component}>
+    <Box sx={styles.forms.column}>
       <TextField
         name='content'
         label='content'
