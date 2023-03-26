@@ -6,7 +6,7 @@ import { Divider } from 'react-native-paper'
 import { useEventsList } from './events-list.hook'
 import { StyledText } from '../../common/components/typography/styled-text.component'
 import { Event } from './event.entity'
-import { parseDateTimeLabel } from '../../common/utils'
+import { parseDateTimeChatLabel } from '../../common/utils'
 import { Spacer } from '../../common/components/spacer/spacer.component'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { EventStackParamsList } from '../../app/navigation/navigation-internal'
@@ -59,8 +59,8 @@ const EventCard = ({
             <StyledText>{event.name}</StyledText>
           </Spacer>
           <StyledText variant='caption'>Address: {event.address}</StyledText>
-          <StyledText variant='caption'>Start: {parseDateTimeLabel(event.timeStart)}</StyledText>
-          <StyledText variant='caption'>End: {parseDateTimeLabel(event.timeEnd)}</StyledText>
+          <StyledText variant='caption'>Start: {parseDateTimeChatLabel(event.timeStart)}</StyledText>
+          <StyledText variant='caption'>End: {parseDateTimeChatLabel(event.timeEnd)}</StyledText>
         </Spacer>
       </TouchableOpacity>
       <Divider/>

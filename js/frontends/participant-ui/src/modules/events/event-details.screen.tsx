@@ -4,7 +4,7 @@ import { StyledText } from '../../common/components/typography/styled-text.compo
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { EventStackParamsList } from '../../app/navigation/navigation-internal'
 import { useEvent } from './event.hook'
-import { parseDateTimeLabel } from '../../common/utils'
+import { parseDateTimeChatLabel } from '../../common/utils'
 import { Spacer } from '../../common/components/spacer/spacer.component'
 import { Card } from 'react-native-paper'
 import { PrimaryButton, SuccessButton } from '../../common/components/button.component'
@@ -76,8 +76,8 @@ export const EventDetailsScreen = ({
           <StyledText variant='title'>{event.name}</StyledText>
           <Spacer size='large' position='horizontal'>
             <StyledText variant='caption'>Address: {event.address}</StyledText>
-            <StyledText variant='caption'>Start: {parseDateTimeLabel(event.timeStart)}</StyledText>
-            <StyledText variant='caption'>End: {parseDateTimeLabel(event.timeEnd)}</StyledText>
+            <StyledText variant='caption'>Start: {parseDateTimeChatLabel(event.timeStart)}</StyledText>
+            <StyledText variant='caption'>End: {parseDateTimeChatLabel(event.timeEnd)}</StyledText>
           </Spacer>
           <Spacer size='large' position='all'>
             <StyledText>{event.description}</StyledText>
