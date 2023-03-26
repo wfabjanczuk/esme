@@ -8,11 +8,13 @@ import { useNewAuthenticator } from '../common/authenticator/authenticator.hook'
 import { AuthenticatorContext } from '../common/authenticator/authenticator.context'
 import { NavigationExternal } from './navigation/navigation-external'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import { useNewAlertStore } from '../common/alert-bar/alert-store.hook'
 
 export const App = (): JSX.Element => {
   const authenticator = useNewAuthenticator()
+  const alertStore = useNewAlertStore()
 
-  if (!authenticator.hasState()) {
+  if (!authenticator.hasState() || !alertStore.hasState()) {
     return <></>
   }
 
