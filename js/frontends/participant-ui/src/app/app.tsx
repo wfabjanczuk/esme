@@ -9,6 +9,8 @@ import { AuthenticatorContext } from '../common/authenticator/authenticator.cont
 import { NavigationExternal } from './navigation/navigation-external'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { useNewAlertStore } from '../common/alert-bar/alert-store.hook'
+import { AlertStoreContext } from '../common/alert-bar/alert-store.context'
+import { AlertBar } from '../common/alert-bar/alert-bar.component'
 
 export const App = (): JSX.Element => {
   const authenticator = useNewAuthenticator()
@@ -24,14 +26,17 @@ export const App = (): JSX.Element => {
         icon: props => <MaterialIcons {...props} />
       }}>
         <AuthenticatorContext.Provider value={authenticator}>
-          <StatusBar
-            backgroundColor={globalTheme.colors.bg.primary}
-            barStyle='dark-content'
-          />
-          {authenticator.isAuthorized()
-            ? <NavigationInternal/>
-            : <NavigationExternal/>
-          }
+          <AlertStoreContext.Provider value={alertStore}>
+            <StatusBar
+              backgroundColor={globalTheme.colors.bg.primary}
+              barStyle='dark-content'
+            />
+            <AlertBar/>
+            {authenticator.isAuthorized()
+              ? <NavigationInternal/>
+              : <NavigationExternal/>
+            }
+          </AlertStoreContext.Provider>
         </AuthenticatorContext.Provider>
       </PaperProvider>
     </ThemeProvider>

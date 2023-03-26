@@ -4,6 +4,7 @@ import axios from 'axios'
 import { Authenticator, AuthenticatorContext } from '../../common/authenticator/authenticator.context'
 import { config } from '../../app/config'
 import { parseErrorData } from '../../common/utils'
+import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-store.context'
 
 const eventsUrl = `${config.participantApiUrl}/events`
 const chatRequestsUrl = `${config.participantApiUrl}/chat-requests`
@@ -28,6 +29,7 @@ interface State {
 
 export const useEvent = (id: number): EventHook => {
   const authenticator = useContext(AuthenticatorContext)
+  const alertStore = useContext(AlertStoreContext)
   const url = `${eventsUrl}/${id}`
 
   const [state, setState] = useState<State>({
@@ -36,11 +38,11 @@ export const useEvent = (id: number): EventHook => {
   })
 
   useEffect(() => {
-    void fetchAsync(url, authenticator, setState)
+    void fetchAsync(url, setState, alertStore, authenticator)
   }, [authenticator])
 
   const requestChat = (data: RequestChatDto): void => {
-    void requestChatAsync(data, url, authenticator, setState)
+    void requestChatAsync(data, url, setState, alertStore, authenticator)
   }
 
   return {
@@ -51,8 +53,9 @@ export const useEvent = (id: number): EventHook => {
 
 const fetchAsync = async (
   url: string,
-  authenticator: Authenticator,
-  setState: Dispatch<SetStateAction<State>>
+  setState: Dispatch<SetStateAction<State>>,
+  alertStore: AlertStore,
+  authenticator: Authenticator
 ): Promise<void> => {
   return await axios.get<UserEvent>(url, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(({ data }) => setState({
@@ -67,18 +70,20 @@ const fetchAsync = async (
         event: undefined,
         errorMessages: parseErrorData(e?.response?.data)
       })
+      alertStore.add('error', 'Could not fetch event')
     })
 }
 
 const requestChatAsync = async (
   data: RequestChatDto,
   url: string,
-  authenticator: Authenticator,
-  setState: Dispatch<SetStateAction<State>>
+  setState: Dispatch<SetStateAction<State>>,
+  alertStore: AlertStore,
+  authenticator: Authenticator
 ): Promise<void> => {
   return await axios.post(chatRequestsUrl, data, { headers: { Authorization: authenticator.authorizationHeader } })
-    .then(({ data }) => {
-      console.log('successfully sent chat request to', chatRequestsUrl)
+    .then(() => {
+      alertStore.add('success', 'Request for help sent')
     })
     .catch(e => {
       if (authenticator.isAuthError(e)) {
@@ -88,5 +93,6 @@ const requestChatAsync = async (
         ...prevState,
         errorMessages: parseErrorData(e?.response?.data)
       }))
+      alertStore.add('error', 'Could not request help')
     })
 }

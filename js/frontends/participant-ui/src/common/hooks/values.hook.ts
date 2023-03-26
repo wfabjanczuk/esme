@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 interface ValuesHook<T extends string> {
   values: Record<T, string>
+  setValues: (values: Record<T, string>) => void
   newSetter: (key: T) => (value: string) => void
 }
 
@@ -14,6 +15,7 @@ export const useValues = <T extends string>(initialValues: Record<T, string>): V
 
   return {
     values,
-    newSetter
+    newSetter,
+    setValues
   }
 }

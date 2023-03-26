@@ -1,7 +1,8 @@
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useContext, useState } from 'react'
 import { config } from '../../app/config'
 import axios from 'axios'
 import { parseErrorData } from '../../common/utils'
+import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-store.context'
 
 const signUpUrl = `${config.participantApiUrl}/auth/sign-up`
 
@@ -17,12 +18,13 @@ interface State {
 }
 
 export const useSignUp = (): SignUpHook => {
+  const alertStore = useContext(AlertStoreContext)
   const [state, setState] = useState<State>({
     errorMessages: []
   })
 
   const signUp = (formValues: SignUpValues): void => {
-    void signUpAsync(formValues, setState)
+    void signUpAsync(formValues, setState, alertStore)
   }
 
   return {
@@ -33,9 +35,16 @@ export const useSignUp = (): SignUpHook => {
 
 const signUpAsync = async (
   formValues: SignUpValues,
-  setState: Dispatch<SetStateAction<State>>
+  setState: Dispatch<SetStateAction<State>>,
+  alertStore: AlertStore
 ): Promise<void> => {
   await axios.post(signUpUrl, formValues)
-    .then(() => setState({ errorMessages: [] }))
-    .catch(e => setState({ errorMessages: parseErrorData(e?.response?.data) }))
+    .then(() => {
+      alertStore.add('success', 'Participant created successfully')
+      setState({ errorMessages: [] })
+    })
+    .catch(e => {
+      alertStore.add('error', 'Could not register participant')
+      setState({ errorMessages: parseErrorData(e?.response?.data) })
+    })
 }

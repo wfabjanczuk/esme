@@ -4,6 +4,7 @@ import { Event } from './event.entity'
 import axios from 'axios'
 import { config } from '../../app/config'
 import { parseErrorData } from '../../common/utils'
+import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-store.context'
 
 const eventsUrl = `${config.participantApiUrl}/events`
 
@@ -21,6 +22,7 @@ interface State {
 
 export const useEventsList = (): EventsListHook => {
   const authenticator = useContext(AuthenticatorContext)
+  const alertStore = useContext(AlertStoreContext)
 
   const [state, setState] = useState<State>({
     query: '',
@@ -37,7 +39,7 @@ export const useEventsList = (): EventsListHook => {
 
   useEffect(() => {
     // TODO: debounce
-    void fetchAsync(state.query, setState, authenticator)
+    void fetchAsync(state.query, setState, alertStore, authenticator)
   }, [authenticator, state.query])
 
   return {
@@ -50,6 +52,7 @@ export const useEventsList = (): EventsListHook => {
 const fetchAsync = async (
   query: string,
   setState: Dispatch<SetStateAction<State>>,
+  alertStore: AlertStore,
   authenticator: Authenticator
 ): Promise<void> => {
   const url = query.length > 0
@@ -73,5 +76,6 @@ const fetchAsync = async (
         events: [],
         errorMessages: parseErrorData(e?.response?.data)
       }))
+      alertStore.add('error', 'Could not fetch events')
     })
 }

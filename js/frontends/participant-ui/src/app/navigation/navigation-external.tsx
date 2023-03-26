@@ -25,6 +25,6 @@ const ExternalNavigator = (): JSX.Element => (
 
 export const NavigationExternal = (): JSX.Element => (
   <NavigationContainer>
-    <ExternalNavigator />
+    <ExternalNavigator/>
   </NavigationContainer>
 )

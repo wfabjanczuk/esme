@@ -11,15 +11,15 @@ export const AlertBar = (): JSX.Element => {
   const { alerts } = useContext(AlertStoreContext)
   const insets = useSafeAreaInsets()
 
-  return <AlertBarContainer top={insets.top}>
+  return <AlertBarContainer topOffset={insets.top}>
     {alerts.map((a, i) =>
       <AlertBarElement key={i} type={a.type} content={a.content}/>
     )}
   </AlertBarContainer>
 }
 
-const AlertBarContainer = styled(View)<{ top: number }>`
-    top: ${props => props.top}px;
+const AlertBarContainer = styled(View)<{ topOffset: number }>`
+    top: ${props => props.topOffset}px;
     position: absolute;
     zIndex: 3;
     elevation: 3;

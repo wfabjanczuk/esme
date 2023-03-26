@@ -13,6 +13,7 @@ import { FullScreenScrollView } from '../../common/components/containers/scroll-
 import { View } from 'react-native'
 import { LocationObject } from 'expo-location/src/Location.types'
 import * as Location from 'expo-location'
+import { FormErrors } from '../../common/components/form.component'
 
 const placeholderImage = 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
 
@@ -25,9 +26,11 @@ export const EventDetailsScreen = ({
   const [location, setLocation] = useState<LocationObject | undefined>(undefined)
   const [description, setDescription] = useState('')
   const {
+    errorMessages,
     event,
     requestChat
   } = useEvent(id)
+  const isError = errorMessages.length > 0
 
   useEffect(() => {
     void (async () => {
@@ -92,8 +95,10 @@ export const EventDetailsScreen = ({
             </Fragment>
             : <Fragment>
               <Spacer size='large' position='all'>
-                <PaperTextInput label='problem description' mode='outlined' multiline onChangeText={setDescription}/>
+                <PaperTextInput label='problem description' mode='outlined' error={isError} multiline
+                  onChangeText={setDescription}/>
               </Spacer>
+              <FormErrors errorMessages={errorMessages}/>
               <SuccessButton icon='medical-services' onPress={requestHelp}>
                 Request help
               </SuccessButton>

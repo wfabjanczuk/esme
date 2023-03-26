@@ -10,14 +10,17 @@ import { parseDateTimeLabel } from '../../common/utils'
 import { Spacer } from '../../common/components/spacer/spacer.component'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { EventStackParamsList } from '../../app/navigation/navigation-internal'
+import { FormErrors } from '../../common/components/form.component'
 
 type EventsScreenProps = NativeStackScreenProps<EventStackParamsList, 'Event select'>
 
 export const EventSelectScreen = ({ navigation }: EventsScreenProps): JSX.Element => {
   const {
+    errorMessages,
     events,
     setQuery
   } = useEventsList()
+  const isError = errorMessages.length > 0
   const newOnPress = (id: number) => (): void => {
     navigation.navigate('Event details', { id })
   }
@@ -26,8 +29,9 @@ export const EventSelectScreen = ({ navigation }: EventsScreenProps): JSX.Elemen
     <SafeArea>
       <StyledText variant='title'>Select event</StyledText>
       <Spacer size='large' position='horizontal'>
-        <PaperTextInput label='search' mode='outlined' onChangeText={setQuery}/>
+        <PaperTextInput label='search' mode='outlined' onChangeText={setQuery} error={isError}/>
       </Spacer>
+      <FormErrors errorMessages={errorMessages} />
       <FlatList
         data={events}
         renderItem={({ item }) => <EventCard event={item} onPress={newOnPress(item.id)}/>}
