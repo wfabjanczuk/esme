@@ -1,19 +1,22 @@
-import React, { useContext } from 'react'
-import { View } from 'react-native'
+import React, { useContext, useEffect } from 'react'
+import { TouchableOpacity, View } from 'react-native'
 import { StyledText } from '../components/typography/styled-text.component'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import styled from 'styled-components/native'
-import { AlertStoreContext } from './alert-store.context'
+import { Alert, AlertStoreContext, AlertType } from './alert-store.context'
 
-export type AlertType = 'success' | 'error' | 'warning'
+const alertDisplayTime = 5000
 
 export const AlertBar = (): JSX.Element => {
-  const { alerts } = useContext(AlertStoreContext)
+  const {
+    state: { alerts },
+    remove
+  } = useContext(AlertStoreContext)
   const insets = useSafeAreaInsets()
 
   return <AlertBarContainer topOffset={insets.top}>
     {alerts.map((a, i) =>
-      <AlertBarElement key={i} type={a.type} content={a.content}/>
+      <AlertBarElement key={i} alert={a} remove={remove}/>
     )}
   </AlertBarContainer>
 }
@@ -27,25 +30,38 @@ const AlertBarContainer = styled(View)<{ topOffset: number }>`
 `
 
 interface AlertBarElementProps {
-  type: AlertType
-  content: string
+  alert: Alert
+  remove: (id: number) => void
 }
 
 const AlertBarElement = ({
-  type,
-  content
+  alert: {
+    id,
+    content,
+    type
+  },
+  remove
 }: AlertBarElementProps): JSX.Element => {
-  return <ElementContainer type={type}>
+  useEffect(() => {
+    setTimeout(() => remove(id), alertDisplayTime)
+  }, [id, remove])
+
+  return <ElementContainer type={type} onPress={() => remove(id)}>
     <StyledText variant='inverseBody'>{content}</StyledText>
   </ElementContainer>
 }
 
 interface ElementContainerProps {
   type: AlertType
+  onPress: () => void
 }
 
-const ElementContainer = styled(View).attrs(({ type }: ElementContainerProps) => ({
+const ElementContainer = styled(TouchableOpacity).attrs(({
   type,
+  onPress
+}: ElementContainerProps) => ({
+  type,
+  onPress,
   shadowColor: 'black',
   elevation: 3,
   shadowOpacity: 0.5,
