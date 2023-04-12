@@ -73,12 +73,13 @@ export class Authenticator {
       return false
     }
 
-    if ([401, 403].includes(code)) {
-      void this.signOut()
-      return true
-    }
+    return [401, 403].includes(code)
+  }
 
-    return false
+  parseAuthError = (e: AxiosError): string[] => {
+    return this.isAuthError(e)
+      ? ['Insufficient privileges']
+      : []
   }
 
   private refreshState (authorizationHeader: string): void {

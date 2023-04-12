@@ -5,9 +5,14 @@ import { Add } from '@mui/icons-material'
 import React from 'react'
 import { useCreateUser } from './user.entity'
 import { UserRoleSelect } from './user-role-select.component'
+import { useProfileDetails } from '../profile/profile.hook'
 
 export const AddUserForm = (): JSX.Element => {
   const { errorMessages, create } = useCreateUser()
+  const { profile } = useProfileDetails()
+  if (profile === undefined) {
+    return <></>
+  }
   const isError = errorMessages.length > 0
 
   return <form onSubmit={create}>
@@ -50,7 +55,7 @@ export const AddUserForm = (): JSX.Element => {
         error={isError}
         sx={styles.forms.field}
       />
-      <UserRoleSelect isError={isError}/>
+      <UserRoleSelect isError={isError} profile={profile}/>
       <FormErrors errorMessages={errorMessages}/>
       <Button type='submit' variant='contained' color='success' sx={styles.buttons.single}
         startIcon={<Add/>}

@@ -93,3 +93,5 @@ const updateAsync = async (
       alertStore.add('error', 'Could not update profile')
     })
 }
+
+export const useProfileDetails = (): Pick<EditProfileHook, 'errorMessages' | 'profile'> => useEditProfile()

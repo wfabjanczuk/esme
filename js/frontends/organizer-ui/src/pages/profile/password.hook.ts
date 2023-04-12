@@ -51,11 +51,9 @@ const changePasswordAsync = async (
       window.location.replace('/')
     })
     .catch(e => {
-      if (authenticator.isAuthError(e)) {
-        return
-      }
+      const authErrors = authenticator.parseAuthError(e)
       setState({
-        errorMessages: parseErrorMessage(e?.response?.data?.message)
+        errorMessages: authErrors.length > 0 ? authErrors : parseErrorMessage(e?.response?.data?.message)
       })
       alertStore.add('error', 'Could not update profile')
     })

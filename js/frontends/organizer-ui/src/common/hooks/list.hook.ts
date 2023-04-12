@@ -37,12 +37,10 @@ const fetchAsync = async <T> (
       errorMessages: []
     }))
     .catch(e => {
-      if (authenticator.isAuthError(e)) {
-        return
-      }
+      const authErrors = authenticator.parseAuthError(e)
       setState({
         list: [],
-        errorMessages: parseErrorMessage(e?.response?.data?.message)
+        errorMessages: authErrors.length > 0 ? authErrors : parseErrorMessage(e?.response?.data?.message)
       })
       alertStore.add('error', 'Could not fetch entities')
     })

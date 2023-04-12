@@ -22,6 +22,10 @@ import { EditIssueView } from '../pages/issues/edit-issue.view'
 import { AddCommentView } from '../pages/issues/comments/add-comment.view'
 import { EditCommentView } from '../pages/issues/comments/edit-comment.view'
 import { ProfileView } from '../pages/profile/profile.view'
+import { AdminAgenciesView } from '../pages/admin/agencies/admin-agencies.view'
+import { AdminUsersView } from '../pages/admin/users/admin-users.view'
+import { AdminChangelogsView } from '../pages/admin/changelogs/admin-changelogs.view'
+import { AdminAgencyDetailsView } from '../pages/admin/agencies/admin-agency-details.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -34,6 +38,10 @@ export const RouterInternal = createBrowserRouter([
         children: [
           {
             index: true,
+            element: <ProfileView/>
+          },
+          {
+            path: 'agency',
             element: <EditAgencyView/>
           },
           {
@@ -111,6 +119,22 @@ export const RouterInternal = createBrowserRouter([
           {
             path: 'profile',
             element: <ProfileView/>
+          },
+          {
+            path: 'admin/agencies',
+            element: <AdminAgenciesView/>
+          },
+          {
+            path: 'admin/agencies/:agencyId',
+            element: <AdminAgencyDetailsView/>
+          },
+          {
+            path: 'admin/users',
+            element: <AdminUsersView/>
+          },
+          {
+            path: 'admin/changelogs',
+            element: <AdminChangelogsView/>
           }
         ]
       }

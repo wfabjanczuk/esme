@@ -8,24 +8,32 @@ interface RouteError {
   message?: string
 }
 
-export const ErrorView = (): JSX.Element => {
-  const error = useRouteError() as RouteError
+interface ErrorViewProps {
+  errorMessages?: string[]
+}
+
+export const ErrorView = ({ errorMessages }: ErrorViewProps): JSX.Element => {
+  const errors = errorMessages === undefined
+    ? [getDisplayMessage(useRouteError() as RouteError)]
+    : errorMessages
 
   return (<Box style={styles.layout.root}>
     <Box component='main' sx={styles.layout.content}>
-      <Alert variant='filled' severity='error' sx={styles.layout.fullWidth}>
-        {getDisplayMessage(error)}
-      </Alert>
+      {errors.map((message, index) => (
+        <Alert key={`error_${index}`} variant='filled' severity='error' sx={styles.layout.fullWidth}>
+          {message}
+        </Alert>
+      ))}
     </Box>
   </Box>
   )
 }
 
 const getDisplayMessage = (error: RouteError): string => {
-  if (error.statusText != null) {
+  if (error?.statusText != null) {
     return error.statusText
   }
-  if (error.message != null) {
+  if (error?.message != null) {
     return error.message
   }
 

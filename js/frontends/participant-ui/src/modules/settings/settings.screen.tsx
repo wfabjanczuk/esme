@@ -8,18 +8,31 @@ import { AvatarContainer, AvatarPlaceholder, SettingsItem, SettingsItemIcon } fr
 import { AuthenticatorContext } from '../../common/authenticator/authenticator.context'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { SettingsStackParamsList } from '../../app/navigation/navigation-internal'
+import { useProfileDetails } from './edit-profile.hook'
+import { FormErrors } from '../../common/components/form.component'
 
 type SettingsScreenProps = NativeStackScreenProps<SettingsStackParamsList, 'Settings menu'>
 
 export const SettingsScreen = ({ navigation }: SettingsScreenProps): JSX.Element => {
   const authenticator = useContext(AuthenticatorContext)
+  const { errorMessages, profile } = useProfileDetails()
+
+  if (errorMessages.length > 0) {
+    return <SafeArea>
+      <FormErrors errorMessages={errorMessages}/>
+    </SafeArea>
+  }
+
+  if (profile === undefined) {
+    return <></>
+  }
 
   return (
     <SafeArea>
       <AvatarContainer>
         <AvatarPlaceholder/>
         <Spacer size='extraLarge' position='top'>
-          <StyledText>participant@gmail.com</StyledText>
+          <StyledText>{profile.email}</StyledText>
         </Spacer>
       </AvatarContainer>
       <ScrollView>

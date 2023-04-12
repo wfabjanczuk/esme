@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const participantReadTimeout = 10 * time.Minute
+const participantReadTimeout = 30 * time.Minute
 
 type ParticipantConnection struct {
 	Participant  *authentication.Participant

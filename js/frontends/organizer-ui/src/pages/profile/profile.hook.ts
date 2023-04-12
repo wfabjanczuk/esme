@@ -11,6 +11,7 @@ const profileUrl = `${config.organizerApiUrl}/profile`
 interface EditProfileHook {
   errorMessages: string[]
   profile?: Profile
+  fetch: () => void
   update: (e: FormEvent<HTMLFormElement>) => void
 }
 
@@ -23,14 +24,9 @@ export const useEditProfile = (): EditProfileHook => {
   const authenticator = useContext(AuthenticatorContext)
   const alertStore = useContext(AlertStoreContext)
 
-  const [state, setState] = useState<State>({
-    profile: undefined,
-    errorMessages: []
-  })
-
-  useEffect(() => {
+  const fetch = (): void => {
     void fetchProfile(setState, alertStore, authenticator)
-  }, [authenticator])
+  }
 
   const update = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
@@ -39,8 +35,16 @@ export const useEditProfile = (): EditProfileHook => {
     void updateAsync(payload, setState, alertStore, authenticator)
   }
 
+  useEffect(fetch, [authenticator])
+
+  const [state, setState] = useState<State>({
+    profile: undefined,
+    errorMessages: []
+  })
+
   return {
     ...state,
+    fetch,
     update
   }
 }
@@ -56,12 +60,10 @@ const fetchProfile = async (
       errorMessages: []
     }))
     .catch(e => {
-      if (authenticator.isAuthError(e)) {
-        return
-      }
+      const authErrors = authenticator.parseAuthError(e)
       setState({
         profile: undefined,
-        errorMessages: parseErrorMessage(e?.response?.data?.message)
+        errorMessages: authErrors.length > 0 ? authErrors : parseErrorMessage(e?.response?.data?.message)
       })
       alertStore.add('error', 'Could not fetch profile')
     })
@@ -82,12 +84,10 @@ const updateAsync = async (
       alertStore.add('success', 'Profile updated successfully')
     })
     .catch(e => {
-      if (authenticator.isAuthError(e)) {
-        return
-      }
+      const authErrors = authenticator.parseAuthError(e)
       setState((prevState) => ({
         profile: prevState.profile,
-        errorMessages: parseErrorMessage(e?.response?.data?.message)
+        errorMessages: authErrors.length > 0 ? authErrors : parseErrorMessage(e?.response?.data?.message)
       }))
       alertStore.add('error', 'Could not update profile')
     })
