@@ -4,8 +4,9 @@ import { Box, Typography } from '@mui/material'
 import { AlertBar } from '../../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
 import { styles } from '../../../layout/styles'
+import { withAdminAuth } from '../../../common/with-admin-auth.hoc'
 
-export const AdminChangelogsView = (): JSX.Element => {
+const _AdminChangelogsView = (): JSX.Element => {
   return <Fragment>
     <Header title='Changelogs'/>
     <Box component='main' sx={styles.layout.content}>
@@ -16,3 +17,5 @@ export const AdminChangelogsView = (): JSX.Element => {
     </Box>
   </Fragment>
 }
+
+export const AdminChangelogsView = withAdminAuth(_AdminChangelogsView)

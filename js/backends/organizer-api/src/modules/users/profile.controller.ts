@@ -8,6 +8,8 @@ import { PublicUserDto } from './dtos/public-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { ProfileService } from './profile.service';
 import { ChangePasswordDto } from './dtos/change-password.dto';
+import { AdminGuard } from '../../common/guards/admin.guard';
+import { SetAgencyDto } from './dtos/set-agency.dto';
 
 @Controller('profile')
 @UseGuards(AuthenticationGuard)
@@ -44,5 +46,15 @@ export class ProfileController {
     @Body() body: ChangePasswordDto,
   ) {
     return this.profileService.changePassword(body, currentUser);
+  }
+
+  @Patch('set-agency')
+  @UseGuards(AdminGuard)
+  @ApiResponse({
+    status: 200,
+    type: User,
+  })
+  setAgency(@CurrentUser() currentUser: User, @Body() body: SetAgencyDto) {
+    return this.profileService.setAgency(body, currentUser);
   }
 }

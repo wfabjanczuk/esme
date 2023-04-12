@@ -6,8 +6,9 @@ import Paper from '@mui/material/Paper'
 import { styles } from '../../../layout/styles'
 import { AgenciesList } from './agencies-list.component'
 import { CardFooter } from '../../../common/card-footer.component'
+import { withAdminAuth } from '../../../common/with-admin-auth.hoc'
 
-export const AdminAgenciesView = (): JSX.Element => {
+const _AdminAgenciesView = (): JSX.Element => {
   return <Fragment>
     <Header title='Agencies'/>
     <Box component='main' sx={styles.layout.content}>
@@ -15,8 +16,10 @@ export const AdminAgenciesView = (): JSX.Element => {
       <Paper sx={styles.layout.cardLarge}>
         <Typography component='h2' variant='h5' sx={styles.layout.title}>Browse agencies</Typography>
         <AgenciesList/>
-        <CardFooter />
+        <CardFooter/>
       </Paper>
     </Box>
   </Fragment>
 }
+
+export const AdminAgenciesView = withAdminAuth(_AdminAgenciesView)

@@ -51,6 +51,7 @@ export class User {
   @ApiProperty({ example: 1 })
   agencyId?: number;
 
+  // TODO: fix edge cases with deleting users
   @ManyToOne(() => Agency, null, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'agencyId' })
   @ApiHideProperty()

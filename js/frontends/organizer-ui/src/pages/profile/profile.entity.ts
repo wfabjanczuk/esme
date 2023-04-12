@@ -1,3 +1,5 @@
+import { UserRole } from '../users/user.entity'
+
 export interface Profile {
   id: number
   email: string
@@ -9,12 +11,4 @@ export interface Profile {
   timeSignOut: Date
   role: UserRole
   agencyId?: number
-}
-
-export enum UserRole {
-  superAdmin,
-  admin,
-  agencyOwner,
-  agencyManager,
-  agencySupport,
 }

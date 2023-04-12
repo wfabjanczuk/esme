@@ -14,6 +14,7 @@ import { styles } from './styles'
 import { useProfileDetails } from '../pages/profile/profile.hook'
 import { ErrorView } from '../app/error.view'
 import { defaultRoute, getUserCategories, MenuButton, MenuRoute } from './categories'
+import { useAdminAgencyPreview } from '../pages/admin/agencies/agencies.hook'
 
 export default function Menu (props: DrawerProps): JSX.Element {
   const authenticator = useContext(AuthenticatorContext)
@@ -21,13 +22,19 @@ export default function Menu (props: DrawerProps): JSX.Element {
     profile,
     errorMessages
   } = useProfileDetails()
+  const { setAgency } = useAdminAgencyPreview()
   const { ...other } = props
 
   if (profile == null) {
     return <ErrorView errorMessages={errorMessages}/>
   }
 
-  const categories = getUserCategories(profile, authenticator)
+  const leavePreview = (): void => setAgency(
+    undefined,
+    () => window.location.replace(`/admin/agencies/${profile.agencyId ?? ''}`)
+  )
+
+  const categories = getUserCategories(profile, authenticator, leavePreview)
 
   return (
     <Drawer variant='permanent' {...other}>

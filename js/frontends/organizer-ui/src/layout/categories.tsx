@@ -8,21 +8,28 @@ import * as React from 'react'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
 import { Authenticator } from '../common/authenticator/authenticator.context'
-import { Profile, UserRole } from '../pages/profile/profile.entity'
+import { Profile } from '../pages/profile/profile.entity'
+import { VisibilityOffOutlined } from '@mui/icons-material'
+import { UserRole } from '../pages/users/user.entity'
 
-export const defaultRoute = '/profile'
-
-export const getUserCategories = (profile: Profile, authenticator: Authenticator): Category[] => {
+export const getUserCategories = (profile: Profile, authenticator: Authenticator, leavePreview: () => void): Category[] => {
   const isAdmin = [UserRole.superAdmin, UserRole.admin].includes(profile.role)
   const isAgency = profile.agencyId != null
 
   let categories = isAgency ? agencyCategories : adminCategories
+  if (isAdmin && isAgency) {
+    const agencyId = profile.agencyId as number
+    categories = [...getAdminAgencyCategories(agencyId, leavePreview), ...categories]
+  }
+
   if (!isAdmin) {
     categories = [...categories, ...messengerCategories]
   }
 
   return [...categories, ...getAccountCategories(authenticator)]
 }
+
+export const defaultRoute = '/profile'
 
 export interface Category {
   id: string
@@ -43,7 +50,7 @@ export interface MenuButton {
   onClick: () => void
 }
 
-export const adminCategories: Category[] = [
+const adminCategories: Category[] = [
   {
     id: 'Admin',
     children: [
@@ -69,7 +76,7 @@ export const adminCategories: Category[] = [
   }
 ]
 
-export const agencyCategories: Category[] = [
+const agencyCategories: Category[] = [
   {
     id: 'Organizer',
     children: [
@@ -107,7 +114,7 @@ export const agencyCategories: Category[] = [
   }
 ]
 
-export const messengerCategories: Category[] = [
+const messengerCategories: Category[] = [
   {
     id: 'Messenger',
     children: [
@@ -121,7 +128,23 @@ export const messengerCategories: Category[] = [
   }
 ]
 
-export const getAccountCategories = (authenticator: Authenticator): Category[] => {
+const getAdminAgencyCategories = (agencyId: number, leavePreview: () => void): Category[] => {
+  return [
+    {
+      id: `Preview: agency ${agencyId}`,
+      children: [
+        {
+          type: 'button',
+          id: 'Leave preview',
+          icon: <VisibilityOffOutlined/>,
+          onClick: () => leavePreview()
+        }
+      ]
+    }
+  ]
+}
+
+const getAccountCategories = (authenticator: Authenticator): Category[] => {
   return [
     {
       id: 'Account',

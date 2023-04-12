@@ -7,8 +7,9 @@ import { AlertBar } from '../../../common/alert-bar/alert-bar.component'
 import { useParams } from 'react-router-dom'
 import { AdminAgencyForm } from './admin-agency.form'
 import { CardTitle } from '../../../common/card-title.component'
+import { withAdminAuth } from '../../../common/with-admin-auth.hoc'
 
-export const AdminAgencyDetailsView = (): JSX.Element => {
+const _AdminAgencyDetailsView = (): JSX.Element => {
   const { agencyId: agencyIdFromRoute } = useParams()
   const id = agencyIdFromRoute === undefined ? undefined : parseInt(agencyIdFromRoute, 10)
 
@@ -30,3 +31,5 @@ const AdminAgencyCard = ({ id }: { id: number }): JSX.Element => {
     <AdminAgencyForm id={id}/>
   </Paper>
 }
+
+export const AdminAgencyDetailsView = withAdminAuth(_AdminAgencyDetailsView)

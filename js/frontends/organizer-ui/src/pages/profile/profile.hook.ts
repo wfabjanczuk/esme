@@ -5,12 +5,14 @@ import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-stor
 import axios from 'axios'
 import { parseErrorMessage } from '../../common/utils'
 import { Profile } from './profile.entity'
+import { UserRole } from '../users/user.entity'
 
 const profileUrl = `${config.organizerApiUrl}/profile`
 
 interface EditProfileHook {
   errorMessages: string[]
   profile?: Profile
+  isAdmin: boolean
   fetch: () => void
   update: (e: FormEvent<HTMLFormElement>) => void
 }
@@ -42,8 +44,11 @@ export const useEditProfile = (): EditProfileHook => {
     errorMessages: []
   })
 
+  const isAdmin = [UserRole.superAdmin, UserRole.admin].includes(state.profile?.role ?? UserRole.agencySupport)
+
   return {
     ...state,
+    isAdmin,
     fetch,
     update
   }
@@ -93,5 +98,5 @@ const updateAsync = async (
     })
 }
 
-export const useProfileDetails = (): Pick<EditProfileHook, 'errorMessages' | 'profile'> =>
+export const useProfileDetails = (): Pick<EditProfileHook, 'errorMessages' | 'profile' | 'isAdmin'> =>
   useEditProfile()

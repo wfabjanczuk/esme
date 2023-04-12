@@ -4,7 +4,7 @@ import { FormErrors } from '../../../common/form-errors.component'
 import { styles } from '../../../layout/styles'
 import { Save, Visibility } from '@mui/icons-material'
 import { ButtonGroup } from '../../../common/button-group.component'
-import { useAdminAgency } from './agencies.hook'
+import { useAdminAgency, useAdminAgencyPreview } from './agencies.hook'
 import { AgencyApprovedSelect } from './agency-approved-select.component'
 
 interface AdminAgencyFormProps {
@@ -17,6 +17,7 @@ export const AdminAgencyForm = ({ id }: AdminAgencyFormProps): JSX.Element => {
     agency,
     verify
   } = useAdminAgency(id)
+  const { setAgency } = useAdminAgencyPreview()
   const isError = errorMessages.length > 0
 
   if (agency === undefined) {
@@ -63,8 +64,10 @@ export const AdminAgencyForm = ({ id }: AdminAgencyFormProps): JSX.Element => {
         <Button type='submit' variant='contained' color='success' sx={styles.buttons.groupElement} startIcon={<Save/>}>
           Save
         </Button>
-        <Button type='button' variant='contained' color='primary' sx={styles.buttons.groupElement} startIcon={<Visibility/>}>
-          View data
+        <Button type='button' variant='contained' color='secondary' sx={styles.buttons.groupElement}
+          startIcon={<Visibility/>}
+          onClick={() => setAgency(id, () => window.location.replace('/agency'))}>
+          Preview
         </Button>
       </ButtonGroup>
     </Box>

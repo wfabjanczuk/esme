@@ -8,11 +8,12 @@ import { parseErrorMessage } from '../../../common/utils'
 import axios from 'axios'
 
 const agenciesApiUrl = `${config.organizerApiUrl}/agencies`
+const setAgencyApiUrl = `${config.organizerApiUrl}/profile/set-agency`
 
 export const useAgenciesList = (): ListHook<Agency> =>
   useList<Agency>(agenciesApiUrl)
 
-interface VerifyAgencyHook {
+interface AdminAgencyHook {
   errorMessages: string[]
   agency?: Agency
   verify: (e: FormEvent<HTMLFormElement>) => void
@@ -23,7 +24,7 @@ interface State {
   agency?: Agency
 }
 
-export const useAdminAgency = (id: number): VerifyAgencyHook => {
+export const useAdminAgency = (id: number): AdminAgencyHook => {
   const authenticator = useContext(AuthenticatorContext)
   const alertStore = useContext(AlertStoreContext)
   const url = `${agenciesApiUrl}/${id}`
@@ -94,5 +95,51 @@ const verifyAsync = async (
         errorMessages: authErrors.length > 0 ? authErrors : parseErrorMessage(e?.response?.data?.message)
       }))
       alertStore.add('error', 'Could not update agency')
+    })
+}
+
+interface AdminAgencyPreviewHook {
+  errorMessages: string[]
+  setAgency: (id: number | undefined, onSuccess: () => void) => void
+}
+
+export const useAdminAgencyPreview = (): AdminAgencyPreviewHook => {
+  const authenticator = useContext(AuthenticatorContext)
+  const alertStore = useContext(AlertStoreContext)
+
+  const [state, setState] = useState({
+    errorMessages: [] as string[]
+  })
+
+  const setAgency = (id: number | undefined, onSuccess: () => void): void => {
+    const payload = id === undefined ? {} : { agencyId: id }
+    void setAgencyAsync(payload, setState, alertStore, authenticator, onSuccess)
+  }
+
+  return {
+    ...state,
+    setAgency
+  }
+}
+
+const setAgencyAsync = async (
+  payload: Object,
+  setState: Dispatch<SetStateAction<State>>,
+  alertStore: AlertStore,
+  authenticator: Authenticator,
+  onSuccess: () => void
+): Promise<void> => {
+  return await axios.patch(setAgencyApiUrl, payload, { headers: { Authorization: authenticator.authorizationHeader } })
+    .then(() => {
+      alertStore.add('success', 'Agency preview set successfully')
+      onSuccess()
+    })
+    .catch(e => {
+      const authErrors = authenticator.parseAuthError(e)
+      setState((prevState) => ({
+        agency: prevState.agency,
+        errorMessages: authErrors.length > 0 ? authErrors : parseErrorMessage(e?.response?.data?.message)
+      }))
+      alertStore.add('error', 'Could not set agency preview')
     })
 }
