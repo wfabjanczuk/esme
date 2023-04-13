@@ -5,33 +5,41 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './user.entity';
+import { User } from '../users/user.entity';
 import { Repository } from 'typeorm';
-import { UpdateUserDto } from './dtos/update-user.dto';
 import { LoggingEntityManager } from '../changelogs/logging-entity-manager';
+import { UserRole } from '../users/user-role.enum';
 import { hashSync } from 'bcrypt';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { UpdateAdminUserDto } from './dtos/update-admin-user.dto';
+import { CreateUserDto } from '../users/dtos/create-user.dto';
 
 @Injectable()
-export class UsersService {
+export class AdminUsersService {
   constructor(
     private lem: LoggingEntityManager,
     @InjectRepository(User) private repo: Repository<User>,
   ) {}
 
-  findAll(agencyId: number) {
-    return this.repo.find({ where: { agencyId } });
+  findAll() {
+    return this.repo.find();
   }
 
-  async findOne(id: number, agencyId: number) {
+  findAllAdmins() {
+    return this.repo
+      .createQueryBuilder('user')
+      .where('user.role IN (:...roles)', {
+        roles: [UserRole.superAdmin, UserRole.admin],
+      })
+      .getMany();
+  }
+
+  async findOne(id: number) {
     const user = await this.repo.findOne({
-      where: { id, agencyId },
+      where: { id },
       relations: { agency: true },
     });
     if (!user) {
-      throw new NotFoundException(
-        `User with id ${id} not found in agency ${agencyId}`,
-      );
+      throw new NotFoundException(`User with id ${id} not found`);
     }
     return user;
   }
@@ -50,22 +58,18 @@ export class UsersService {
     });
     validateRole('create', user, createdBy);
 
-    user.agencyId = createdBy.agencyId;
     user.password = hashSync(user.password, 12);
     return this.lem.create(this.repo, user, createdBy);
   }
 
-  async update(id: number, props: UpdateUserDto, updatedBy: User) {
-    const user = Object.assign(
-      await this.findOne(id, updatedBy.agencyId),
-      props,
-    );
+  async update(id: number, props: UpdateAdminUserDto, updatedBy: User) {
+    const user = Object.assign(await this.findOne(id), props);
     validateRole('update', user, updatedBy);
     return this.lem.update(this.repo, user, updatedBy);
   }
 
   async remove(id: number, deletedBy: User) {
-    const user = await this.findOne(id, deletedBy.agencyId);
+    const user = await this.findOne(id);
     validateRole('delete', user, deletedBy);
     return this.lem.remove(this.repo, user, deletedBy);
   }

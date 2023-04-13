@@ -9,7 +9,8 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { User } from './user.entity';
+import { AdminUsersService } from './admin-users.service';
+import { User } from '../users/user.entity';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import {
@@ -18,38 +19,34 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UpdateUserDto } from './dtos/update-user.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
-import { PublicUserDto } from './dtos/public-user.dto';
-import { AgencyRoles } from './user-role.enum';
-import { AgencyManagerGuard } from '../../common/guards/agency-manager.guard';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
+import { PublicUserDto } from '../users/dtos/public-user.dto';
+import { AdminGuard } from '../../common/guards/admin.guard';
+import { AdminRoles } from '../users/user-role.enum';
+import { UpdateAdminUserDto } from './dtos/update-admin-user.dto';
+import { CreateUserDto } from '../users/dtos/create-user.dto';
 
-@Controller('agency/users')
-@UseGuards(AuthenticationGuard)
+@Controller('admin/users')
+@UseGuards(AuthenticationGuard, AdminGuard)
 @Serialize(PublicUserDto)
-@ApiTags('2. Organizer: users')
-export class UsersController {
-  constructor(private agencyUsersService: UsersService) {}
+@ApiTags('1. Admin: users')
+export class AdminUsersController {
+  constructor(private adminUsersService: AdminUsersService) {}
 
   @Get('roles')
   @Header('Content-Type', 'application/json; charset=utf-8')
-  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     schema: {
-      example: JSON.stringify(AgencyRoles),
+      example: JSON.stringify(AdminRoles),
     },
   })
   getAdminRoles() {
-    return JSON.stringify(AgencyRoles);
+    return JSON.stringify(AdminRoles);
   }
 
   @Get(':id')
-  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: User,
@@ -58,27 +55,25 @@ export class UsersController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'User with id 1 not found in agency 1',
+        message: 'User with id 1 not found',
         error: 'Not Found',
       },
     },
   })
-  findOne(@CurrentUser() { agencyId }: User, @Param() { id }: IdDto) {
-    return this.agencyUsersService.findOne(id, agencyId);
+  findOne(@Param() { id }: IdDto) {
+    return this.adminUsersService.findOne(id);
   }
 
   @Get()
-  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: [User],
   })
-  findAll(@CurrentUser() { agencyId }: User) {
-    return this.agencyUsersService.findAll(agencyId);
+  findAll() {
+    return this.adminUsersService.findAllAdmins();
   }
 
   @Post()
-  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 201,
     type: User,
@@ -93,11 +88,10 @@ export class UsersController {
     },
   })
   create(@CurrentUser() currentUser: User, @Body() body: CreateUserDto) {
-    return this.agencyUsersService.create(body, currentUser);
+    return this.adminUsersService.create(body, currentUser);
   }
 
   @Patch(':id')
-  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: User,
@@ -106,7 +100,7 @@ export class UsersController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'User with id 1 not found in agency 1',
+        message: 'User with id 1 not found',
         error: 'Not Found',
       },
     },
@@ -114,13 +108,12 @@ export class UsersController {
   update(
     @CurrentUser() currentUser: User,
     @Param() { id }: IdDto,
-    @Body() body: UpdateUserDto,
+    @Body() body: UpdateAdminUserDto,
   ) {
-    return this.agencyUsersService.update(id, body, currentUser);
+    return this.adminUsersService.update(id, body, currentUser);
   }
 
   @Delete(':id')
-  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: User,
@@ -129,12 +122,12 @@ export class UsersController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'User with id 1 not found in agency 1',
+        message: 'User with id 1 not found',
         error: 'Not Found',
       },
     },
   })
   async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
-    return await this.agencyUsersService.remove(id, currentUser);
+    return await this.adminUsersService.remove(id, currentUser);
   }
 }

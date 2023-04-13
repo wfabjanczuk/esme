@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Agency } from '../agencies/agency.entity';
+import { Agency } from '../agency/agency.entity';
 
 @Entity()
 export class Event {

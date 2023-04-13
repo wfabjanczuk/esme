@@ -14,7 +14,7 @@ import { styles } from './styles'
 import { useProfileDetails } from '../pages/profile/profile.hook'
 import { ErrorView } from '../app/error.view'
 import { defaultRoute, getUserCategories, MenuButton, MenuRoute } from './categories'
-import { useAdminAgencyPreview } from '../pages/admin/agencies/agencies.hook'
+import { useAdminAgencyPreview } from '../pages/admin-agencies/agencies.hook'
 
 export default function Menu (props: DrawerProps): JSX.Element {
   const authenticator = useContext(AuthenticatorContext)

@@ -4,9 +4,19 @@ import { UserRole } from '../../modules/users/user-role.enum';
 export class AgencySupportGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const { agency, role } = context.switchToHttp().getRequest().currentUser;
+    const isAdmin = [UserRole.superAdmin, UserRole.admin].includes(role);
+    if (isAdmin) {
+      return true;
+    }
+
     if (!agency) {
       return false;
     }
-    return role <= UserRole.agencySupport;
+
+    return [
+      UserRole.agencyOwner,
+      UserRole.agencyManager,
+      UserRole.agencySupport,
+    ].includes(role);
   }
 }

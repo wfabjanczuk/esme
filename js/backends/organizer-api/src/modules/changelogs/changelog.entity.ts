@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
-import { Agency } from '../agencies/agency.entity';
+import { Agency } from '../agency/agency.entity';
 
 export enum ChangeType {
   insert = 'insert',

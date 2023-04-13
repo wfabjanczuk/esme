@@ -1,40 +1,12 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
+import { Module } from '@nestjs/common';
 import { User } from './user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CurrentUserMiddleware } from '../../common/middlewares/current-user.middleware';
-import { AuthenticationController } from './authentication.controller';
-import { AuthenticationService } from './authentication.service';
-import { AgencyUsersController } from './agency-users.controller';
-import { AgencyUsersService } from './agency-users.service';
-import { ProfileService } from './profile.service';
-import { ProfileController } from './profile.controller';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
-import { jwtModuleAsyncOptions } from './jwt.config';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
 
 @Module({
-  imports: [
-    ConfigModule,
-    JwtModule.registerAsync(jwtModuleAsyncOptions),
-    TypeOrmModule.forFeature([User]),
-  ],
-  controllers: [
-    AuthenticationController,
-    ProfileController,
-    UsersController,
-    AgencyUsersController,
-  ],
-  providers: [
-    AuthenticationService,
-    ProfileService,
-    UsersService,
-    AgencyUsersService,
-  ],
+  imports: [TypeOrmModule.forFeature([User])],
+  controllers: [UsersController],
+  providers: [UsersService],
 })
-export class UsersModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CurrentUserMiddleware).forRoutes('*');
-  }
-}
+export class UsersModule {}

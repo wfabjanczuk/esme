@@ -1,4 +1,4 @@
-import { UsersService } from '../../modules/users/users.service';
+import { AdminUsersService } from '../../modules/admin-users/admin-users.service';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../../modules/users/user.entity';
@@ -7,7 +7,7 @@ import {
   Issuer,
   JwtPayload,
   OrganizerTokenPrefix,
-} from '../../modules/users/jwt.config';
+} from '../../modules/authentication/jwt.config';
 
 declare global {
   export namespace Express {
@@ -21,7 +21,7 @@ declare global {
 export class CurrentUserMiddleware implements NestMiddleware {
   constructor(
     private jwtService: JwtService,
-    private usersService: UsersService,
+    private usersService: AdminUsersService,
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction): Promise<any> {
