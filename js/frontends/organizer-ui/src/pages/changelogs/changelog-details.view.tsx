@@ -5,12 +5,12 @@ import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import { Box, Typography } from '@mui/material'
 import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
-import { CardTitle } from '../../common/card-title.component'
+import { CardTitle } from '../../common/components/card-title.component'
 import { JsonViewer } from '@textea/json-viewer'
 import { useChangelogDetails } from './changelog.entity'
 import { parseDateTimeLabel } from '../../common/utils'
 import { useUserDetails } from '../users/user.entity'
-import { FormErrors } from '../../common/form-errors.component'
+import { FormErrors } from '../../common/components/form-errors.component'
 
 export const ChangelogDetailsView = (): JSX.Element => {
   const { changelogId: changelogIdFromRoute } = useParams()

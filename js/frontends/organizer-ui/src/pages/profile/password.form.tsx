@@ -3,7 +3,7 @@ import { styles } from '../../layout/styles'
 import { LockReset } from '@mui/icons-material'
 import React from 'react'
 import { useChangePassword } from './password.hook'
-import { FormErrors } from '../../common/form-errors.component'
+import { FormErrors } from '../../common/components/form-errors.component'
 
 export const ChangePasswordForm = (): JSX.Element => {
   const { errorMessages, changePassword } = useChangePassword()

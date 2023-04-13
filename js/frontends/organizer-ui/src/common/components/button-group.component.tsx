@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box } from '@mui/material'
-import { styles } from '../layout/styles'
+import { styles } from '../../layout/styles'
 
 interface ButtonGroupProps {
   children: React.ReactNode

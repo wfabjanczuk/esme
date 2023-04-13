@@ -1,10 +1,10 @@
 import React from 'react'
 import { Box, Button, TextField } from '@mui/material'
-import { FormErrors } from '../../common/form-errors.component'
+import { FormErrors } from '../../common/components/form-errors.component'
 import { styles } from '../../layout/styles'
 import { DeleteForever, Save } from '@mui/icons-material'
 import { useEditAgency } from './agency.hook'
-import { ButtonGroup } from '../../common/button-group.component'
+import { ButtonGroup } from '../../common/components/button-group.component'
 
 export const AgencyForm = (): JSX.Element => {
   const { errorMessages, agency, update, remove } = useEditAgency()

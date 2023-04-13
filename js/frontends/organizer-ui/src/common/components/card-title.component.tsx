@@ -1,4 +1,4 @@
-import { styles } from '../layout/styles'
+import { styles } from '../../layout/styles'
 import { NavLink } from 'react-router-dom'
 import Button from '@mui/material/Button'
 import { ArrowBack } from '@mui/icons-material'

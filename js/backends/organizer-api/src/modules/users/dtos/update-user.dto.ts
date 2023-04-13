@@ -31,8 +31,9 @@ export class UpdateUserDto {
   @ApiProperty({ example: '+48123456789' })
   phoneNumber?: string;
 
+  @IsOptional()
   @IsEnum(UserRole)
   @Transform(({ value }) => parseInt(value, 10))
   @ApiProperty({ example: UserRole.agencyOwner })
-  role: UserRole;
+  role?: UserRole;
 }

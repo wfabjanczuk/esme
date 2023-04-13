@@ -5,7 +5,7 @@ import { Box } from '@mui/material'
 import { styles } from '../../../layout/styles'
 import { AlertBar } from '../../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
-import { CardTitle } from '../../../common/card-title.component'
+import { CardTitle } from '../../../common/components/card-title.component'
 import { EditContactForm } from './edit-contact.form'
 
 export const EditContactView = (): JSX.Element => {

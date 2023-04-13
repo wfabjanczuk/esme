@@ -4,7 +4,7 @@ import React from 'react'
 import { GridActionsColDef } from '@mui/x-data-grid/models/colDef/gridColDef'
 import { Box } from '@mui/material'
 import { useAgenciesList } from './agencies.hook'
-import { TableRowLinkButton } from '../../common/table-row-link-button.component'
+import { TableRowLinkButton } from '../../common/components/table-row-link-button.component'
 import { Visibility } from '@mui/icons-material'
 
 const columns: Array<GridColDef | GridActionsColDef> = [

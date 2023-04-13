@@ -3,7 +3,7 @@ import { DeleteForever, Save } from '@mui/icons-material'
 import React from 'react'
 import { useEditComment } from './comment.entity'
 import { styles } from '../../../layout/styles'
-import { FormErrors } from '../../../common/form-errors.component'
+import { FormErrors } from '../../../common/components/form-errors.component'
 
 interface EditCommentFormProps {
   issueId: number

@@ -4,7 +4,7 @@ import { Box } from '@mui/material'
 import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
 import { styles } from '../../layout/styles'
-import { CardTitle } from '../../common/card-title.component'
+import { CardTitle } from '../../common/components/card-title.component'
 import { AddUserForm } from './add-user.form'
 
 export const AddUserView = (): JSX.Element => {

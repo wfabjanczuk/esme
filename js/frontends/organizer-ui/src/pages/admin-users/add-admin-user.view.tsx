@@ -4,7 +4,7 @@ import { Box } from '@mui/material'
 import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
 import { styles } from '../../layout/styles'
-import { CardTitle } from '../../common/card-title.component'
+import { CardTitle } from '../../common/components/card-title.component'
 import { AddAdminUserForm } from './add-admin-user.form'
 import { withSuperAdminAuth } from '../../common/authorization/with-auth.hoc'
 

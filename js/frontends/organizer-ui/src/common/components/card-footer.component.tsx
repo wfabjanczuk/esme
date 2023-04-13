@@ -1,5 +1,5 @@
 import { Box, Button } from '@mui/material'
-import { styles } from '../layout/styles'
+import { styles } from '../../layout/styles'
 import { NavLink } from 'react-router-dom'
 import { Add } from '@mui/icons-material'
 import React from 'react'

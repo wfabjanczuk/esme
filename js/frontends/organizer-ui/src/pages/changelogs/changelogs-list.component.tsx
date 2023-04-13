@@ -5,7 +5,7 @@ import { parseDateTimeColumn } from '../../common/utils'
 import { GridActionsColDef } from '@mui/x-data-grid/models/colDef/gridColDef'
 import { Box } from '@mui/material'
 import { Changelog, useChangelogsList } from './changelog.entity'
-import { TableRowLinkButton } from '../../common/table-row-link-button.component'
+import { TableRowLinkButton } from '../../common/components/table-row-link-button.component'
 import { Visibility } from '@mui/icons-material'
 
 const parseEntity = ({

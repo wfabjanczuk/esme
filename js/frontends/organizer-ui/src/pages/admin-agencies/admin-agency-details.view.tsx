@@ -6,7 +6,7 @@ import { styles } from '../../layout/styles'
 import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import { useParams } from 'react-router-dom'
 import { AdminAgencyForm } from './admin-agency.form'
-import { CardTitle } from '../../common/card-title.component'
+import { CardTitle } from '../../common/components/card-title.component'
 import { withAdminAuth } from '../../common/authorization/with-auth.hoc'
 
 const _AdminAgencyDetailsView = (): JSX.Element => {

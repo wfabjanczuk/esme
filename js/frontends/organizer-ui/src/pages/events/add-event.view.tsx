@@ -5,7 +5,7 @@ import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
 import { styles } from '../../layout/styles'
 import { AddEventForm } from './add-event.form'
-import { CardTitle } from '../../common/card-title.component'
+import { CardTitle } from '../../common/components/card-title.component'
 
 export const AddEventView = (): JSX.Element => {
   return <Fragment>

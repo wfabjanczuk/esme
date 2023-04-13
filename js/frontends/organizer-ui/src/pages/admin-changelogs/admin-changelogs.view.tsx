@@ -6,7 +6,7 @@ import Paper from '@mui/material/Paper'
 import { styles } from '../../layout/styles'
 import { withAdminAuth } from '../../common/authorization/with-auth.hoc'
 import { AdminChangelogsList } from './admin-changelogs-list.component'
-import { CardFooter } from '../../common/card-footer.component'
+import { CardFooter } from '../../common/components/card-footer.component'
 
 const _AdminChangelogsView = (): JSX.Element => {
   return <Fragment>

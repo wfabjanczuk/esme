@@ -1,6 +1,6 @@
 import { Alert, Typography } from '@mui/material'
 import React from 'react'
-import { styles } from '../layout/styles'
+import { styles } from '../../layout/styles'
 
 interface FormErrorsProps {
   errorMessages: string[]

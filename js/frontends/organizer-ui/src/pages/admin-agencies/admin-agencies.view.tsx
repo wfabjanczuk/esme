@@ -5,7 +5,7 @@ import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
 import { styles } from '../../layout/styles'
 import { AgenciesList } from './agencies-list.component'
-import { CardFooter } from '../../common/card-footer.component'
+import { CardFooter } from '../../common/components/card-footer.component'
 import { withAdminAuth } from '../../common/authorization/with-auth.hoc'
 
 const _AdminAgenciesView = (): JSX.Element => {

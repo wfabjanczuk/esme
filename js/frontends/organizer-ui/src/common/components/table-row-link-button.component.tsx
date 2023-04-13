@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { styles } from '../layout/styles'
+import { styles } from '../../layout/styles'
 import { Button } from '@mui/material'
 import React from 'react'
 

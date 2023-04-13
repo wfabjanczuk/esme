@@ -6,9 +6,9 @@ import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import { Box } from '@mui/material'
 import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
-import { CardTitle } from '../../common/card-title.component'
+import { CardTitle } from '../../common/components/card-title.component'
 import { ContactsList } from './contacts/contacts-list.component'
-import { CardFooter } from '../../common/card-footer.component'
+import { CardFooter } from '../../common/components/card-footer.component'
 
 export const EditEventView = (): JSX.Element => {
   const { eventId: eventIdFromRoute } = useParams()

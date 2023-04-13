@@ -56,6 +56,18 @@ export class AgencyService {
   }
 
   async remove(deletedBy: User) {
+    await this.usersRepo
+      .createQueryBuilder()
+      .delete()
+      .where(
+        '"user".role NOT IN (:...roles) AND "user"."agencyId" = :agencyId',
+        {
+          roles: [UserRole.superAdmin, UserRole.admin],
+          agencyId: deletedBy.agency.id,
+        },
+      )
+      .execute();
+
     const { id } = deletedBy.agency;
     await this.agenciesRepo.remove(deletedBy.agency);
     return Object.assign(deletedBy.agency, { id });

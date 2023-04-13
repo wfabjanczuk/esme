@@ -1,6 +1,6 @@
 import { Box, Button, TextField } from '@mui/material'
 import { styles } from '../../layout/styles'
-import { FormErrors } from '../../common/form-errors.component'
+import { FormErrors } from '../../common/components/form-errors.component'
 import { DeleteForever, Save } from '@mui/icons-material'
 import React from 'react'
 import { parseDateTimeValue } from '../../common/utils'

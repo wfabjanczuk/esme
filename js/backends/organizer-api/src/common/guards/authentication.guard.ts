@@ -11,6 +11,6 @@ export class AuthenticationGuard implements CanActivate {
     const isAdmin = [UserRole.admin, UserRole.superAdmin].includes(
       request.currentUser.role,
     );
-    return isAdmin || request.currentUser.agency.approved;
+    return isAdmin || request.currentUser.agency?.approved;
   }
 }

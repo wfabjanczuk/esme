@@ -5,13 +5,13 @@ import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import { Box, Typography } from '@mui/material'
 import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
-import { CardTitle } from '../../common/card-title.component'
+import { CardTitle } from '../../common/components/card-title.component'
 import { JsonViewer } from '@textea/json-viewer'
 import { parseDateTimeLabel } from '../../common/utils'
 import { useUserDetails } from '../users/user.entity'
 import { useAdminChangelogDetails } from './admin-changelog.hook'
 import { withAdminAuth } from '../../common/authorization/with-auth.hoc'
-import { FormErrors } from '../../common/form-errors.component'
+import { FormErrors } from '../../common/components/form-errors.component'
 
 const _AdminChangelogDetailsView = (): JSX.Element => {
   const { changelogId: changelogIdFromRoute } = useParams()
