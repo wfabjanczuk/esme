@@ -9,6 +9,7 @@ interface LoggableEntity {
   constructor: {
     name: string;
   };
+  password?: string;
 }
 
 @Injectable()
@@ -56,6 +57,10 @@ export class LoggingEntityManager {
   }
 
   async logInsert(em: EntityManager, entity: LoggableEntity, createdBy: User) {
+    if (entity.password != undefined) {
+      delete entity.password;
+    }
+
     await em.save(
       this.repo.create({
         entityId: entity.id,
@@ -70,6 +75,10 @@ export class LoggingEntityManager {
   }
 
   async logUpdate(em: EntityManager, entity: LoggableEntity, updatedBy: User) {
+    if (entity.password != undefined) {
+      delete entity.password;
+    }
+
     await em.save(
       this.repo.create({
         entityId: entity.id,

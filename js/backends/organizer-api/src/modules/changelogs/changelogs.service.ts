@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Changelog } from './changelog.entity';
-import { FindAgencyChangelogsOptionsDto } from './dtos/find-agency-changelogs-options.dto';
+import { FindChangelogsOptionsDto } from './dtos/find-changelogs-options.dto';
 
 @Injectable()
 export class ChangelogsService {
@@ -10,7 +10,7 @@ export class ChangelogsService {
     @InjectRepository(Changelog) private repo: Repository<Changelog>,
   ) {}
 
-  findAll(options: FindAgencyChangelogsOptionsDto) {
+  findAll(options: FindChangelogsOptionsDto) {
     return this.repo.find({ where: options });
   }
 

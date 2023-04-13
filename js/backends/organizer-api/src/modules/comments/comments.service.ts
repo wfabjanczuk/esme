@@ -17,10 +17,12 @@ export class CommentsService {
     @InjectRepository(Issue) private issuesRepo: Repository<Issue>,
   ) {}
 
-  async findOne(id: number) {
-    const comment = await this.commentsRepo.findOneBy({ id });
+  async findOne(id: number, agencyId: number) {
+    const comment = await this.commentsRepo.findOneBy({ id, agencyId });
     if (!comment) {
-      throw new NotFoundException(`Comment with id ${id} not found`);
+      throw new NotFoundException(
+        `Comment with id ${id} not found in agency ${agencyId}`,
+      );
     }
     return comment;
   }
@@ -30,23 +32,31 @@ export class CommentsService {
   }
 
   async create(props: CreateCommentDto, createdBy: User) {
-    const issue = await this.issuesRepo.findOneBy({ id: props.issueId });
+    const issue = await this.issuesRepo.findOneBy({
+      id: props.issueId,
+      agencyId: createdBy.agencyId,
+    });
     if (!issue) {
-      throw new NotFoundException(`Issue with id ${props.issueId} not found`);
+      throw new NotFoundException(
+        `Issue with id ${props.issueId} not found in agency ${createdBy.agencyId}`,
+      );
     }
 
     const comment = this.commentsRepo.create(props);
-    comment.agencyId = issue.agencyId;
+    comment.agencyId = createdBy.agencyId;
     return this.lem.create(this.commentsRepo, comment, createdBy);
   }
 
   async update(id: number, props: UpdateCommentDto, updatedBy: User) {
-    const comment = Object.assign(await this.findOne(id), props);
+    const comment = Object.assign(
+      await this.findOne(id, updatedBy.agencyId),
+      props,
+    );
     return this.lem.update(this.commentsRepo, comment, updatedBy);
   }
 
   async remove(id: number, deletedBy: User) {
-    const comment = await this.findOne(id);
+    const comment = await this.findOne(id, deletedBy.agencyId);
     return this.lem.remove(this.commentsRepo, comment, deletedBy);
   }
 }

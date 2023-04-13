@@ -11,19 +11,19 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
-import { IssuesService } from './issues.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Issue } from './issue.entity';
 import { CreateIssueDto } from './dtos/create-issue.dto';
 import { UpdateIssueDto } from './dtos/update-issue.dto';
 import { IdDto } from '../../common/dtos/id.dto';
-import { AdminGuard } from '../../common/guards/admin.guard';
-import { FindIssuesOptionsDto } from './dtos/find-issues-options.dto';
 import { User } from '../users/user.entity';
+import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
+import { IssuesService } from './issues.service';
+import { FindAgencyIssuesOptionsDto } from './dtos/find-agency-issues-options.dto';
 
-@Controller('issues')
-@UseGuards(AuthenticationGuard, AdminGuard)
-@ApiTags('1. Admin: issues')
+@Controller('agency/issues')
+@UseGuards(AuthenticationGuard, AgencySupportGuard)
+@ApiTags('2. Organizer: issues')
 export class IssuesController {
   constructor(private issuesService: IssuesService) {}
 
@@ -36,7 +36,7 @@ export class IssuesController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Event with id 1 not found',
+        message: 'Event with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -54,13 +54,13 @@ export class IssuesController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Issue with id 1 not found',
+        message: 'Issue with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
-  findOne(@Param() { id }: IdDto) {
-    return this.issuesService.findOne(id);
+  findOne(@CurrentUser() { agencyId }: User, @Param() { id }: IdDto) {
+    return this.issuesService.findOne(id, agencyId);
   }
 
   @Get()
@@ -68,8 +68,11 @@ export class IssuesController {
     status: 200,
     type: [Issue],
   })
-  findAll(@Query() options: FindIssuesOptionsDto) {
-    return this.issuesService.findAll(options);
+  findAll(
+    @CurrentUser() { agencyId }: User,
+    @Query() options: FindAgencyIssuesOptionsDto,
+  ) {
+    return this.issuesService.findAll({ ...options, agencyId });
   }
 
   @Patch(':id')
@@ -81,7 +84,7 @@ export class IssuesController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Issue with id 1 not found',
+        message: 'Issue with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -103,7 +106,7 @@ export class IssuesController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Issue with id 1 not found',
+        message: 'Issue with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },

@@ -6,9 +6,4 @@ export class FindAgencyChangelogsOptionsDto {
   @IsInt()
   @Transform(({ value }) => parseInt(value, 10))
   userId?: number;
-
-  @IsOptional()
-  @IsInt()
-  @Transform(({ value }) => parseInt(value, 10))
-  agencyId?: number;
 }

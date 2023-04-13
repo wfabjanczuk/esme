@@ -9,7 +9,6 @@ import Paper from '@mui/material/Paper'
 import { CardTitle } from '../../common/card-title.component'
 import { ContactsList } from './contacts/contacts-list.component'
 import { CardFooter } from '../../common/card-footer.component'
-import { AnnouncementsList } from './announcements/announcements-list.component'
 
 export const EditEventView = (): JSX.Element => {
   const { eventId: eventIdFromRoute } = useParams()
@@ -23,7 +22,6 @@ export const EditEventView = (): JSX.Element => {
         ? <Fragment>
           <EditEventCard id={id}/>
           <EventContactsCard eventId={id}/>
-          <EventAnnouncementsCard eventId={id}/>
         </Fragment>
         : <></>
       }
@@ -43,13 +41,5 @@ const EventContactsCard = ({ eventId }: { eventId: number }): JSX.Element => {
     <CardTitle title='Event contacts'/>
     <ContactsList eventId={eventId}/>
     <CardFooter redirectLabel='Add contact' redirectUrl={`/events/${eventId}/contacts/add`}/>
-  </Paper>
-}
-
-const EventAnnouncementsCard = ({ eventId }: { eventId: number }): JSX.Element => {
-  return <Paper sx={styles.layout.cardMedium}>
-    <CardTitle title='Event announcements'/>
-    <AnnouncementsList eventId={eventId}/>
-    <CardFooter redirectLabel='Add announcement' redirectUrl={`/events/${eventId}/announcements/add`}/>
   </Paper>
 }

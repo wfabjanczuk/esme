@@ -4,20 +4,17 @@ import { theme as globalTheme } from '../../../../layout'
 import { ThreadCardIconContainer } from './thread-icon.styles'
 
 interface ThreadIconProps {
-  threadType: 'conversation' | 'announcement'
   unread: boolean
 }
 
-export const ThreadIcon = ({ threadType, unread }: ThreadIconProps): JSX.Element => {
-  const name =
-        threadType === 'conversation' ? 'chatbubble-ellipses' : 'alert-circle'
+export const ThreadIcon = ({ unread }: ThreadIconProps): JSX.Element => {
   const color = unread
     ? globalTheme.colors.ui.primary
     : globalTheme.colors.ui.secondary
 
   return (
     <ThreadCardIconContainer>
-      <Ionicons name={name} size={32} color={color}/>
+      <Ionicons name={'chatbubble-ellipses'} size={32} color={color}/>
     </ThreadCardIconContainer>
   )
 }

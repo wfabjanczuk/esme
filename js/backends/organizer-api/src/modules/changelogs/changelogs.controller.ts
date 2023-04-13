@@ -5,9 +5,9 @@ import { Changelog } from './changelog.entity';
 import { ChangelogsService } from './changelogs.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../users/user.entity';
-import { FindAgencyChangelogsOptionsDto } from './dtos/find-agency-changelogs-options.dto';
 import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
 import { IdDto } from '../../common/dtos/id.dto';
+import { FindAgencyChangelogsOptionsDto } from './dtos/find-agency-changelogs-options.dto';
 
 @Controller('agency/changelogs')
 @UseGuards(AuthenticationGuard, AgencySupportGuard)

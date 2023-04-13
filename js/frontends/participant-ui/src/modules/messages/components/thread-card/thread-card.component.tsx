@@ -34,7 +34,7 @@ export const ThreadCard = ({
           }
           description={<ThreadDescription date={parseDate(event.timeStart)} unread={true}/>}
           left={() => (
-            <ThreadIcon threadType='conversation' unread={true}/>
+            <ThreadIcon unread={true}/>
           )}
           right={() => true && <ThreadBadge content='UNREAD'/>}
         />
