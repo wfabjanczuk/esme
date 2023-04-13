@@ -23,5 +23,5 @@ const changelogsApiUrl = `${config.organizerApiUrl}/agency/changelogs`
 export const useChangelogsList = (): ListHook<Changelog> =>
   useList<Changelog>(changelogsApiUrl)
 
-export const useChangelog = (id: number): Pick<EditHook<Changelog>, 'errorMessages' | 'entity'> =>
+export const useChangelogDetails = (id: number): Pick<EditHook<Changelog>, 'errorMessages' | 'entity'> =>
   useEdit<Changelog>(id, changelogsApiUrl, '')

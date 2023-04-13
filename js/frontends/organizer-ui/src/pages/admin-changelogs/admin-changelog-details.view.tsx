@@ -7,12 +7,13 @@ import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
 import { CardTitle } from '../../common/card-title.component'
 import { JsonViewer } from '@textea/json-viewer'
-import { useChangelogDetails } from './changelog.entity'
 import { parseDateTimeLabel } from '../../common/utils'
 import { useUserDetails } from '../users/user.entity'
+import { useAdminChangelogDetails } from './admin-changelog.hook'
+import { withAdminAuth } from '../../common/authorization/with-auth.hoc'
 import { FormErrors } from '../../common/form-errors.component'
 
-export const ChangelogDetailsView = (): JSX.Element => {
+const _AdminChangelogDetailsView = (): JSX.Element => {
   const { changelogId: changelogIdFromRoute } = useParams()
   const id = changelogIdFromRoute === undefined ? undefined : parseInt(changelogIdFromRoute, 10)
 
@@ -21,25 +22,25 @@ export const ChangelogDetailsView = (): JSX.Element => {
     <Box component='main' sx={styles.layout.content}>
       <AlertBar size='medium'/>
       {id !== undefined
-        ? <ChangelogDetailsCard id={id}/>
+        ? <AdminChangelogDetailsCard id={id}/>
         : <></>
       }
     </Box>
   </Fragment>
 }
 
-const ChangelogDetailsCard = ({ id }: { id: number }): JSX.Element => {
-  const { errorMessages, entity: changelog } = useChangelogDetails(id)
+const AdminChangelogDetailsCard = ({ id }: { id: number }): JSX.Element => {
+  const { errorMessages, entity: changelog } = useAdminChangelogDetails(id)
 
   if (changelog === undefined) {
     return <Paper sx={styles.layout.cardMedium}>
-      <CardTitle title='Changelog details' redirectLabel='Go to changelogs list' redirectUrl='/changelogs'/>
+      <CardTitle title='Changelog details' redirectLabel='Go to admin changelogs list' redirectUrl='/admin/changelogs'/>
       <FormErrors errorMessages={errorMessages}/>
     </Paper>
   }
 
   return <Paper sx={styles.layout.cardMedium}>
-    <CardTitle title='Changelog details' redirectLabel='Go to changelogs list' redirectUrl='/changelogs'/>
+    <CardTitle title='Changelog details' redirectLabel='Go to admin changelogs list' redirectUrl='/admin/changelogs'/>
     <ChangelogField name='action' value={changelog.type} bold={true}/>
     <ChangelogField name='id' value={changelog.id}/>
     <ChangelogField name='entity' value={`${changelog.entityClass} ${changelog.entityId}`}/>
@@ -50,7 +51,11 @@ const ChangelogDetailsCard = ({ id }: { id: number }): JSX.Element => {
     <ChangelogField name='time' value={parseDateTimeLabel(changelog.changedAt)}/>
     {changelog.valueAfter == null
       ? <></>
-      : <Box sx={{ backgroundColor: '#f8fafa', my: 2, p: 2 }}>
+      : <Box sx={{
+        backgroundColor: '#f8fafa',
+        my: 2,
+        p: 2
+      }}>
         <JsonViewer rootName={false} value={JSON.parse(changelog.valueAfter)}/>
       </Box>
     }
@@ -63,11 +68,18 @@ interface ChangelogFieldProps {
   bold?: boolean
 }
 
-const ChangelogField = ({ name, value, bold = false }: ChangelogFieldProps): JSX.Element => {
+const ChangelogField = ({
+  name,
+  value,
+  bold = false
+}: ChangelogFieldProps): JSX.Element => {
   const fontWeight = bold ? 'bolder' : 'normal'
 
   return <Box>
-    <Box sx={{ width: '80px', display: 'inline-block' }}>
+    <Box sx={{
+      width: '80px',
+      display: 'inline-block'
+    }}>
       <Typography variant='overline' fontWeight={fontWeight}>{name}:</Typography>
     </Box>
     <Typography component='span' fontWeight={fontWeight}>{value}</Typography>
@@ -87,3 +99,5 @@ const ChangelogUser = ({ userId }: ChangelogUserProps): JSX.Element => {
 
   return <ChangelogField name='user' value={`${user.firstName} ${user.lastName}`}/>
 }
+
+export const AdminChangelogDetailsView = withAdminAuth(_AdminChangelogDetailsView)

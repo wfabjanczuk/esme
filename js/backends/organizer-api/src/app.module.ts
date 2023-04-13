@@ -14,6 +14,7 @@ import { AdminAgenciesModule } from './modules/admin-agencies/admin-agencies.mod
 import { AuthenticationModule } from './modules/authentication/authentication.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { AdminUsersModule } from './modules/admin-users/admin-users.module';
+import { AdminChangelogsModule } from './modules/admin-changelogs/admin-changelogs.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AdminUsersModule } from './modules/admin-users/admin-users.module';
     AuthenticationModule,
     AdminAgenciesModule,
     AdminUsersModule,
+    AdminChangelogsModule,
     ProfileModule,
     UsersModule,
     ChangelogsModule,

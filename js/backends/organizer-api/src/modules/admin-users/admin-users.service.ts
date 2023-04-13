@@ -26,8 +26,8 @@ export class AdminUsersService {
 
   findAllAdmins() {
     return this.repo
-      .createQueryBuilder('user')
-      .where('user.role IN (:...roles)', {
+      .createQueryBuilder('u')
+      .where('u.role IN (:...roles)', {
         roles: [UserRole.superAdmin, UserRole.admin],
       })
       .getMany();
@@ -63,15 +63,16 @@ export class AdminUsersService {
   }
 
   async update(id: number, props: UpdateAdminUserDto, updatedBy: User) {
-    const user = Object.assign(await this.findOne(id), props);
-    validateRole('update', user, updatedBy);
+    const userToUpdate = await this.findOne(id);
+    validateRole('update', userToUpdate, updatedBy);
+    const user = Object.assign(userToUpdate, props);
     return this.lem.update(this.repo, user, updatedBy);
   }
 
   async remove(id: number, deletedBy: User) {
-    const user = await this.findOne(id);
-    validateRole('delete', user, deletedBy);
-    return this.lem.remove(this.repo, user, deletedBy);
+    const userToDelete = await this.findOne(id);
+    validateRole('delete', userToDelete, deletedBy);
+    return this.lem.remove(this.repo, userToDelete, deletedBy);
   }
 }
 

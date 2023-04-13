@@ -25,7 +25,10 @@ export class UsersService {
 
   async findOne(id: number, agencyId: number) {
     const user = await this.repo.findOne({
-      where: { id, agencyId },
+      where: {
+        id,
+        agencyId,
+      },
       relations: { agency: true },
     });
     if (!user) {
@@ -56,18 +59,16 @@ export class UsersService {
   }
 
   async update(id: number, props: UpdateUserDto, updatedBy: User) {
-    const user = Object.assign(
-      await this.findOne(id, updatedBy.agencyId),
-      props,
-    );
-    validateRole('update', user, updatedBy);
+    const userToUpdate = await this.findOne(id, updatedBy.agencyId);
+    validateRole('update', userToUpdate, updatedBy);
+    const user = Object.assign(userToUpdate, props);
     return this.lem.update(this.repo, user, updatedBy);
   }
 
   async remove(id: number, deletedBy: User) {
-    const user = await this.findOne(id, deletedBy.agencyId);
-    validateRole('delete', user, deletedBy);
-    return this.lem.remove(this.repo, user, deletedBy);
+    const userToDelete = await this.findOne(id, deletedBy.agencyId);
+    validateRole('delete', userToDelete, deletedBy);
+    return this.lem.remove(this.repo, userToDelete, deletedBy);
   }
 }
 

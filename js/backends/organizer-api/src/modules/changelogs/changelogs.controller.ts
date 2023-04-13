@@ -1,14 +1,17 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { Changelog } from './changelog.entity';
 import { ChangelogsService } from './changelogs.service';
-import { AdminGuard } from '../../common/guards/admin.guard';
-import { FindChangelogsOptionsDto } from './dtos/find-changelogs-options.dto';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { User } from '../users/user.entity';
+import { FindAgencyChangelogsOptionsDto } from './dtos/find-agency-changelogs-options.dto';
+import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
+import { IdDto } from '../../common/dtos/id.dto';
 
-@Controller('changelogs')
-@UseGuards(AuthenticationGuard, AdminGuard)
-@ApiTags('1. Admin: changelogs')
+@Controller('agency/changelogs')
+@UseGuards(AuthenticationGuard, AgencySupportGuard)
+@ApiTags('2. Organizer: changelogs')
 export class ChangelogsController {
   constructor(private changelogsService: ChangelogsService) {}
 
@@ -17,7 +20,22 @@ export class ChangelogsController {
     status: 200,
     type: [Changelog],
   })
-  findAll(@Query() options: FindChangelogsOptionsDto) {
-    return this.changelogsService.findAll(options);
+  findAll(
+    @CurrentUser() { agencyId }: User,
+    @Query() options: FindAgencyChangelogsOptionsDto,
+  ) {
+    return this.changelogsService.findAll({
+      ...options,
+      agencyId: agencyId,
+    });
+  }
+
+  @Get(':id')
+  @ApiResponse({
+    status: 200,
+    type: Changelog,
+  })
+  findOne(@CurrentUser() { agencyId }: User, @Param() { id }: IdDto) {
+    return this.changelogsService.findOne(id, agencyId);
   }
 }
