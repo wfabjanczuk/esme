@@ -15,6 +15,17 @@ export const UserRoleSelect = ({
   isError,
   profile
 }: UserRoleSelectProps): JSX.Element => {
+  if (currentValue === UserRole.agencyOwner) {
+    return <TextField
+      name='role'
+      label='user role'
+      value={UserRoleLabels[UserRole.agencyOwner]}
+      error={isError}
+      sx={styles.forms.field}
+      disabled
+    />
+  }
+
   const roles = filterRoles(profile)
   const [role, setRole] = useState(currentValue !== undefined ? currentValue : roles[0])
 

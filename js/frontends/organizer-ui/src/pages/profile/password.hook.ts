@@ -48,7 +48,7 @@ const changePasswordAsync = async (
       setState({
         errorMessages: []
       })
-      window.location.replace('/')
+      authenticator.resetCookie()
     })
     .catch(e => {
       const authErrors = authenticator.parseAuthError(e)
