@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { jwtModuleAsyncOptions } from './jwt.config';
 import { AdminUsersModule } from '../admin-users/admin-users.module';
+import { BearerStrategy } from './bearer.strategy';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { AdminUsersModule } from '../admin-users/admin-users.module';
     AdminUsersModule,
   ],
   controllers: [AuthenticationController],
-  providers: [AuthenticationService],
+  providers: [AuthenticationService, BearerStrategy],
 })
 export class AuthenticationModule {
   configure(consumer: MiddlewareConsumer) {

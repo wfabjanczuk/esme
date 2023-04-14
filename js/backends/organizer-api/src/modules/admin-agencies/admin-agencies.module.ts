@@ -9,6 +9,5 @@ import { Agency } from '../agency/agency.entity';
   imports: [TypeOrmModule.forFeature([Agency, User])],
   controllers: [AdminAgenciesController],
   providers: [AdminAgenciesService],
-  exports: [AdminAgenciesService],
 })
 export class AdminAgenciesModule {}

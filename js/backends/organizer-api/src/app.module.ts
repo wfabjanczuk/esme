@@ -15,11 +15,11 @@ import { AuthenticationModule } from './modules/authentication/authentication.mo
 import { ProfileModule } from './modules/profile/profile.module';
 import { AdminUsersModule } from './modules/admin-users/admin-users.module';
 import { AdminChangelogsModule } from './modules/admin-changelogs/admin-changelogs.module';
+import { ApiEventsModule } from './modules/api-events/api-events.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleAsyncOptions),
@@ -35,6 +35,7 @@ import { AdminChangelogsModule } from './modules/admin-changelogs/admin-changelo
     ContactsModule,
     IssuesModule,
     CommentsModule,
+    ApiEventsModule,
   ],
   providers: [
     {
