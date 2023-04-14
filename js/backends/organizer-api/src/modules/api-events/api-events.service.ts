@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from '../events/event.entity';
 import { Repository } from 'typeorm';
-import { SearchEventsDto } from './dtos/search-events.dto';
+import { FindEventsDto } from './dtos/find-events.dto';
 
 @Injectable()
 export class ApiEventsService {
   constructor(@InjectRepository(Event) private repo: Repository<Event>) {}
 
-  searchEvents(options: SearchEventsDto) {
+  findEvents(options: FindEventsDto) {
     const qb = this.repo
       .createQueryBuilder('e')
       .innerJoin('e.agency', 'a')
@@ -37,5 +37,18 @@ export class ApiEventsService {
     }
 
     return qb.getMany();
+  }
+
+  async findOne(id: number) {
+    const event = await this.repo
+      .createQueryBuilder('e')
+      .innerJoin('e.agency', 'a')
+      .where('a.approved = true and e.id = :id', { id: id })
+      .getOne();
+
+    if (!event) {
+      throw new NotFoundException(`Event with id ${id} not found`);
+    }
+    return event;
   }
 }

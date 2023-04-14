@@ -1,7 +1,6 @@
 package events
 
 import (
-	"database/sql"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
@@ -67,10 +66,10 @@ func (c *Controller) FindEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	eventsList, err := c.eventsRepository.FindEvents(filters, 20)
+	eventsList, err := c.eventsRepository.FindEvents(filters)
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrApi, http.StatusInternalServerError)
 		return
 	}
 
@@ -93,13 +92,13 @@ func (c *Controller) getEvent(w http.ResponseWriter, r *http.Request, onSuccess 
 	}
 
 	rawEvent, err := c.eventsRepository.GetEventById(id)
-	if err == sql.ErrNoRows {
+	if err == api_errors.ErrApiResourceNotFound {
 		c.responder.WriteError(w, api_errors.NewErrEventNotFound(id), http.StatusNotFound)
 		return
 	}
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrApi, http.StatusInternalServerError)
 		return
 	}
 

@@ -13,6 +13,7 @@ import (
 
 const maxDbQueryTime = 3 * time.Second
 const maxMqPublishTime = 6 * time.Second
+const maxRequestTime = 6 * time.Second
 
 type Module struct {
 	EventsRepository        *events.Repository
@@ -24,12 +25,13 @@ type Module struct {
 }
 
 func NewModule(cfg *config.Config, logger *log.Logger) *Module {
-	organizerDb := setupDbConnection(cfg.OrganizerDbDsn, logger)
 	participantDb := setupDbConnection(cfg.ParticipantDbDsn, logger)
 	mqConnection, mqChannel := setupMqConnection(cfg.QueueDsn, logger)
 
 	return &Module{
-		EventsRepository:        events.NewRepository(organizerDb, maxDbQueryTime),
+		EventsRepository: events.NewRepository(
+			cfg.OrganizerApiUrl, cfg.OrganizerApiKey, maxRequestTime,
+		),
 		UsersRepository:         users.NewRepository(participantDb, maxDbQueryTime),
 		SubscriptionsRepository: subscriptions.NewRepository(participantDb, maxDbQueryTime),
 		ChatRequestsRepository: chat_requests.NewRepository(

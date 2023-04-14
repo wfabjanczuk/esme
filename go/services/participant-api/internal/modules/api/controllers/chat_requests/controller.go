@@ -1,7 +1,6 @@
 package chat_requests
 
 import (
-	"database/sql"
 	"encoding/json"
 	"io"
 	"log"
@@ -52,7 +51,7 @@ func (c *Controller) DoesChatRequestExist(w http.ResponseWriter, r *http.Request
 	}
 
 	event, err := c.eventsRepository.GetEventById(doesChatRequestExistDto.EventId)
-	if err == sql.ErrNoRows {
+	if err == api_errors.ErrApiResourceNotFound {
 		c.responder.WriteError(w, api_errors.NewErrEventNotFound(doesChatRequestExistDto.EventId), http.StatusNotFound)
 		return
 	}
@@ -113,7 +112,7 @@ func (c *Controller) buildChatRequest(r *http.Request) (*chat_requests.ChatReque
 	}
 
 	event, err := c.eventsRepository.GetEventById(requestChatDto.EventId)
-	if err == sql.ErrNoRows {
+	if err == api_errors.ErrApiResourceNotFound {
 		return nil, api_errors.NewErrEventNotFound(requestChatDto.EventId), http.StatusNotFound
 	}
 	if err != nil {

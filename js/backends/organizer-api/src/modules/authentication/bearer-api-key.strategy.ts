@@ -4,7 +4,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class BearerStrategy extends PassportStrategy(Strategy) {
+export class BearerApiKeyStrategy extends PassportStrategy(
+  Strategy,
+  'bearer-api-key',
+) {
   constructor(private configService: ConfigService) {
     super();
   }
