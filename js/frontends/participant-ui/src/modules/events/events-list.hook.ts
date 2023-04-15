@@ -5,6 +5,7 @@ import axios from 'axios'
 import { config } from '../../app/config'
 import { parseErrorData } from '../../common/utils'
 import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-store.context'
+import { useIsFocused } from '@react-navigation/native'
 
 const eventsUrl = `${config.participantApiUrl}/events`
 
@@ -23,6 +24,7 @@ interface State {
 export const useEventsList = (): EventsListHook => {
   const authenticator = useContext(AuthenticatorContext)
   const alertStore = useContext(AlertStoreContext)
+  const isFocused = useIsFocused()
 
   const [state, setState] = useState<State>({
     query: '',
@@ -39,8 +41,10 @@ export const useEventsList = (): EventsListHook => {
 
   useEffect(() => {
     // TODO: debounce
-    void fetchAsync(state.query, setState, alertStore, authenticator)
-  }, [authenticator, state.query])
+    if (isFocused) {
+      void fetchAsync(state.query, setState, alertStore, authenticator)
+    }
+  }, [authenticator, state.query, isFocused])
 
   return {
     events: state.events,

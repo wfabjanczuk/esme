@@ -5,6 +5,7 @@ import { Authenticator, AuthenticatorContext } from '../../common/authenticator/
 import { config } from '../../app/config'
 import { parseErrorData } from '../../common/utils'
 import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-store.context'
+import { useIsFocused } from '@react-navigation/native'
 
 const eventsUrl = `${config.participantApiUrl}/events`
 const chatRequestsUrl = `${config.participantApiUrl}/chat-requests`
@@ -30,6 +31,7 @@ interface State {
 export const useEvent = (id: number): EventHook => {
   const authenticator = useContext(AuthenticatorContext)
   const alertStore = useContext(AlertStoreContext)
+  const isFocused = useIsFocused()
   const url = `${eventsUrl}/${id}`
 
   const [state, setState] = useState<State>({
@@ -38,8 +40,10 @@ export const useEvent = (id: number): EventHook => {
   })
 
   useEffect(() => {
-    void fetchAsync(url, setState, alertStore, authenticator)
-  }, [authenticator])
+    if (isFocused) {
+      void fetchAsync(url, setState, alertStore, authenticator)
+    }
+  }, [authenticator, isFocused])
 
   const requestChat = (data: RequestChatDto, onSuccess: () => void): void => {
     const onSuccessWrapped = (): void => {

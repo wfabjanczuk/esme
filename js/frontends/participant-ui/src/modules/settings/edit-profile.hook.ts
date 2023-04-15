@@ -5,6 +5,7 @@ import axios from 'axios'
 import { parseErrorMessage } from '../../common/utils'
 import { Profile } from './profile.entity'
 import { AlertStore, AlertStoreContext } from '../../common/alert-bar/alert-store.context'
+import { useIsFocused } from '@react-navigation/native'
 
 const profileUrl = `${config.participantApiUrl}/profile`
 
@@ -24,6 +25,7 @@ interface State {
 export const useEditProfile = (): EditProfileHook => {
   const authenticator = useContext(AuthenticatorContext)
   const alertStore = useContext(AlertStoreContext)
+  const isFocused = useIsFocused()
 
   const [state, setState] = useState<State>({
     profile: undefined,
@@ -31,8 +33,10 @@ export const useEditProfile = (): EditProfileHook => {
   })
 
   useEffect(() => {
-    void fetchProfile(setState, alertStore, authenticator)
-  }, [authenticator])
+    if (isFocused) {
+      void fetchProfile(setState, alertStore, authenticator)
+    }
+  }, [authenticator, isFocused])
 
   const update = (formValues: ProfileValues, onUpdate: () => void): void => {
     void updateAsync(formValues, onUpdate, setState, alertStore, authenticator)
