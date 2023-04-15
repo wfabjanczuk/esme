@@ -25,7 +25,7 @@ type Module struct {
 
 func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Logger) *Module {
 	router := httprouter.New()
-	mw := middlewares.NewModule(cfg.JwtSecret, infra.UsersRepository, logger)
+	mw := middlewares.NewModule(cfg.JwtSecret, cfg.ParticipantApiKey, infra.UsersRepository, logger)
 
 	module := &Module{
 		Router:  mw.EnableCors.Handler(router),
@@ -38,11 +38,13 @@ func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Log
 		users:        users.NewController(infra.UsersRepository, logger),
 	}
 
-	module.attachRoutes(router, mw.CurrentUser.HandlerFunc)
+	module.attachRoutes(router, mw.CurrentUser.HandlerFunc, mw.ApiKey.HandlerFunc)
 	return module
 }
 
-func (m *Module) attachRoutes(r *httprouter.Router, cu func(http.HandlerFunc) http.HandlerFunc) {
+func (m *Module) attachRoutes(
+	r *httprouter.Router, cu func(http.HandlerFunc) http.HandlerFunc, ak func(http.HandlerFunc) http.HandlerFunc,
+) {
 	r.HandlerFunc(http.MethodPost, "/auth/sign-up", m.auth.SignUp)
 	r.HandlerFunc(http.MethodPost, "/auth/sign-in", m.auth.SignIn)
 	r.HandlerFunc(http.MethodPost, "/auth/sign-out", cu(m.auth.SignOut))
@@ -60,6 +62,5 @@ func (m *Module) attachRoutes(r *httprouter.Router, cu func(http.HandlerFunc) ht
 	r.HandlerFunc(http.MethodGet, "/chat-requests", cu(m.chatRequests.DoesChatRequestExist))
 	r.HandlerFunc(http.MethodPost, "/chat-requests", cu(m.chatRequests.RequestChat))
 
-	// TODO: secure GetUser endpoint
-	r.HandlerFunc(http.MethodGet, "/users/:id", m.users.GetUser)
+	r.HandlerFunc(http.MethodGet, "/users/:id", ak(m.users.GetUser))
 }

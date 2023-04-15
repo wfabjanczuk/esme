@@ -12,6 +12,7 @@ var (
 
 	ErrInvalidHeader      = errors.New("invalid authorization header")
 	ErrInvalidToken       = errors.New("invalid token")
+	ErrInvalidApiKey      = errors.New("invalid api key")
 	ErrInvalidEmail       = errors.New("invalid email address")
 	ErrInvalidPassword    = errors.New("invalid password")
 	ErrInvalidCredentials = errors.New("invalid email or password")
