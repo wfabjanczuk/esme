@@ -1,12 +1,30 @@
-import { useEffect, useState } from 'react'
-import { AlertStore } from './alert-store.context'
+import { useReducer } from 'react'
+import { AlertStore, AlertStoreReducer } from './alert-store.context'
+import { AlertColor } from '@mui/material/Alert/Alert'
 
 export const useNewAlertStore = (): AlertStore => {
-  const [alertStore, setAlertStore] = useState<AlertStore>(new AlertStore())
+  const [state, dispatch] = useReducer(AlertStoreReducer, {
+    nextId: 0,
+    alerts: []
+  })
 
-  useEffect(() => {
-    setAlertStore(new AlertStore(setAlertStore))
-  }, [])
-
-  return alertStore
+  return {
+    state,
+    add: (type: AlertColor, content: string) => {
+      dispatch({
+        type: 'add',
+        payload: {
+          id: 0,
+          type,
+          content
+        }
+      })
+    },
+    remove: (id: number) => {
+      dispatch({
+        type: 'remove',
+        payload: id
+      })
+    }
+  }
 }

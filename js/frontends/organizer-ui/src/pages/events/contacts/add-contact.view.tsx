@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react'
 import Header from '../../../layout/header'
 import { Box } from '@mui/material'
-import { AlertBar } from '../../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
 import { styles } from '../../../layout/styles'
 import { CardTitle } from '../../../common/components/card-title.component'
@@ -15,7 +14,6 @@ export const AddContactView = (): JSX.Element => {
   return <Fragment>
     <Header title='Event contact'/>
     <Box component='main' sx={styles.layout.content}>
-      <AlertBar size='medium'/>
       {eventId !== undefined
         ? <CreateContactCard eventId={eventId}/>
         : <></>

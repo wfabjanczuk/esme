@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 import Header from '../../layout/header'
-import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import { Box } from '@mui/material'
 import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
@@ -17,7 +16,6 @@ export const EditIssueView = (): JSX.Element => {
   return <Fragment>
     <Header title='Issue'/>
     <Box component='main' sx={styles.layout.content}>
-      <AlertBar size='medium'/>
       {id !== undefined
         ? <Fragment>
           <EditIssueCard id={id}/>

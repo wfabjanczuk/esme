@@ -9,12 +9,13 @@ import { useNewAuthenticator } from '../common/authenticator/authenticator.hook'
 import { RouterExternal } from './router-external'
 import { useNewAlertStore } from '../common/alert-bar/alert-store.hook'
 import { AlertStoreContext } from '../common/alert-bar/alert-store.context'
+import { AlertBar } from '../common/alert-bar/alert-bar.component'
 
 export const App = (): JSX.Element => {
   const authenticator = useNewAuthenticator()
   const alertStore = useNewAlertStore()
 
-  if (!authenticator.hasState() || !alertStore.hasState()) {
+  if (!authenticator.hasState()) {
     return <></>
   }
 
@@ -22,6 +23,7 @@ export const App = (): JSX.Element => {
     <CssBaseline/>
     <AuthenticatorContext.Provider value={authenticator}>
       <AlertStoreContext.Provider value={alertStore}>
+        <AlertBar/>
         {authenticator.isAuthorized()
           ? <RouterProvider router={RouterInternal}/>
           : <RouterProvider router={RouterExternal}/>

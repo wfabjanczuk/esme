@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 import Header from '../../layout/header'
-import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import { Box, Typography } from '@mui/material'
 import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
@@ -20,7 +19,6 @@ const _AdminChangelogDetailsView = (): JSX.Element => {
   return <Fragment>
     <Header title='Changelog'/>
     <Box component='main' sx={styles.layout.content}>
-      <AlertBar size='medium'/>
       {id !== undefined
         ? <AdminChangelogDetailsCard id={id}/>
         : <></>
