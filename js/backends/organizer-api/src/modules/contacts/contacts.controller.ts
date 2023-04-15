@@ -11,23 +11,25 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
-import { ContactsService } from './contacts.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { CreateContactDto } from './dtos/create-contact.dto';
 import { Contact } from './contact.entity';
 import { UpdateContactDto } from './dtos/update-contact.dto';
 import { IdDto } from '../../common/dtos/id.dto';
-import { AdminGuard } from '../../common/guards/admin.guard';
-import { FindContactsOptionsDto } from './dtos/find-contacts-options.dto';
 import { User } from '../users/user.entity';
+import { AgencyManagerGuard } from '../../common/guards/agency-manager.guard';
+import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
+import { FindAgencyContactsOptionsDto } from './dtos/find-agency-contacts-options.dto';
+import { ContactsService } from './contacts.service';
 
-@Controller('contacts')
-@UseGuards(AuthenticationGuard, AdminGuard)
-@ApiTags('1. Admin: contacts')
+@Controller('agency/contacts')
+@UseGuards(AuthenticationGuard)
+@ApiTags('2. Organizer: contacts')
 export class ContactsController {
   constructor(private contactsService: ContactsService) {}
 
   @Post()
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 201,
     type: Contact,
@@ -36,7 +38,7 @@ export class ContactsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Event with id 1 not found',
+        message: 'Event with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -46,6 +48,7 @@ export class ContactsController {
   }
 
   @Get(':id')
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: Contact,
@@ -54,25 +57,30 @@ export class ContactsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Contact with id 1 not found',
+        message: 'Contact with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
-  findOne(@Param() { id }: IdDto) {
-    return this.contactsService.findOne(id);
+  findOne(@CurrentUser() { agencyId }: User, @Param() { id }: IdDto) {
+    return this.contactsService.findOne(id, agencyId);
   }
 
   @Get()
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: [Contact],
   })
-  findAll(@Query() options: FindContactsOptionsDto) {
-    return this.contactsService.findAll(options);
+  findAll(
+    @CurrentUser() { agencyId }: User,
+    @Query() options: FindAgencyContactsOptionsDto,
+  ) {
+    return this.contactsService.findAll({ ...options, agencyId });
   }
 
   @Patch(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: Contact,
@@ -81,7 +89,7 @@ export class ContactsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Contact with id 1 not found',
+        message: 'Contact with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -95,6 +103,7 @@ export class ContactsController {
   }
 
   @Delete(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: Contact,
@@ -103,7 +112,7 @@ export class ContactsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Contact with id 1 not found',
+        message: 'Contact with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },

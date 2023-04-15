@@ -1,40 +1,56 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import React, { Reducer } from 'react'
 import { AlertColor } from '@mui/material/Alert/Alert'
 
-const emptySetState = (): void => {}
-const alertDisplayTime = 5000
-
-interface Alert {
+export interface FlashAlert {
+  id: number
   type: AlertColor
   content: string
 }
 
-export class AlertStore {
-  constructor (
-    private readonly setState: Dispatch<SetStateAction<AlertStore>> = emptySetState,
-    public readonly alerts: Alert[] = []
-  ) {
-  }
+export interface AlertStore {
+  state: AlertStoreState
+  add: (type: AlertColor, content: string) => void
+  remove: (id: number) => void
+}
 
-  hasState (): boolean {
-    return this.setState !== emptySetState
-  }
+interface AlertStoreState {
+  nextId: number
+  alerts: FlashAlert[]
+}
 
-  add (type: AlertColor, content: string): void {
-    this.alerts.push({
-      type,
-      content
-    })
-    setTimeout(() => {
-      this.alerts.shift()
-      this.refreshState()
-    }, alertDisplayTime)
-    this.refreshState()
-  }
+interface AddAction {
+  type: 'add'
+  payload: FlashAlert
+}
 
-  private refreshState (): void {
-    this.setState(new AlertStore(this.setState, this.alerts))
+interface RemoveAction {
+  type: 'remove'
+  payload: number
+}
+
+export const AlertStoreReducer: Reducer<AlertStoreState, AddAction | RemoveAction> = (state, action) => {
+  switch (action.type) {
+  case 'add':
+    return {
+      nextId: state.nextId + 1,
+      alerts: [...state.alerts, {
+        ...action.payload,
+        id: state.nextId
+      }]
+    }
+  case 'remove':
+    return {
+      nextId: state.nextId,
+      alerts: state.alerts.filter(alert => alert.id !== action.payload)
+    }
   }
 }
 
-export const AlertStoreContext = React.createContext<AlertStore>(new AlertStore())
+export const AlertStoreContext = React.createContext<AlertStore>({
+  state: {
+    nextId: 0,
+    alerts: []
+  },
+  add: (type: AlertColor, content: string) => null,
+  remove: (id: number) => null
+})

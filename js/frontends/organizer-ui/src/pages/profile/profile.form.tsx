@@ -3,7 +3,7 @@ import { styles } from '../../layout/styles'
 import { Save } from '@mui/icons-material'
 import React from 'react'
 import { useEditProfile } from './profile.hook'
-import { FormErrors } from '../../common/form-errors.component'
+import { FormErrors } from '../../common/components/form-errors.component'
 
 export const EditProfileForm = (): JSX.Element => {
   const { profile, errorMessages, update } = useEditProfile()

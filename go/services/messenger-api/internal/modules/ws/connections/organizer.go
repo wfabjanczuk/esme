@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const organizerReadTimeout = 10 * time.Minute
+const organizerReadTimeout = 30 * time.Minute
 
 type OrganizerConnection struct {
 	Organizer    *authentication.Organizer

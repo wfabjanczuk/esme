@@ -1,4 +1,5 @@
 import {
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
@@ -6,6 +7,8 @@ import {
   MaxLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserRole } from '../user-role.enum';
+import { Transform } from 'class-transformer';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -27,4 +30,10 @@ export class UpdateUserDto {
   @MaxLength(30)
   @ApiProperty({ example: '+48123456789' })
   phoneNumber?: string;
+
+  @IsOptional()
+  @IsEnum(UserRole)
+  @Transform(({ value }) => parseInt(value, 10))
+  @ApiProperty({ example: UserRole.agencyOwner })
+  role?: UserRole;
 }

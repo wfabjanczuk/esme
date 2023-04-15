@@ -1,16 +1,27 @@
 import { Box, Button, TextField } from '@mui/material'
 import { styles } from '../../layout/styles'
-import { FormErrors } from '../../common/form-errors.component'
+import { FormErrors } from '../../common/components/form-errors.component'
 import { DeleteForever, Save } from '@mui/icons-material'
 import React from 'react'
 import { useEditUser } from './user.entity'
+import { UserRoleSelect } from './user-role-select.component'
+import { useProfileDetails } from '../profile/profile.hook'
 
 interface EditUserFormProps {
   id: number
 }
 
 export const EditUserForm = ({ id }: EditUserFormProps): JSX.Element => {
-  const { errorMessages, entity, update, remove } = useEditUser(id)
+  const {
+    errorMessages,
+    entity,
+    update,
+    remove
+  } = useEditUser(id)
+  const { profile } = useProfileDetails()
+  if (profile === undefined) {
+    return <></>
+  }
   const isError = errorMessages.length > 0
 
   if (entity === undefined) {
@@ -40,6 +51,7 @@ export const EditUserForm = ({ id }: EditUserFormProps): JSX.Element => {
         error={isError}
         sx={styles.forms.field}
       />
+      <UserRoleSelect currentValue={entity.role} isError={isError} profile={profile}/>
       <FormErrors errorMessages={errorMessages}/>
       <Box style={styles.buttons.group}>
         <Button type='submit' variant='contained' color='success' sx={styles.buttons.groupElement}

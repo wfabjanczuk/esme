@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Issue } from '../issues/issue.entity';
-import { Agency } from '../agencies/agency.entity';
+import { Agency } from '../agency/agency.entity';
 
 @Entity()
 export class Comment {

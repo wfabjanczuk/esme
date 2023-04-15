@@ -62,12 +62,10 @@ const fetchAgency = async (
       errorMessages: []
     }))
     .catch(e => {
-      if (authenticator.isAuthError(e)) {
-        return
-      }
+      const authErrors = authenticator.parseAuthError(e)
       setState({
         agency: undefined,
-        errorMessages: parseErrorMessage(e?.response?.data?.message)
+        errorMessages: authErrors.length > 0 ? authErrors : parseErrorMessage(e?.response?.data?.message)
       })
       alertStore.add('error', 'Could not fetch agency')
     })
@@ -88,12 +86,10 @@ const updateAsync = async (
       alertStore.add('success', 'Agency updated successfully')
     })
     .catch(e => {
-      if (authenticator.isAuthError(e)) {
-        return
-      }
+      const authErrors = authenticator.parseAuthError(e)
       setState((prevState) => ({
         agency: prevState.agency,
-        errorMessages: parseErrorMessage(e?.response?.data?.message)
+        errorMessages: authErrors.length > 0 ? authErrors : parseErrorMessage(e?.response?.data?.message)
       }))
       alertStore.add('error', 'Could not update agency')
     })

@@ -17,7 +17,7 @@
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.7",
     "expo": "48.0.6",
-    "react-native": "0.71.4",
+    "react-native": "0.71.6",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-paper": "^5.4.0",
     "react-native-vector-icons": "^9.2.0",

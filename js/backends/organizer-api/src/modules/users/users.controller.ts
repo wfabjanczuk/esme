@@ -9,7 +9,6 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -23,30 +22,34 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { IdDto } from '../../common/dtos/id.dto';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PublicUserDto } from './dtos/public-user.dto';
-import { AdminGuard } from '../../common/guards/admin.guard';
+import { AgencyRoles } from './user-role.enum';
+import { AgencyManagerGuard } from '../../common/guards/agency-manager.guard';
+import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { AdminRoles } from './user-role.enum';
+import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
 
-@Controller('users')
-@UseGuards(AuthenticationGuard, AdminGuard)
+@Controller('agency/users')
+@UseGuards(AuthenticationGuard)
 @Serialize(PublicUserDto)
-@ApiTags('1. Admin: users')
+@ApiTags('2. Organizer: users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private agencyUsersService: UsersService) {}
 
   @Get('roles')
   @Header('Content-Type', 'application/json; charset=utf-8')
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     schema: {
-      example: JSON.stringify(AdminRoles),
+      example: JSON.stringify(AgencyRoles),
     },
   })
   getAdminRoles() {
-    return JSON.stringify(AdminRoles);
+    return JSON.stringify(AgencyRoles);
   }
 
   @Get(':id')
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: User,
@@ -55,25 +58,27 @@ export class UsersController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'User with id 1 not found',
+        message: 'User with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
-  findOne(@Param() { id }: IdDto) {
-    return this.usersService.findOne(id);
+  findOne(@CurrentUser() { agencyId }: User, @Param() { id }: IdDto) {
+    return this.agencyUsersService.findOne(id, agencyId);
   }
 
   @Get()
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: [User],
   })
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@CurrentUser() { agencyId }: User) {
+    return this.agencyUsersService.findAll(agencyId);
   }
 
   @Post()
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 201,
     type: User,
@@ -88,10 +93,11 @@ export class UsersController {
     },
   })
   create(@CurrentUser() currentUser: User, @Body() body: CreateUserDto) {
-    return this.usersService.create(body, currentUser);
+    return this.agencyUsersService.create(body, currentUser);
   }
 
   @Patch(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: User,
@@ -100,7 +106,7 @@ export class UsersController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'User with id 1 not found',
+        message: 'User with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -110,10 +116,11 @@ export class UsersController {
     @Param() { id }: IdDto,
     @Body() body: UpdateUserDto,
   ) {
-    return this.usersService.update(id, body, currentUser);
+    return this.agencyUsersService.update(id, body, currentUser);
   }
 
   @Delete(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: User,
@@ -122,12 +129,12 @@ export class UsersController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'User with id 1 not found',
+        message: 'User with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
   async remove(@CurrentUser() currentUser: User, @Param() { id }: IdDto) {
-    return await this.usersService.remove(id, currentUser);
+    return await this.agencyUsersService.remove(id, currentUser);
   }
 }

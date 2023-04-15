@@ -1,7 +1,6 @@
 package events
 
 import (
-	"database/sql"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
@@ -10,30 +9,25 @@ import (
 	"participant-api/internal/modules/api/common/responses"
 	"participant-api/internal/modules/infrastructure/chat_requests"
 	"participant-api/internal/modules/infrastructure/events"
-	"participant-api/internal/modules/infrastructure/subscriptions"
-	"participant-api/internal/modules/infrastructure/users"
 	"strconv"
 	"time"
 )
 
 type Controller struct {
-	eventsRepository        *events.Repository
-	subscriptionsRepository *subscriptions.Repository
-	chatRequestsRepository  *chat_requests.Repository
-	responder               *responses.Responder
-	logger                  *log.Logger
+	eventsRepository       *events.Repository
+	chatRequestsRepository *chat_requests.Repository
+	responder              *responses.Responder
+	logger                 *log.Logger
 }
 
 func NewController(
-	eventsRepository *events.Repository, subscriptionsRepository *subscriptions.Repository,
-	chatRequestsRepository *chat_requests.Repository, logger *log.Logger,
+	eventsRepository *events.Repository, chatRequestsRepository *chat_requests.Repository, logger *log.Logger,
 ) *Controller {
 	return &Controller{
-		eventsRepository:        eventsRepository,
-		subscriptionsRepository: subscriptionsRepository,
-		chatRequestsRepository:  chatRequestsRepository,
-		responder:               responses.NewResponder(logger),
-		logger:                  logger,
+		eventsRepository:       eventsRepository,
+		chatRequestsRepository: chatRequestsRepository,
+		responder:              responses.NewResponder(logger),
+		logger:                 logger,
 	}
 }
 
@@ -67,10 +61,10 @@ func (c *Controller) FindEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	eventsList, err := c.eventsRepository.FindEvents(filters, 20)
+	eventsList, err := c.eventsRepository.FindEvents(filters)
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrApi, http.StatusInternalServerError)
 		return
 	}
 
@@ -81,9 +75,8 @@ type userEvent struct {
 	events.Event
 	IsChatRequested bool `json:"isChatRequested"`
 }
-type getEventOnSuccess func(http.ResponseWriter, *http.Request, *users.User, *userEvent)
 
-func (c *Controller) getEvent(w http.ResponseWriter, r *http.Request, onSuccess getEventOnSuccess) {
+func (c *Controller) GetEvent(w http.ResponseWriter, r *http.Request) {
 	idString := httprouter.ParamsFromContext(r.Context()).ByName("id")
 	id, err := strconv.Atoi(idString)
 	if err != nil {
@@ -93,13 +86,13 @@ func (c *Controller) getEvent(w http.ResponseWriter, r *http.Request, onSuccess 
 	}
 
 	rawEvent, err := c.eventsRepository.GetEventById(id)
-	if err == sql.ErrNoRows {
+	if err == api_errors.ErrApiResourceNotFound {
 		c.responder.WriteError(w, api_errors.NewErrEventNotFound(id), http.StatusNotFound)
 		return
 	}
 	if err != nil {
 		c.logger.Println(err)
-		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
+		c.responder.WriteError(w, api_errors.ErrApi, http.StatusInternalServerError)
 		return
 	}
 
@@ -120,43 +113,5 @@ func (c *Controller) getEvent(w http.ResponseWriter, r *http.Request, onSuccess 
 		return
 	}
 
-	onSuccess(w, r, user, event)
-}
-
-func (c *Controller) GetEvent(w http.ResponseWriter, r *http.Request) {
-	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *userEvent) {
-		c.responder.WriteJson(w, http.StatusOK, event)
-	}
-
-	c.getEvent(w, r, onSuccess)
-}
-
-func (c *Controller) Subscribe(w http.ResponseWriter, r *http.Request) {
-	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *userEvent) {
-		err := c.subscriptionsRepository.Subscribe(user.Id, event.Id)
-		if err != nil {
-			c.logger.Println(err)
-			c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
-			return
-		}
-
-		c.responder.WriteEmptyResponse(w, http.StatusOK)
-	}
-
-	c.getEvent(w, r, onSuccess)
-}
-
-func (c *Controller) Unsubscribe(w http.ResponseWriter, r *http.Request) {
-	onSuccess := func(w http.ResponseWriter, r *http.Request, user *users.User, event *userEvent) {
-		err := c.subscriptionsRepository.Unsubscribe(user.Id, event.Id)
-		if err != nil {
-			c.logger.Println(err)
-			c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
-			return
-		}
-
-		c.responder.WriteEmptyResponse(w, http.StatusOK)
-	}
-
-	c.getEvent(w, r, onSuccess)
+	c.responder.WriteJson(w, http.StatusOK, event)
 }

@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Agency } from '../agencies/agency.entity';
+import { Agency } from '../agency/agency.entity';
 import { UserRole } from './user-role.enum';
 
 @Entity()
@@ -51,7 +51,7 @@ export class User {
   @ApiProperty({ example: 1 })
   agencyId?: number;
 
-  @ManyToOne(() => Agency, null, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Agency, null, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'agencyId' })
   @ApiHideProperty()
   agency?: Agency;

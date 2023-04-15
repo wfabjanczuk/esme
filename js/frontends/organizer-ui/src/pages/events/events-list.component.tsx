@@ -4,7 +4,7 @@ import React from 'react'
 import { useEventsList } from './event.entity'
 import { parseDateTimeColumn } from '../../common/utils'
 import { GridActionsColDef } from '@mui/x-data-grid/models/colDef/gridColDef'
-import { TableRowLinkButton } from '../../common/table-row-link-button.component'
+import { TableRowLinkButton } from '../../common/components/table-row-link-button.component'
 import { Box } from '@mui/material'
 import { Edit } from '@mui/icons-material'
 

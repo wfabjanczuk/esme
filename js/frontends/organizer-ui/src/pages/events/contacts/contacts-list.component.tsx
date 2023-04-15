@@ -1,6 +1,6 @@
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { GridActionsColDef } from '@mui/x-data-grid/models/colDef/gridColDef'
-import { TableRowLinkButton } from '../../../common/table-row-link-button.component'
+import { TableRowLinkButton } from '../../../common/components/table-row-link-button.component'
 import { Edit } from '@mui/icons-material'
 import { Box } from '@mui/material'
 import { styles } from '../../../layout/styles'

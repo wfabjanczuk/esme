@@ -49,10 +49,8 @@ const createAsync = async (
       onCreate()
     })
     .catch(e => {
-      if (authenticator.isAuthError(e)) {
-        return
-      }
-      setState({ errorMessages: parseErrorMessage(e?.response?.data?.message) })
+      const authErrors = authenticator.parseAuthError(e)
+      setState({ errorMessages: authErrors.length > 0 ? authErrors : parseErrorMessage(e?.response?.data?.message) })
       alertStore.add('error', 'Could not create entity')
     })
 }

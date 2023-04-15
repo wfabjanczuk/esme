@@ -1,4 +1,4 @@
-import { UsersService } from '../../modules/users/users.service';
+import { AdminUsersService } from '../../modules/admin-users/admin-users.service';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../../modules/users/user.entity';
@@ -7,7 +7,7 @@ import {
   Issuer,
   JwtPayload,
   OrganizerTokenPrefix,
-} from '../../modules/users/jwt.config';
+} from '../../modules/authentication/jwt.config';
 
 declare global {
   export namespace Express {
@@ -21,16 +21,24 @@ declare global {
 export class CurrentUserMiddleware implements NestMiddleware {
   constructor(
     private jwtService: JwtService,
-    private usersService: UsersService,
+    private usersService: AdminUsersService,
   ) {}
 
-  async use(req: Request, res: Response, next: NextFunction): Promise<any> {
-    req.currentUser = await this.getUserByAuthorizationHeader(req);
+  async use(req: Request, res: Response, next: NextFunction): Promise<void> {
+    req.currentUser = await this.getCurrentUser(req);
     next();
   }
 
-  async getUserByAuthorizationHeader(req: Request): Promise<User | undefined> {
-    const authorizationHeader = req.header('Authorization');
+  async getCurrentUser(req: Request): Promise<User | undefined> {
+    const payload = this.getPayload(req.header('Authorization'));
+    if (!payload) {
+      return undefined;
+    }
+
+    return this.findUser(payload);
+  }
+
+  getPayload(authorizationHeader: string): JwtPayload | undefined {
     if (!authorizationHeader) {
       return undefined;
     }
@@ -60,6 +68,10 @@ export class CurrentUserMiddleware implements NestMiddleware {
       return undefined;
     }
 
+    return payload;
+  }
+
+  async findUser(payload: JwtPayload): Promise<User | undefined> {
     let user: User;
     try {
       user = await this.usersService.findOne(payload.sub);

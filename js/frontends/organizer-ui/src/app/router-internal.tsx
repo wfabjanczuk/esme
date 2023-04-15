@@ -14,14 +14,19 @@ import { ChangelogsView } from '../pages/changelogs/changelogs.view'
 import { ChangelogDetailsView } from '../pages/changelogs/changelog-details.view'
 import { AddContactView } from '../pages/events/contacts/add-contact.view'
 import { EditContactView } from '../pages/events/contacts/edit-contact.view'
-import { AddAnnouncementView } from '../pages/events/announcements/add-announcement.view'
-import { EditAnnouncementView } from '../pages/events/announcements/edit-announcement.view'
 import { IssuesView } from '../pages/issues/issues.view'
 import { AddIssueView } from '../pages/issues/add-issue.view'
 import { EditIssueView } from '../pages/issues/edit-issue.view'
 import { AddCommentView } from '../pages/issues/comments/add-comment.view'
 import { EditCommentView } from '../pages/issues/comments/edit-comment.view'
 import { ProfileView } from '../pages/profile/profile.view'
+import { AdminUsersView } from '../pages/admin-users/admin-users.view'
+import { AdminChangelogsView } from '../pages/admin-changelogs/admin-changelogs.view'
+import { AdminAgenciesView } from '../pages/admin-agencies/admin-agencies.view'
+import { AdminAgencyDetailsView } from '../pages/admin-agencies/admin-agency-details.view'
+import { AddAdminUserView } from '../pages/admin-users/add-admin-user.view'
+import { EditAdminUserView } from '../pages/admin-users/edit-admin-user.view'
+import { AdminChangelogDetailsView } from '../pages/admin-changelogs/admin-changelog-details.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -34,6 +39,10 @@ export const RouterInternal = createBrowserRouter([
         children: [
           {
             index: true,
+            element: <ProfileView/>
+          },
+          {
+            path: 'agency',
             element: <EditAgencyView/>
           },
           {
@@ -67,14 +76,6 @@ export const RouterInternal = createBrowserRouter([
           {
             path: 'events/:eventId/contacts/:contactId',
             element: <EditContactView/>
-          },
-          {
-            path: 'events/:eventId/announcements/add',
-            element: <AddAnnouncementView/>
-          },
-          {
-            path: 'events/:eventId/announcements/:announcementId',
-            element: <EditAnnouncementView/>
           },
           {
             path: 'issues',
@@ -111,6 +112,34 @@ export const RouterInternal = createBrowserRouter([
           {
             path: 'profile',
             element: <ProfileView/>
+          },
+          {
+            path: 'admin/agencies',
+            element: <AdminAgenciesView/>
+          },
+          {
+            path: 'admin/agencies/:agencyId',
+            element: <AdminAgencyDetailsView/>
+          },
+          {
+            path: 'admin/users',
+            element: <AdminUsersView/>
+          },
+          {
+            path: 'admin/users/add',
+            element: <AddAdminUserView/>
+          },
+          {
+            path: 'admin/users/:userId',
+            element: <EditAdminUserView/>
+          },
+          {
+            path: 'admin/changelogs',
+            element: <AdminChangelogsView/>
+          },
+          {
+            path: 'admin/changelogs/:changelogId',
+            element: <AdminChangelogDetailsView/>
           }
         ]
       }

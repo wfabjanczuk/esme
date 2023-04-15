@@ -2,40 +2,41 @@ package events
 
 import (
 	"context"
-	"database/sql"
+	"encoding/json"
 	"fmt"
-	"strings"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"participant-api/internal/modules/api/common/api_errors"
+	"strconv"
 	"time"
 )
 
 type Repository struct {
-	db           *sql.DB
-	maxQueryTime time.Duration
+	organizerApiUrl string
+	organizerApiKey string
+	maxRequestTime  time.Duration
 }
 
-func NewRepository(db *sql.DB, maxQueryTime time.Duration) *Repository {
+func NewRepository(organizerApiUrl, organizerApiKey string, maxQueryTime time.Duration) *Repository {
 	return &Repository{
-		db:           db,
-		maxQueryTime: maxQueryTime,
+		organizerApiUrl: organizerApiUrl,
+		organizerApiKey: organizerApiKey,
+		maxRequestTime:  maxQueryTime,
 	}
 }
 
 func (r *Repository) GetEventById(id int) (*Event, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
-	defer cancel()
-
-	event := &Event{}
-
-	query := `select e.id, e.name, e.description, e.address, e.lat, e.lng, e."timeStart", e."timeEnd", e."agencyId"
-       from "event" e where e.id = $1`
-
-	err := r.db.QueryRowContext(ctx, query, id).Scan(
-		&event.Id, &event.Name, &event.Description, &event.Address, &event.Lat, &event.Lng, &event.TimeStart,
-		&event.TimeEnd, &event.AgencyId,
-	)
-
+	eventUrl := r.organizerApiUrl + "/api/events/" + strconv.Itoa(id)
+	body, err := r.getRawOrganizerApiResponse(eventUrl)
 	if err != nil {
 		return nil, err
+	}
+
+	var event *Event
+	err = json.Unmarshal(body, &event)
+	if err != nil {
+		return nil, fmt.Errorf("could not unmarshal organizer api response: %w", err)
 	}
 	return event, nil
 }
@@ -46,82 +47,64 @@ type Filters struct {
 	To    time.Time
 }
 
-func (f Filters) isEmpty() bool {
-	return f.Query == "" && f.From.IsZero() && f.To.IsZero()
-}
-
-func (f Filters) parseQueryFilter(value string, columns []string, argId int) (condition, arg string) {
-	var subConditions []string
-	for _, column := range columns {
-		subCondition := fmt.Sprintf("e.%s ilike '%%' || $%d || '%%'", column, argId)
-		subConditions = append(subConditions, subCondition)
+func (r *Repository) FindEvents(filters Filters) ([]*Event, error) {
+	queryValues := url.Values{}
+	if filters.Query != "" {
+		queryValues.Set("query", filters.Query)
 	}
-	condition = "(" + strings.Join(subConditions, " or ") + ")"
-	arg = strings.ReplaceAll(value, "%", `\%`)
-	return
-}
-
-func (f Filters) buildWhereClause() (string, []any) {
-	if f.isEmpty() {
-		return "", nil
+	if !filters.From.IsZero() {
+		queryValues.Set("from", filters.From.Format(time.RFC3339))
+	}
+	if !filters.To.IsZero() {
+		queryValues.Set("to", filters.To.Format(time.RFC3339))
 	}
 
-	var conditions []string
-	var args []any
-
-	if f.Query != "" {
-		textSearchColumns := []string{"name", "description", "address"}
-		c, a := f.parseQueryFilter(f.Query, textSearchColumns, len(args)+1)
-		conditions = append(conditions, c)
-		args = append(args, a)
-	}
-	if !f.From.IsZero() {
-		c := fmt.Sprintf(`e."timeStart" >= $%d`, len(args)+1)
-		conditions = append(conditions, c)
-		args = append(args, f.From)
-	}
-	if !f.To.IsZero() {
-		c := fmt.Sprintf(`e."timeStart" <= $%d`, len(args)+1)
-		conditions = append(conditions, c)
-		args = append(args, f.To)
-	}
-
-	whereClause := "where " + strings.Join(conditions, " and ")
-	return whereClause, args
-}
-
-func (r *Repository) FindEvents(filters Filters, limit int) ([]*Event, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
-	defer cancel()
-
-	selectClause := `select e.id, e.name, e.description, e.address, e.lat, e.lng, e."timeStart", e."timeEnd",
-       e."agencyId" from "event" e`
-	whereClause, args := filters.buildWhereClause()
-	orderByClause := `order by e."timeStart" asc`
-	limitClause := fmt.Sprintf(`limit %d`, limit)
-
-	query := strings.Join([]string{selectClause, whereClause, orderByClause, limitClause}, " ")
-	rows, err := r.db.QueryContext(ctx, query, args...)
+	eventsUrl := r.organizerApiUrl + "/api/events?" + queryValues.Encode()
+	body, err := r.getRawOrganizerApiResponse(eventsUrl)
 	if err != nil {
 		return nil, err
 	}
 
-	events := make([]*Event, 0)
-	for rows.Next() {
-		event := &Event{}
-		err = rows.Scan(
-			&event.Id, &event.Name, &event.Description, &event.Address, &event.Lat, &event.Lng, &event.TimeStart,
-			&event.TimeEnd, &event.AgencyId,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		events = append(events, event)
+	var events []*Event
+	err = json.Unmarshal(body, &events)
+	if err != nil {
+		return nil, fmt.Errorf("could not unmarshal organizer api response: %w", err)
 	}
 
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
 	return events, nil
+}
+
+func (r *Repository) getRawOrganizerApiResponse(url string) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), r.maxRequestTime)
+	defer cancel()
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("could not prepare organizer api request: %w\n", err)
+	}
+	request.Header = map[string][]string{
+		"Authorization": {"Bearer " + r.organizerApiKey},
+		"Content-Type":  {"application/json"},
+	}
+
+	response, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return nil, fmt.Errorf("could not send organizer api request: %w", err)
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode == http.StatusNotFound {
+		return nil, api_errors.ErrApiResourceNotFound
+	}
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("organizer api response returned with status %d", response.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("could not read organizer api response: %w", err)
+	}
+
+	return body, nil
 }

@@ -14,8 +14,11 @@ export class ChangelogsService {
     return this.repo.find({ where: options });
   }
 
-  findOne(id: number, agencyId: number) {
-    const changelog = this.repo.findOneBy({ id, agencyId });
+  async findOne(id: number, agencyId: number) {
+    const changelog = await this.repo.findOneBy({
+      id,
+      agencyId,
+    });
     if (!changelog) {
       throw new NotFoundException(
         `Changelog with id ${id} not found in agency ${agencyId}`,

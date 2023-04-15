@@ -8,9 +8,11 @@ import (
 var (
 	ErrUnexpected = errors.New("unexpected error")
 	ErrDatabase   = errors.New("database error")
+	ErrApi        = errors.New("api error")
 
 	ErrInvalidHeader      = errors.New("invalid authorization header")
 	ErrInvalidToken       = errors.New("invalid token")
+	ErrInvalidApiKey      = errors.New("invalid api key")
 	ErrInvalidEmail       = errors.New("invalid email address")
 	ErrInvalidPassword    = errors.New("invalid password")
 	ErrInvalidCredentials = errors.New("invalid email or password")
@@ -23,9 +25,10 @@ var (
 	ErrConfirmNewPassword  = errors.New("confirmNewPassword must match newPassword")
 	ErrSamePasswords       = errors.New("newPassword must be different from oldPassword")
 
-	ErrEmailExists        = errors.New("email already exists")
-	ErrChatRequestExists  = errors.New("chat request already exists")
-	ErrDescriptionTooLong = errors.New("description must be at most 2000 characters")
+	ErrEmailExists         = errors.New("email already exists")
+	ErrChatRequestExists   = errors.New("chat request already exists")
+	ErrDescriptionTooLong  = errors.New("description must be at most 2000 characters")
+	ErrApiResourceNotFound = errors.New("api resource not found")
 )
 
 func NewErrInvalidTimeFilter(field string) error {

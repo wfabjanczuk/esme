@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext } from '@nestjs/common';
+import { UserRole } from '../../modules/users/user-role.enum';
 
 export class AuthenticationGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
@@ -6,9 +7,10 @@ export class AuthenticationGuard implements CanActivate {
     if (!request.currentUser) {
       return false;
     }
-    if (!request.currentUser.agency) {
-      return true;
-    }
-    return request.currentUser.agency.approved;
+
+    const isAdmin = [UserRole.admin, UserRole.superAdmin].includes(
+      request.currentUser.role,
+    );
+    return isAdmin || request.currentUser?.agency?.approved;
   }
 }

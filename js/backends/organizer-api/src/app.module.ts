@@ -5,28 +5,39 @@ import { typeOrmModuleAsyncOptions } from '../typeorm.config';
 import { ConfigModule } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 import { EventsModule } from './modules/events/events.module';
-import { AgenciesModule } from './modules/agencies/agencies.module';
+import { AgencyModule } from './modules/agency/agency.module';
 import { ChangelogsModule } from './modules/changelogs/changelogs.module';
-import { AnnouncementsModule } from './modules/announcements/announcements.module';
 import { ContactsModule } from './modules/contacts/contacts.module';
 import { IssuesModule } from './modules/issues/issues.module';
 import { CommentsModule } from './modules/comments/comments.module';
+import { AdminAgenciesModule } from './modules/admin-agencies/admin-agencies.module';
+import { AuthenticationModule } from './modules/authentication/authentication.module';
+import { ProfileModule } from './modules/profile/profile.module';
+import { AdminUsersModule } from './modules/admin-users/admin-users.module';
+import { AdminChangelogsModule } from './modules/admin-changelogs/admin-changelogs.module';
+import { ApiEventsModule } from './modules/api-events/api-events.module';
+import { ParticipantsModule } from './modules/participants/participants.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleAsyncOptions),
+    AuthenticationModule,
+    AdminAgenciesModule,
+    AdminUsersModule,
+    AdminChangelogsModule,
+    ProfileModule,
     UsersModule,
     ChangelogsModule,
-    AgenciesModule,
+    AgencyModule,
     EventsModule,
     ContactsModule,
-    AnnouncementsModule,
     IssuesModule,
     CommentsModule,
+    ParticipantsModule,
+    ApiEventsModule,
   ],
   providers: [
     {

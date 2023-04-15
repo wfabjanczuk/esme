@@ -3,9 +3,8 @@ import React, { Fragment } from 'react'
 import Header from '../../../layout/header'
 import { Box } from '@mui/material'
 import { styles } from '../../../layout/styles'
-import { AlertBar } from '../../../common/alert-bar/alert-bar.component'
 import Paper from '@mui/material/Paper'
-import { CardTitle } from '../../../common/card-title.component'
+import { CardTitle } from '../../../common/components/card-title.component'
 import { EditCommentForm } from './edit-comment.form'
 
 export const EditCommentView = (): JSX.Element => {
@@ -19,7 +18,6 @@ export const EditCommentView = (): JSX.Element => {
   return <Fragment>
     <Header title='Issue comment'/>
     <Box component='main' sx={styles.layout.content}>
-      <AlertBar size='medium'/>
       {issueId !== undefined && commentId !== undefined
         ? <EditCommentCard issueId={issueId} commentId={commentId}/>
         : <></>

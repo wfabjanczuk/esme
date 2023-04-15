@@ -1,13 +1,12 @@
 import React, { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 import Header from '../../layout/header'
-import { AlertBar } from '../../common/alert-bar/alert-bar.component'
 import { Box } from '@mui/material'
 import { styles } from '../../layout/styles'
 import Paper from '@mui/material/Paper'
-import { CardTitle } from '../../common/card-title.component'
+import { CardTitle } from '../../common/components/card-title.component'
 import { EditIssueForm } from './edit-issue.form'
-import { CardFooter } from '../../common/card-footer.component'
+import { CardFooter } from '../../common/components/card-footer.component'
 import { CommentsList } from './comments/comments-list.component'
 
 export const EditIssueView = (): JSX.Element => {
@@ -17,7 +16,6 @@ export const EditIssueView = (): JSX.Element => {
   return <Fragment>
     <Header title='Issue'/>
     <Box component='main' sx={styles.layout.content}>
-      <AlertBar size='medium'/>
       {id !== undefined
         ? <Fragment>
           <EditIssueCard id={id}/>

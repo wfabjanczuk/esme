@@ -17,8 +17,8 @@ export class ContactsService {
     @InjectRepository(Event) private eventsRepo: Repository<Event>,
   ) {}
 
-  async findOne(id: number) {
-    const contact = await this.contactsRepo.findOneBy({ id });
+  async findOne(id: number, agencyId: number) {
+    const contact = await this.contactsRepo.findOneBy({ id, agencyId });
     if (!contact) {
       throw new NotFoundException(`Contact with id ${id} not found`);
     }
@@ -30,23 +30,31 @@ export class ContactsService {
   }
 
   async create(props: CreateContactDto, createdBy: User) {
-    const event = await this.eventsRepo.findOneBy({ id: props.eventId });
+    const event = await this.eventsRepo.findOneBy({
+      id: props.eventId,
+      agencyId: createdBy.agencyId,
+    });
     if (!event) {
-      throw new NotFoundException(`Event with id ${props.eventId} not found`);
+      throw new NotFoundException(
+        `Event with id ${props.eventId} not found in agency ${createdBy.agencyId}`,
+      );
     }
 
     const contact = this.contactsRepo.create(props);
-    contact.agencyId = event.agencyId;
+    contact.agencyId = createdBy.agencyId;
     return this.lem.create(this.contactsRepo, contact, createdBy);
   }
 
   async update(id: number, props: UpdateContactDto, updatedBy: User) {
-    const contact = Object.assign(await this.findOne(id), props);
+    const contact = Object.assign(
+      await this.findOne(id, updatedBy.agencyId),
+      props,
+    );
     return this.lem.update(this.contactsRepo, contact, updatedBy);
   }
 
   async remove(id: number, deletedBy: User) {
-    const contact = await this.findOne(id);
+    const contact = await this.findOne(id, deletedBy.agencyId);
     return this.lem.remove(this.contactsRepo, contact, deletedBy);
   }
 }

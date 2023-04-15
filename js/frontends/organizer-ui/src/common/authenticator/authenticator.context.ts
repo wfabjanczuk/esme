@@ -7,7 +7,8 @@ import { parseErrorMessage } from '../utils'
 const authCookieName = 'esme_authorization'
 const signInUrl = `${config.organizerApiUrl}/auth/sign-in`
 const signOutUrl = `${config.organizerApiUrl}/auth/sign-out`
-const emptySetState = (): void => {}
+const emptySetState = (): void => {
+}
 
 interface SignInResponse {
   token: string
@@ -43,7 +44,10 @@ export class Authenticator {
   }
 
   async signIn (email: string, password: string): Promise<string[]> {
-    return await axios.post<SignInResponse>(signInUrl, { email, password })
+    return await axios.post<SignInResponse>(signInUrl, {
+      email,
+      password
+    })
       .then(({ data: { token } }) => {
         // TODO: use Secure, HttpOnly and SameSite attributes in cookie
         Cookies.set(authCookieName, JSON.stringify({ token }), { expires: 1 })
@@ -60,11 +64,12 @@ export class Authenticator {
   async signOut (): Promise<unknown> {
     return await axios.post(signOutUrl, {}, {
       headers: { Authorization: this.authorizationHeader }
-    }).finally(() => {
-      Cookies.remove(authCookieName)
-      this.refreshState('')
-      window.location.replace('/')
-    })
+    }).finally(this.resetCookie)
+  }
+
+  resetCookie (): void {
+    Cookies.remove(authCookieName)
+    window.location.replace('/')
   }
 
   isAuthError = (e: AxiosError): boolean => {
@@ -73,12 +78,13 @@ export class Authenticator {
       return false
     }
 
-    if ([401, 403].includes(code)) {
-      void this.signOut()
-      return true
-    }
+    return [401, 403].includes(code)
+  }
 
-    return false
+  parseAuthError = (e: AxiosError): string[] => {
+    return this.isAuthError(e)
+      ? ['Insufficient privileges']
+      : []
   }
 
   private refreshState (authorizationHeader: string): void {

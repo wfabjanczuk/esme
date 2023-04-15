@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -16,23 +15,24 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthenticationGuard } from '../../common/guards/authentication.guard';
-import { EventsService } from './events.service';
 import { Event } from './event.entity';
-import { CreateEventDto } from './dtos/create-event.dto';
 import { UpdateEventDto } from './dtos/update-event.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { IdDto } from '../../common/dtos/id.dto';
-import { AdminGuard } from '../../common/guards/admin.guard';
-import { FindEventsOptionsDto } from './dtos/find-events-options.dto';
+import { AgencyManagerGuard } from '../../common/guards/agency-manager.guard';
+import { AgencySupportGuard } from '../../common/guards/agency-support.guard';
+import { EventsService } from './events.service';
+import { CreateEventDto } from './dtos/create-event.dto';
 import { User } from '../users/user.entity';
 
-@Controller('events')
-@UseGuards(AuthenticationGuard, AdminGuard)
-@ApiTags('1. Admin: events')
+@Controller('agency/events')
+@UseGuards(AuthenticationGuard)
+@ApiTags('2. Organizer: events')
 export class EventsController {
   constructor(private eventsService: EventsService) {}
 
   @Post()
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 201,
     type: Event,
@@ -51,6 +51,7 @@ export class EventsController {
   }
 
   @Get(':id')
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: Event,
@@ -59,25 +60,27 @@ export class EventsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Event with id 1 not found',
+        message: 'Event with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
   })
-  findOne(@Param() { id }: IdDto) {
-    return this.eventsService.findOne(id);
+  findOne(@CurrentUser() { agencyId }: User, @Param() { id }: IdDto) {
+    return this.eventsService.findOne(id, agencyId);
   }
 
   @Get()
+  @UseGuards(AgencySupportGuard)
   @ApiResponse({
     status: 200,
     type: [Event],
   })
-  findAll(@Query() options: FindEventsOptionsDto) {
-    return this.eventsService.findAll(options);
+  findAll(@CurrentUser() { agencyId }: User) {
+    return this.eventsService.findAll(agencyId);
   }
 
   @Patch(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: Event,
@@ -86,7 +89,7 @@ export class EventsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Event with id 1 not found',
+        message: 'Event with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },
@@ -100,6 +103,7 @@ export class EventsController {
   }
 
   @Delete(':id')
+  @UseGuards(AgencyManagerGuard)
   @ApiResponse({
     status: 200,
     type: Event,
@@ -108,7 +112,7 @@ export class EventsController {
     schema: {
       example: {
         statusCode: 404,
-        message: 'Event with id 1 not found',
+        message: 'Event with id 1 not found in agency 1',
         error: 'Not Found',
       },
     },

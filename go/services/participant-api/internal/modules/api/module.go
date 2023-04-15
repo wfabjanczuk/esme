@@ -25,24 +25,26 @@ type Module struct {
 
 func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Logger) *Module {
 	router := httprouter.New()
-	mw := middlewares.NewModule(cfg.JwtSecret, infra.UsersRepository, logger)
+	mw := middlewares.NewModule(cfg.JwtSecret, cfg.ParticipantApiKey, infra.UsersRepository, logger)
 
 	module := &Module{
 		Router:  mw.EnableCors.Handler(router),
 		auth:    auth.NewController(cfg.JwtSecret, infra.UsersRepository, logger),
 		profile: profile.NewController(infra.UsersRepository, logger),
 		events: events.NewController(
-			infra.EventsRepository, infra.SubscriptionsRepository, infra.ChatRequestsRepository, logger,
+			infra.EventsRepository, infra.ChatRequestsRepository, logger,
 		),
 		chatRequests: chat_requests.NewController(infra.EventsRepository, infra.ChatRequestsRepository, logger),
 		users:        users.NewController(infra.UsersRepository, logger),
 	}
 
-	module.attachRoutes(router, mw.CurrentUser.HandlerFunc)
+	module.attachRoutes(router, mw.CurrentUser.HandlerFunc, mw.ApiKey.HandlerFunc)
 	return module
 }
 
-func (m *Module) attachRoutes(r *httprouter.Router, cu func(http.HandlerFunc) http.HandlerFunc) {
+func (m *Module) attachRoutes(
+	r *httprouter.Router, cu func(http.HandlerFunc) http.HandlerFunc, ak func(http.HandlerFunc) http.HandlerFunc,
+) {
 	r.HandlerFunc(http.MethodPost, "/auth/sign-up", m.auth.SignUp)
 	r.HandlerFunc(http.MethodPost, "/auth/sign-in", m.auth.SignIn)
 	r.HandlerFunc(http.MethodPost, "/auth/sign-out", cu(m.auth.SignOut))
@@ -54,12 +56,9 @@ func (m *Module) attachRoutes(r *httprouter.Router, cu func(http.HandlerFunc) ht
 
 	r.HandlerFunc(http.MethodGet, "/events", cu(m.events.FindEvents))
 	r.HandlerFunc(http.MethodGet, "/events/:id", cu(m.events.GetEvent))
-	r.HandlerFunc(http.MethodPost, "/events/:id/subscribe", cu(m.events.Subscribe))
-	r.HandlerFunc(http.MethodPost, "/events/:id/unsubscribe", cu(m.events.Unsubscribe))
 
 	r.HandlerFunc(http.MethodGet, "/chat-requests", cu(m.chatRequests.DoesChatRequestExist))
 	r.HandlerFunc(http.MethodPost, "/chat-requests", cu(m.chatRequests.RequestChat))
 
-	// TODO: secure GetUser endpoint
-	r.HandlerFunc(http.MethodGet, "/users/:id", m.users.GetUser)
+	r.HandlerFunc(http.MethodGet, "/users/:id", ak(m.users.GetUser))
 }

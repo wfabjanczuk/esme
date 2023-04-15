@@ -62,11 +62,23 @@ const layout = {
 }
 
 const alertBar = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    position: 'absolute',
+    zIndex: 10000,
+    width: '100%',
+    px: 4,
+    py: 2
+  },
   alert: {
+    width: '960px',
+    maxWidth: '100%',
     display: 'flex',
     alignItems: 'center',
     textAlign: 'left',
-    my: 1.5
+    my: 1
   }
 }
 

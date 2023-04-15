@@ -4,8 +4,9 @@ import { Authenticator, AuthenticatorContext } from '../authenticator/authentica
 import axios from 'axios'
 import { parseErrorMessage } from '../utils'
 import { Participant } from './participant'
+import { AlertStore, AlertStoreContext } from '../alert-bar/alert-store.context'
 
-const participantsUrl = `${config.participantApiUrl}/users`
+const participantsUrl = `${config.organizerApiUrl}/participants`
 
 export interface ParticipantHook {
   participant?: Participant
@@ -17,8 +18,9 @@ interface ParticipantState {
   errorMessages: string[]
 }
 
-export const useParticipant = (id: number): ParticipantHook => {
+export const useParticipantDetails = (id: number): ParticipantHook => {
   const authenticator = useContext(AuthenticatorContext)
+  const alertStore = useContext(AlertStoreContext)
 
   const [participantState, setParticipantState] = useState<ParticipantState>({
     participant: undefined,
@@ -26,7 +28,7 @@ export const useParticipant = (id: number): ParticipantHook => {
   })
 
   useEffect(() => {
-    void fetchParticipant(id, authenticator, setParticipantState)
+    void fetchParticipant(id, authenticator, setParticipantState, alertStore)
   }, [authenticator])
 
   return {
@@ -38,7 +40,8 @@ export const useParticipant = (id: number): ParticipantHook => {
 const fetchParticipant = async (
   id: number,
   authenticator: Authenticator,
-  setState: (state: ParticipantState) => void
+  setState: (state: ParticipantState) => void,
+  alertStore: AlertStore
 ): Promise<void> => {
   const participantUrl = `${participantsUrl}/${id}`
   return await axios.get<Participant>(participantUrl, { headers: { Authorization: authenticator.authorizationHeader } })
@@ -47,12 +50,11 @@ const fetchParticipant = async (
       errorMessages: []
     }))
     .catch(e => {
-      if (authenticator.isAuthError(e)) {
-        return
-      }
+      const authErrors = authenticator.parseAuthError(e)
       setState({
         participant: undefined,
-        errorMessages: parseErrorMessage(e?.response?.data?.message)
+        errorMessages: authErrors.length > 0 ? authErrors : parseErrorMessage(e?.response?.data?.message)
       })
+      alertStore.add('error', 'Could not fetch participant')
     })
 }
