@@ -32,7 +32,7 @@ func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Log
 		auth:    auth.NewController(cfg.JwtSecret, infra.UsersRepository, logger),
 		profile: profile.NewController(infra.UsersRepository, logger),
 		events: events.NewController(
-			infra.EventsRepository, infra.SubscriptionsRepository, infra.ChatRequestsRepository, logger,
+			infra.EventsRepository, infra.ChatRequestsRepository, logger,
 		),
 		chatRequests: chat_requests.NewController(infra.EventsRepository, infra.ChatRequestsRepository, logger),
 		users:        users.NewController(infra.UsersRepository, logger),
@@ -56,8 +56,6 @@ func (m *Module) attachRoutes(
 
 	r.HandlerFunc(http.MethodGet, "/events", cu(m.events.FindEvents))
 	r.HandlerFunc(http.MethodGet, "/events/:id", cu(m.events.GetEvent))
-	r.HandlerFunc(http.MethodPost, "/events/:id/subscribe", cu(m.events.Subscribe))
-	r.HandlerFunc(http.MethodPost, "/events/:id/unsubscribe", cu(m.events.Unsubscribe))
 
 	r.HandlerFunc(http.MethodGet, "/chat-requests", cu(m.chatRequests.DoesChatRequestExist))
 	r.HandlerFunc(http.MethodPost, "/chat-requests", cu(m.chatRequests.RequestChat))

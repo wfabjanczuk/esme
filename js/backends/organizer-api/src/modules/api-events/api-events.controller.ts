@@ -6,22 +6,22 @@ import { ApiEventsService } from './api-events.service';
 import { Event } from '../events/event.entity';
 import { IdDto } from '../../common/dtos/id.dto';
 
-@Controller('api')
+@Controller('api/events')
 @UseGuards(AuthGuard('bearer-api-key'))
 @ApiTags('3. Api: events')
 export class ApiEventsController {
   constructor(private apiEventsService: ApiEventsService) {}
 
-  @Get('events')
+  @Get()
   @ApiResponse({
     status: 200,
     type: [Event],
   })
-  findEvents(@Query() options: FindEventsDto) {
-    return this.apiEventsService.findEvents(options);
+  findAll(@Query() options: FindEventsDto) {
+    return this.apiEventsService.findAll(options);
   }
 
-  @Get('events/:id')
+  @Get(':id')
   @ApiResponse({
     status: 200,
     type: Event,

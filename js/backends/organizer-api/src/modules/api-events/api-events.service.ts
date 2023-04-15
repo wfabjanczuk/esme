@@ -8,7 +8,7 @@ import { FindEventsDto } from './dtos/find-events.dto';
 export class ApiEventsService {
   constructor(@InjectRepository(Event) private repo: Repository<Event>) {}
 
-  findEvents(options: FindEventsDto) {
+  findAll(options: FindEventsDto) {
     const qb = this.repo
       .createQueryBuilder('e')
       .innerJoin('e.agency', 'a')

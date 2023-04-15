@@ -2,7 +2,7 @@ import React from 'react'
 import { Chat } from '../../../../common/messenger/structures'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
-import { useParticipant } from '../../../../common/participant/participant.hook'
+import { useParticipantDetails } from '../../../../common/participant/participant.hook'
 
 interface ChatLabelProps {
   chat: Chat
@@ -11,7 +11,7 @@ interface ChatLabelProps {
 }
 
 export const ChatLabel = ({ chat, activeChatId, setActiveChatId }: ChatLabelProps): JSX.Element => {
-  const { participant } = useParticipant(chat.participantId)
+  const { participant } = useParticipantDetails(chat.participantId)
 
   let label
   if (participant === undefined) {
