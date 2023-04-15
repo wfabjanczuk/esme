@@ -12,7 +12,11 @@ import { Profile } from '../pages/profile/profile.entity'
 import { VisibilityOffOutlined } from '@mui/icons-material'
 import { UserRole } from '../pages/users/user.entity'
 
-export const getUserCategories = (profile: Profile, authenticator: Authenticator, leavePreview: () => void): Category[] => {
+export const getUserCategories = (profile: Profile | undefined, authenticator: Authenticator, leavePreview: () => void): Category[] => {
+  if (profile === undefined) {
+    return getAccountCategories(authenticator)
+  }
+
   const isAdmin = [UserRole.superAdmin, UserRole.admin].includes(profile.role)
   const isAgency = profile.agencyId != null
 

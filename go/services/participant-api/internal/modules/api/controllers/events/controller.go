@@ -21,8 +21,7 @@ type Controller struct {
 }
 
 func NewController(
-	eventsRepository *events.Repository,
-	chatRequestsRepository *chat_requests.Repository, logger *log.Logger,
+	eventsRepository *events.Repository, chatRequestsRepository *chat_requests.Repository, logger *log.Logger,
 ) *Controller {
 	return &Controller{
 		eventsRepository:       eventsRepository,

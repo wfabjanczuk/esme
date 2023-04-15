@@ -13,7 +13,7 @@ import { User } from '../users/user.entity';
 @UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: agencies')
 export class AdminAgenciesController {
-  constructor(private agenciesService: AdminAgenciesService) {}
+  constructor(private adminAgenciesService: AdminAgenciesService) {}
 
   @Get()
   @ApiResponse({
@@ -21,7 +21,7 @@ export class AdminAgenciesController {
     type: [Agency],
   })
   findAll() {
-    return this.agenciesService.findAll();
+    return this.adminAgenciesService.findAll();
   }
 
   @Get(':id')
@@ -39,7 +39,7 @@ export class AdminAgenciesController {
     },
   })
   findOne(@Param() { id }: IdDto) {
-    return this.agenciesService.findOne(id);
+    return this.adminAgenciesService.findOne(id);
   }
 
   @Patch(':id/verify')
@@ -61,6 +61,6 @@ export class AdminAgenciesController {
     @Param() { id }: IdDto,
     @Body() body: VerifyAgencyDto,
   ) {
-    return this.agenciesService.verify(id, body, currentUser);
+    return this.adminAgenciesService.verify(id, body, currentUser);
   }
 }

@@ -21,5 +21,3 @@ const withAuth = (roles: UserRole[]) => <P extends object> (Component: React.Com
 
 export const withSuperAdminAuth = withAuth([UserRole.superAdmin])
 export const withAdminAuth = withAuth([UserRole.superAdmin, UserRole.admin])
-export const withAgencyOwnerAuth = withAuth([UserRole.superAdmin, UserRole.admin, UserRole.agencyOwner])
-export const withAgencyManagerAuth = withAuth([UserRole.superAdmin, UserRole.admin, UserRole.agencyOwner, UserRole.agencyManager])

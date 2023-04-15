@@ -11,7 +11,7 @@ import { IdDto } from '../../common/dtos/id.dto';
 @UseGuards(AuthenticationGuard, AdminGuard)
 @ApiTags('1. Admin: changelogs')
 export class AdminChangelogsController {
-  constructor(private changelogsService: AdminChangelogsService) {}
+  constructor(private adminChangelogsService: AdminChangelogsService) {}
 
   @Get()
   @ApiResponse({
@@ -19,7 +19,7 @@ export class AdminChangelogsController {
     type: [Changelog],
   })
   findAll(@Query() options: FindChangelogsOptionsDto) {
-    return this.changelogsService.findAllAdminChangelogs(options);
+    return this.adminChangelogsService.findAllAdminChangelogs(options);
   }
 
   @Get(':id')
@@ -28,6 +28,6 @@ export class AdminChangelogsController {
     type: Changelog,
   })
   findOne(@Param() { id }: IdDto) {
-    return this.changelogsService.findOne(id);
+    return this.adminChangelogsService.findOne(id);
   }
 }

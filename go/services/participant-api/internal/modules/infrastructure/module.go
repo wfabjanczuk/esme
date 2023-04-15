@@ -27,10 +27,8 @@ func NewModule(cfg *config.Config, logger *log.Logger) *Module {
 	mqConnection, mqChannel := setupMqConnection(cfg.QueueDsn, logger)
 
 	return &Module{
-		EventsRepository: events.NewRepository(
-			cfg.OrganizerApiUrl, cfg.OrganizerApiKey, maxRequestTime,
-		),
-		UsersRepository: users.NewRepository(participantDb, maxDbQueryTime),
+		EventsRepository: events.NewRepository(cfg.OrganizerApiUrl, cfg.OrganizerApiKey, maxRequestTime),
+		UsersRepository:  users.NewRepository(participantDb, maxDbQueryTime),
 		ChatRequestsRepository: chat_requests.NewRepository(
 			mqChannel, participantDb, maxMqPublishTime, maxDbQueryTime,
 		),
