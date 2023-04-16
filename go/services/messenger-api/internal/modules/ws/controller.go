@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const authorizationReadTimeout = 5 * time.Second
+const authorizationReadTimeout = time.Minute
 
 var wsUpgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,

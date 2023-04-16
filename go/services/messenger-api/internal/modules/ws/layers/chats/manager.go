@@ -4,9 +4,14 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"messenger-api/internal/modules/authentication"
+	"messenger-api/internal/modules/common"
+	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
-	"messenger-api/internal/modules/ws/layers/users"
+	"messenger-api/internal/modules/ws/layers"
+	"messenger-api/internal/modules/ws/layers/chats/consumers/organizers"
+	"messenger-api/internal/modules/ws/layers/chats/consumers/participants"
+	"messenger-api/internal/modules/ws/protocol/out"
 	"sync"
 )
 
@@ -19,24 +24,25 @@ type chat struct {
 type Manager struct {
 	chatsRepository    *chats.Repository
 	messagesRepository *messages.Repository
-	usersManager       *users.Manager
+	usersManager       layers.UsersManager
 	chats              map[string]*chat
 	logger             *log.Logger
 	mu                 sync.RWMutex
 }
 
-func NewManager(
-	chatsRepository *chats.Repository, messagesRepository *messages.Repository, usersManager *users.Manager,
-	logger *log.Logger,
-) *Manager {
-	return &Manager{
-		chatsRepository:    chatsRepository,
-		messagesRepository: messagesRepository,
+func NewManager(infra *infrastructure.Module, usersManager layers.UsersManager, logger *log.Logger) *Manager {
+	m := &Manager{
+		chatsRepository:    infra.ChatsRepository,
+		messagesRepository: infra.MessagesRepository,
 		usersManager:       usersManager,
 		chats:              make(map[string]*chat),
 		logger:             logger,
 		mu:                 sync.RWMutex{},
 	}
+
+	usersManager.SetOrganizerConsumer(organizers.NewConsumer(infra, m.usersManager, m, logger))
+	usersManager.SetParticipantConsumer(participants.NewConsumer(infra, m.usersManager, m, logger))
+	return m
 }
 
 func (m *Manager) AddOrganizerConnection(organizer *authentication.Organizer, wsConnection *websocket.Conn) error {
@@ -46,7 +52,7 @@ func (m *Manager) AddOrganizerConnection(organizer *authentication.Organizer, ws
 	}
 
 	for _, chat := range organizerChats {
-		m.setChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
+		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
 	}
 
 	return m.usersManager.AddOrganizerConnection(organizer, wsConnection)
@@ -61,13 +67,13 @@ func (m *Manager) AddParticipantConnection(
 	}
 
 	for _, chat := range participantChats {
-		m.setChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
+		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
 	}
 
 	return m.usersManager.AddParticipantConnection(participant, wsConnection)
 }
 
-func (m *Manager) setChat(chatId string, organizerId, participantId int32) {
+func (m *Manager) SetChat(chatId string, organizerId, participantId int32) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -79,4 +85,59 @@ func (m *Manager) setChat(chatId string, organizerId, participantId int32) {
 			ParticipantId: participantId,
 		}
 	}
+}
+
+func (m *Manager) IsOrganizerInChat(organizerId int32, chatId string) bool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	c, exists := m.chats[chatId]
+	if !exists {
+		return false
+	}
+
+	return c.OrganizerId == organizerId
+}
+
+func (m *Manager) IsParticipantInChat(participantId int32, chatId string) bool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	c, exists := m.chats[chatId]
+	if !exists {
+		return false
+	}
+
+	return c.ParticipantId == participantId
+}
+
+func (m *Manager) SendMessageToChat(chatId string, message *messages.Message) error {
+	m.mu.RLock()
+	c, exists := m.chats[chatId]
+	m.mu.RUnlock()
+	if !exists {
+		return common.ErrChatNotFound
+	}
+
+	msg, err := m.messagesRepository.Create(message)
+	if err != nil {
+		return common.ErrMessageNotSaved
+	}
+
+	m.mu.RLock()
+	c, exists = m.chats[chatId]
+	m.mu.RUnlock()
+	if !exists {
+		return common.ErrChatNotFoundMessageSaved
+	}
+
+	outMsg, err := out.BuildUserMessage(msg)
+	if err != nil {
+		m.logger.Printf("could not build user message: %s", err)
+		return common.ErrInternal
+	}
+
+	m.usersManager.SendToOrganizer(c.OrganizerId, outMsg)
+	m.usersManager.SendToParticipant(c.ParticipantId, outMsg)
+	return nil
 }
