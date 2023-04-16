@@ -5,7 +5,8 @@ import (
 	"log"
 	"messenger-api/internal/config"
 	"messenger-api/internal/modules/infrastructure"
-	"messenger-api/internal/modules/ws/managers/chats"
+	"messenger-api/internal/modules/ws/layers/chats"
+	"messenger-api/internal/modules/ws/layers/users"
 	"net/http"
 )
 
@@ -14,11 +15,12 @@ type Module struct {
 }
 
 func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Logger) *Module {
-	chatsManager := chats.NewManager(infra.MessagesRepository, logger)
-	inputController := NewController(cfg, infra, chatsManager, logger)
+	usersManager := users.NewManager(logger)
+	chatsManager := chats.NewManager(infra.ChatsRepository, infra.MessagesRepository, usersManager, logger)
+	controller := NewController(cfg, infra, chatsManager, logger)
 
 	router := httprouter.New()
-	router.HandlerFunc(http.MethodGet, "/connect", inputController.Connect)
+	router.HandlerFunc(http.MethodGet, "/connect", controller.Connect)
 
 	return &Module{
 		Router: router,
