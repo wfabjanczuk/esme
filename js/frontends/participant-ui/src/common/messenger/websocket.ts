@@ -7,7 +7,8 @@ const connectUrl = `${config.messengerApiUrl}/connect`
 export const newWebSocket = (
   authorizationHeader: string,
   dispatch: React.Dispatch<Action>,
-  onOpen: () => void
+  onOpen: () => void,
+  onClose: () => void
 ): WebSocket => {
   const webSocket = new WebSocket(connectUrl)
 
@@ -22,7 +23,7 @@ export const newWebSocket = (
   })
 
   webSocket.addEventListener('close', (e) => {
-    console.log(e)
+    onClose()
   })
 
   return webSocket
