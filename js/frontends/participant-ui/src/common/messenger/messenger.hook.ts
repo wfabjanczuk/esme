@@ -25,6 +25,12 @@ export const useNewMessenger = (): NewMessengerHook => {
   }, [messenger.hasState()])
 
   useEffect(() => {
+    if (messenger.isInitialized()) {
+      messenger.getChats()
+    }
+  }, [messenger.isInitialized()])
+
+  useEffect(() => {
     inbox.chats.forEach(chat => {
       if (inbox.messages[chat.id] === undefined) {
         messenger.getChatHistory(chat.id)

@@ -11,6 +11,7 @@ import (
 	"messenger-api/internal/modules/ws/layers"
 	"messenger-api/internal/modules/ws/layers/chats/consumers/organizers"
 	"messenger-api/internal/modules/ws/layers/chats/consumers/participants"
+	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/out"
 	"sync"
 )
@@ -111,7 +112,7 @@ func (m *Manager) IsParticipantInChat(participantId int32, chatId string) bool {
 	return c.ParticipantId == participantId
 }
 
-func (m *Manager) SendMessageToChat(chatId string, message *messages.Message) error {
+func (m *Manager) SendUserMessageToChat(chatId string, message *messages.Message) error {
 	m.mu.RLock()
 	c, exists := m.chats[chatId]
 	m.mu.RUnlock()
@@ -137,7 +138,13 @@ func (m *Manager) SendMessageToChat(chatId string, message *messages.Message) er
 		return common.ErrInternal
 	}
 
-	m.usersManager.SendToOrganizer(c.OrganizerId, outMsg)
-	m.usersManager.SendToParticipant(c.ParticipantId, outMsg)
+	go m.usersManager.SendToOrganizer(c.OrganizerId, outMsg)
+	go m.usersManager.SendToParticipant(c.ParticipantId, outMsg)
+	return nil
+}
+
+func (m *Manager) SendProtocolMessageToChat(chat *chats.Chat, protocolMessage *protocol.Message) error {
+	go m.usersManager.SendToOrganizer(chat.OrganizerId, protocolMessage)
+	go m.usersManager.SendToParticipant(chat.ParticipantId, protocolMessage)
 	return nil
 }

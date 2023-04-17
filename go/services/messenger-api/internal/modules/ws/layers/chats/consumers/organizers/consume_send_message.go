@@ -28,7 +28,7 @@ func (c *Consumer) consumeSendMessage(id int32, msg *protocol.Message) {
 		AuthorId:      id,
 		TimeSent:      msg.TimeReceived,
 	}
-	err = c.chatsManager.SendMessageToChat(inPayload.ChatId, organizerMessage)
+	err = c.chatsManager.SendUserMessageToChat(inPayload.ChatId, organizerMessage)
 	if err != nil {
 		c.usersManager.SendErrorToOrganizer(id, err)
 		return

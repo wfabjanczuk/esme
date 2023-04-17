@@ -42,11 +42,16 @@ func (c *Consumer) consumeStartChat(organizer *authentication.Organizer, msg *pr
 
 	outMsg, err := out.BuildNewChat(chat)
 	if err != nil {
-		c.logger.Printf("could not send %s to organizer %d: %s\n", out.MsgTypeNewChat, organizer.Id, err)
+		c.logger.Printf("could not send %s to chat %d: %s\n", out.MsgTypeNewChat, chat.Id, err)
 		c.usersManager.SendErrorToOrganizer(organizer.Id, common.ErrInternal)
 		return
 	}
 
-	c.usersManager.SendToOrganizer(organizer.Id, outMsg)
+	err = c.chatsManager.SendProtocolMessageToChat(chat, outMsg)
+	if err != nil {
+		c.logger.Printf("could not send %s to chat %d: %s\n", out.MsgTypeNewChat, chat.Id, err)
+		c.usersManager.SendErrorToOrganizer(organizer.Id, common.ErrInternal)
+		return
+	}
 	c.logger.Printf("organizer %d started new chat %s\n", organizer.Id, chat.Id)
 }
