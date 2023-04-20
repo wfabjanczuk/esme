@@ -9,10 +9,10 @@ import (
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/layers"
-	"messenger-api/internal/modules/ws/layers/chats/consumers/organizers"
-	"messenger-api/internal/modules/ws/layers/chats/consumers/participants"
-	"messenger-api/internal/modules/ws/protocol"
-	"messenger-api/internal/modules/ws/protocol/out"
+	"messenger-api/internal/modules/ws/layers/consumers/organizers"
+	"messenger-api/internal/modules/ws/layers/consumers/participants"
+	"messenger-api/internal/modules/ws/layers/consumers/protocol"
+	"messenger-api/internal/modules/ws/layers/consumers/protocol/out"
 	"sync"
 )
 
@@ -23,26 +23,31 @@ type chat struct {
 }
 
 type Manager struct {
-	chatsRepository    *chats.Repository
-	messagesRepository *messages.Repository
-	usersManager       layers.UsersManager
-	chats              map[string]*chat
-	logger             *log.Logger
-	mu                 sync.RWMutex
+	chatsRepository     *chats.Repository
+	messagesRepository  *messages.Repository
+	organizersManager   layers.OrganizersManager
+	participantsManager layers.ParticipantsManager
+	chats               map[string]*chat
+	logger              *log.Logger
+	mu                  sync.RWMutex
 }
 
-func NewManager(infra *infrastructure.Module, usersManager layers.UsersManager, logger *log.Logger) *Manager {
+func NewManager(
+	infra *infrastructure.Module, organizersManager layers.OrganizersManager,
+	participantsManager layers.ParticipantsManager, logger *log.Logger,
+) *Manager {
 	m := &Manager{
-		chatsRepository:    infra.ChatsRepository,
-		messagesRepository: infra.MessagesRepository,
-		usersManager:       usersManager,
-		chats:              make(map[string]*chat),
-		logger:             logger,
-		mu:                 sync.RWMutex{},
+		chatsRepository:     infra.ChatsRepository,
+		messagesRepository:  infra.MessagesRepository,
+		organizersManager:   organizersManager,
+		participantsManager: participantsManager,
+		chats:               make(map[string]*chat),
+		logger:              logger,
+		mu:                  sync.RWMutex{},
 	}
 
-	usersManager.SetOrganizerConsumer(organizers.NewConsumer(infra, m.usersManager, m, logger))
-	usersManager.SetParticipantConsumer(participants.NewConsumer(infra, m.usersManager, m, logger))
+	organizersManager.SetOrganizerConsumer(organizers.NewConsumer(infra, m.organizersManager, m, logger))
+	participantsManager.SetParticipantConsumer(participants.NewConsumer(infra, m.participantsManager, m, logger))
 	return m
 }
 
@@ -56,7 +61,7 @@ func (m *Manager) AddOrganizerConnection(organizer *authentication.Organizer, ws
 		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
 	}
 
-	return m.usersManager.AddOrganizerConnection(organizer, wsConnection)
+	return m.organizersManager.AddOrganizerConnection(organizer, wsConnection)
 }
 
 func (m *Manager) AddParticipantConnection(
@@ -71,7 +76,7 @@ func (m *Manager) AddParticipantConnection(
 		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
 	}
 
-	return m.usersManager.AddParticipantConnection(participant, wsConnection)
+	return m.participantsManager.AddParticipantConnection(participant, wsConnection)
 }
 
 func (m *Manager) SetChat(chatId string, organizerId, participantId int32) {
@@ -138,13 +143,13 @@ func (m *Manager) SendUserMessageToChat(chatId string, message *messages.Message
 		return common.ErrInternal
 	}
 
-	go m.usersManager.SendToOrganizer(c.OrganizerId, outMsg)
-	go m.usersManager.SendToParticipant(c.ParticipantId, outMsg)
+	go m.organizersManager.SendToOrganizer(c.OrganizerId, outMsg)
+	go m.participantsManager.SendToParticipant(c.ParticipantId, outMsg)
 	return nil
 }
 
 func (m *Manager) SendProtocolMessageToChat(chat *chats.Chat, protocolMessage *protocol.Message) error {
-	go m.usersManager.SendToOrganizer(chat.OrganizerId, protocolMessage)
-	go m.usersManager.SendToParticipant(chat.ParticipantId, protocolMessage)
+	go m.organizersManager.SendToOrganizer(chat.OrganizerId, protocolMessage)
+	go m.participantsManager.SendToParticipant(chat.ParticipantId, protocolMessage)
 	return nil
 }

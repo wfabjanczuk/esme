@@ -9,29 +9,29 @@ import (
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/layers"
-	"messenger-api/internal/modules/ws/protocol"
-	"messenger-api/internal/modules/ws/protocol/in"
+	"messenger-api/internal/modules/ws/layers/consumers/protocol"
+	"messenger-api/internal/modules/ws/layers/consumers/protocol/in"
 )
 
 type Consumer struct {
-	usersManager           layers.UsersManager
-	chatsManager           layers.ChatsManager
 	chatRequestsRepository *chat_requests.Repository
 	chatsRepository        *chats.Repository
 	messagesRepository     *messages.Repository
+	organizersManager      layers.OrganizersManager
+	chatsManager           layers.ChatsManager
 	logger                 *log.Logger
 }
 
 func NewConsumer(
-	infra *infrastructure.Module, usersManager layers.UsersManager, chatsManager layers.ChatsManager,
-	logger *log.Logger,
+	infra *infrastructure.Module, organizersManager layers.OrganizersManager,
+	chatsManager layers.ChatsManager, logger *log.Logger,
 ) *Consumer {
 	return &Consumer{
-		usersManager:           usersManager,
-		chatsManager:           chatsManager,
 		chatRequestsRepository: infra.ChatRequestsRepository,
 		chatsRepository:        infra.ChatsRepository,
 		messagesRepository:     infra.MessagesRepository,
+		organizersManager:      organizersManager,
+		chatsManager:           chatsManager,
 		logger:                 logger,
 	}
 }
@@ -48,7 +48,7 @@ func (c *Consumer) ConsumeMessage(organizer *authentication.Organizer, msg *prot
 		c.consumeGetChatHistory(organizer.Id, msg)
 	default:
 		c.logger.Printf("invalid message type %s from organizer %d\n", msg.Type, organizer.Id)
-		c.usersManager.SendErrorToOrganizer(organizer.Id, common.ErrInvalidMessageType)
+		c.organizersManager.SendErrorToOrganizer(organizer.Id, common.ErrInvalidMessageType)
 	}
 }
 

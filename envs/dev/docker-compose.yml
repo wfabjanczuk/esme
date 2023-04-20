@@ -102,6 +102,8 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: dbPassword
       ME_CONFIG_MONGODB_SERVER: esme_messenger_db
       ME_CONFIG_MONGODB_PORT: 27017
+    depends_on:
+      - esme_messenger_db
 
   esme_messenger_api:
     image: golang:1.18

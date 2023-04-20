@@ -8,28 +8,28 @@ import (
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/layers"
-	"messenger-api/internal/modules/ws/protocol"
-	"messenger-api/internal/modules/ws/protocol/in"
+	"messenger-api/internal/modules/ws/layers/consumers/protocol"
+	"messenger-api/internal/modules/ws/layers/consumers/protocol/in"
 )
 
 type Consumer struct {
-	usersManager       layers.UsersManager
-	chatsManager       layers.ChatsManager
-	chatsRepository    *chats.Repository
-	messagesRepository *messages.Repository
-	logger             *log.Logger
+	chatsRepository     *chats.Repository
+	messagesRepository  *messages.Repository
+	participantsManager layers.ParticipantsManager
+	chatsManager        layers.ChatsManager
+	logger              *log.Logger
 }
 
 func NewConsumer(
-	infra *infrastructure.Module, usersManager layers.UsersManager, chatsManager layers.ChatsManager,
+	infra *infrastructure.Module, participantsManager layers.ParticipantsManager, chatsManager layers.ChatsManager,
 	logger *log.Logger,
 ) *Consumer {
 	return &Consumer{
-		usersManager:       usersManager,
-		chatsManager:       chatsManager,
-		chatsRepository:    infra.ChatsRepository,
-		messagesRepository: infra.MessagesRepository,
-		logger:             logger,
+		participantsManager: participantsManager,
+		chatsManager:        chatsManager,
+		chatsRepository:     infra.ChatsRepository,
+		messagesRepository:  infra.MessagesRepository,
+		logger:              logger,
 	}
 }
 
@@ -43,6 +43,6 @@ func (c *Consumer) ConsumeMessage(participant *authentication.Participant, msg *
 		c.consumeGetChatHistory(participant.Id, msg)
 	default:
 		c.logger.Printf("invalid message type %s from participant %d\n", msg.Type, participant.Id)
-		c.usersManager.SendErrorToParticipant(participant.Id, common.ErrInvalidMessageType)
+		c.participantsManager.SendErrorToParticipant(participant.Id, common.ErrInvalidMessageType)
 	}
 }

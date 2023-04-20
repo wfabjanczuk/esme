@@ -15,8 +15,9 @@ type Module struct {
 }
 
 func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Logger) *Module {
-	usersManager := users.NewManager(logger)
-	chatsManager := chats.NewManager(infra, usersManager, logger)
+	organizersManager := users.NewOrganizersManager(logger)
+	participantsManager := users.NewParticipantsManager(logger)
+	chatsManager := chats.NewManager(infra, organizersManager, participantsManager, logger)
 
 	controller := NewController(cfg, infra, chatsManager, logger)
 	router := httprouter.New()

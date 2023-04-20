@@ -5,16 +5,26 @@ import (
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
-	"messenger-api/internal/modules/ws/protocol"
+	"messenger-api/internal/modules/ws/layers/consumers/protocol"
 )
 
-type UsersManager interface {
+type OrganizerConsumer interface {
+	ConsumeMessage(organizer *authentication.Organizer, msg *protocol.Message)
+}
+
+type ParticipantConsumer interface {
+	ConsumeMessage(participant *authentication.Participant, msg *protocol.Message)
+}
+
+type OrganizersManager interface {
 	SetOrganizerConsumer(organizerConsumer OrganizerConsumer)
 	AddOrganizerConnection(organizer *authentication.Organizer, wsConnection *websocket.Conn) error
 	SendToOrganizer(id int32, outMsg *protocol.Message)
 	SendInfoToOrganizer(id int32, info string)
 	SendErrorToOrganizer(id int32, err error)
+}
 
+type ParticipantsManager interface {
 	SetParticipantConsumer(participantConsumer ParticipantConsumer)
 	AddParticipantConnection(participant *authentication.Participant, wsConnection *websocket.Conn) error
 	SendToParticipant(id int32, outMsg *protocol.Message)
@@ -28,12 +38,4 @@ type ChatsManager interface {
 	IsParticipantInChat(organizerId int32, chatId string) bool
 	SendUserMessageToChat(chatId string, message *messages.Message) error
 	SendProtocolMessageToChat(chat *chats.Chat, protocolMessage *protocol.Message) error
-}
-
-type OrganizerConsumer interface {
-	ConsumeMessage(organizer *authentication.Organizer, msg *protocol.Message)
-}
-
-type ParticipantConsumer interface {
-	ConsumeMessage(participant *authentication.Participant, msg *protocol.Message)
 }

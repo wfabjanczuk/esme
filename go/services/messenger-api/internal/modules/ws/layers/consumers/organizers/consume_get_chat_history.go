@@ -2,16 +2,16 @@ package organizers
 
 import (
 	"messenger-api/internal/modules/common"
-	"messenger-api/internal/modules/ws/protocol"
-	"messenger-api/internal/modules/ws/protocol/in"
-	"messenger-api/internal/modules/ws/protocol/out"
+	"messenger-api/internal/modules/ws/layers/consumers/protocol"
+	"messenger-api/internal/modules/ws/layers/consumers/protocol/in"
+	"messenger-api/internal/modules/ws/layers/consumers/protocol/out"
 )
 
 func (c *Consumer) consumeGetChatHistory(id int32, msg *protocol.Message) {
 	inPayload, err := in.ParseGetChatHistoryPayload(msg)
 	if err != nil {
 		c.logger.Printf("organizer %d sent invalid %s payload\n", id, msg.Type)
-		c.usersManager.SendErrorToOrganizer(id, common.ErrInvalidMessagePayload)
+		c.organizersManager.SendErrorToOrganizer(id, common.ErrInvalidMessagePayload)
 		return
 	}
 
@@ -20,7 +20,7 @@ func (c *Consumer) consumeGetChatHistory(id int32, msg *protocol.Message) {
 		c.logger.Printf(
 			"organizer %d could not fetch chat %s messages: %s\n", id, inPayload.ChatId, err,
 		)
-		c.usersManager.SendErrorToOrganizer(id, common.ErrMessagesNotFetchedFromDb)
+		c.organizersManager.SendErrorToOrganizer(id, common.ErrMessagesNotFetchedFromDb)
 		return
 	}
 
@@ -29,9 +29,9 @@ func (c *Consumer) consumeGetChatHistory(id int32, msg *protocol.Message) {
 		c.logger.Printf(
 			"could not send %s to organizer %d: %s\n", out.MsgTypeChatHistory, id, err,
 		)
-		c.usersManager.SendErrorToOrganizer(id, common.ErrInternal)
+		c.organizersManager.SendErrorToOrganizer(id, common.ErrInternal)
 		return
 	}
 
-	c.usersManager.SendToOrganizer(id, outMsg)
+	c.organizersManager.SendToOrganizer(id, outMsg)
 }
