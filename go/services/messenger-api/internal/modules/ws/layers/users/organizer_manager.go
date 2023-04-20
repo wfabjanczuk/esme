@@ -6,8 +6,8 @@ import (
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/ws/layers"
 	"messenger-api/internal/modules/ws/layers/connection_pools"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol/out"
+	"messenger-api/internal/modules/ws/layers/protocol"
+	"messenger-api/internal/modules/ws/layers/protocol/out"
 	"sync"
 )
 
@@ -25,11 +25,11 @@ func NewOrganizersManager(logger *log.Logger) *OrganizersManager {
 	}
 }
 
-func (om *OrganizersManager) SetOrganizerConsumer(organizerConsumer layers.OrganizerConsumer) {
+func (om *OrganizersManager) SetConsumer(organizerConsumer layers.OrganizerConsumer) {
 	om.organizerConsumer = organizerConsumer
 }
 
-func (om *OrganizersManager) AddOrganizerConnection(
+func (om *OrganizersManager) AddConnection(
 	organizer *authentication.Organizer, wsConnection *websocket.Conn,
 ) error {
 	om.mu.Lock()
@@ -44,7 +44,7 @@ func (om *OrganizersManager) AddOrganizerConnection(
 	return ocp.AddConnection(organizer, wsConnection)
 }
 
-func (om *OrganizersManager) SendToOrganizer(id int32, outMsg *protocol.Message) {
+func (om *OrganizersManager) Send(id int32, outMsg *protocol.Message) {
 	om.mu.RLock()
 	defer om.mu.RUnlock()
 
@@ -54,20 +54,20 @@ func (om *OrganizersManager) SendToOrganizer(id int32, outMsg *protocol.Message)
 	}
 }
 
-func (om *OrganizersManager) SendInfoToOrganizer(id int32, info string) {
+func (om *OrganizersManager) SendInfo(id int32, info string) {
 	outMsg, e := out.BuildInfo(info)
 	if e != nil {
 		om.logger.Printf("could not parse info for organizer %d: %s\n", id, e)
 		return
 	}
-	om.SendToOrganizer(id, outMsg)
+	om.Send(id, outMsg)
 }
 
-func (om *OrganizersManager) SendErrorToOrganizer(id int32, err error) {
+func (om *OrganizersManager) SendError(id int32, err error) {
 	outMsg, e := out.BuildError(err)
 	if e != nil {
 		om.logger.Printf("could not parse error for organizer %d: %s\n", id, e)
 		return
 	}
-	om.SendToOrganizer(id, outMsg)
+	om.Send(id, outMsg)
 }

@@ -5,7 +5,7 @@ import (
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol"
+	"messenger-api/internal/modules/ws/layers/protocol"
 )
 
 type OrganizerConsumer interface {
@@ -17,19 +17,19 @@ type ParticipantConsumer interface {
 }
 
 type OrganizersManager interface {
-	SetOrganizerConsumer(organizerConsumer OrganizerConsumer)
-	AddOrganizerConnection(organizer *authentication.Organizer, wsConnection *websocket.Conn) error
-	SendToOrganizer(id int32, outMsg *protocol.Message)
-	SendInfoToOrganizer(id int32, info string)
-	SendErrorToOrganizer(id int32, err error)
+	SetConsumer(organizerConsumer OrganizerConsumer)
+	AddConnection(organizer *authentication.Organizer, wsConnection *websocket.Conn) error
+	Send(id int32, outMsg *protocol.Message)
+	SendInfo(id int32, info string)
+	SendError(id int32, err error)
 }
 
 type ParticipantsManager interface {
-	SetParticipantConsumer(participantConsumer ParticipantConsumer)
-	AddParticipantConnection(participant *authentication.Participant, wsConnection *websocket.Conn) error
-	SendToParticipant(id int32, outMsg *protocol.Message)
-	SendInfoToParticipant(id int32, info string)
-	SendErrorToParticipant(id int32, err error)
+	SetConsumer(participantConsumer ParticipantConsumer)
+	AddConnection(participant *authentication.Participant, wsConnection *websocket.Conn) error
+	Send(id int32, outMsg *protocol.Message)
+	SendInfo(id int32, info string)
+	SendError(id int32, err error)
 }
 
 type ChatsManager interface {

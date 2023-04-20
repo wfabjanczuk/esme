@@ -8,8 +8,8 @@ import (
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/layers"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol/in"
+	"messenger-api/internal/modules/ws/layers/protocol"
+	"messenger-api/internal/modules/ws/layers/protocol/in"
 )
 
 type Consumer struct {
@@ -43,6 +43,6 @@ func (c *Consumer) ConsumeMessage(participant *authentication.Participant, msg *
 		c.consumeGetChatHistory(participant.Id, msg)
 	default:
 		c.logger.Printf("invalid message type %s from participant %d\n", msg.Type, participant.Id)
-		c.participantsManager.SendErrorToParticipant(participant.Id, common.ErrInvalidMessageType)
+		c.participantsManager.SendError(participant.Id, common.ErrInvalidMessageType)
 	}
 }

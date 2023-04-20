@@ -11,8 +11,8 @@ import (
 	"messenger-api/internal/modules/ws/layers"
 	"messenger-api/internal/modules/ws/layers/consumers/organizers"
 	"messenger-api/internal/modules/ws/layers/consumers/participants"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol/out"
+	"messenger-api/internal/modules/ws/layers/protocol"
+	"messenger-api/internal/modules/ws/layers/protocol/out"
 	"sync"
 )
 
@@ -46,8 +46,8 @@ func NewManager(
 		mu:                  sync.RWMutex{},
 	}
 
-	organizersManager.SetOrganizerConsumer(organizers.NewConsumer(infra, m.organizersManager, m, logger))
-	participantsManager.SetParticipantConsumer(participants.NewConsumer(infra, m.participantsManager, m, logger))
+	organizersManager.SetConsumer(organizers.NewConsumer(infra, m.organizersManager, m, logger))
+	participantsManager.SetConsumer(participants.NewConsumer(infra, m.participantsManager, m, logger))
 	return m
 }
 
@@ -61,7 +61,7 @@ func (m *Manager) AddOrganizerConnection(organizer *authentication.Organizer, ws
 		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
 	}
 
-	return m.organizersManager.AddOrganizerConnection(organizer, wsConnection)
+	return m.organizersManager.AddConnection(organizer, wsConnection)
 }
 
 func (m *Manager) AddParticipantConnection(
@@ -76,7 +76,7 @@ func (m *Manager) AddParticipantConnection(
 		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
 	}
 
-	return m.participantsManager.AddParticipantConnection(participant, wsConnection)
+	return m.participantsManager.AddConnection(participant, wsConnection)
 }
 
 func (m *Manager) SetChat(chatId string, organizerId, participantId int32) {
@@ -143,13 +143,13 @@ func (m *Manager) SendUserMessageToChat(chatId string, message *messages.Message
 		return common.ErrInternal
 	}
 
-	go m.organizersManager.SendToOrganizer(c.OrganizerId, outMsg)
-	go m.participantsManager.SendToParticipant(c.ParticipantId, outMsg)
+	go m.organizersManager.Send(c.OrganizerId, outMsg)
+	go m.participantsManager.Send(c.ParticipantId, outMsg)
 	return nil
 }
 
 func (m *Manager) SendProtocolMessageToChat(chat *chats.Chat, protocolMessage *protocol.Message) error {
-	go m.organizersManager.SendToOrganizer(chat.OrganizerId, protocolMessage)
-	go m.participantsManager.SendToParticipant(chat.ParticipantId, protocolMessage)
+	go m.organizersManager.Send(chat.OrganizerId, protocolMessage)
+	go m.participantsManager.Send(chat.ParticipantId, protocolMessage)
 	return nil
 }

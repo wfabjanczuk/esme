@@ -9,8 +9,8 @@ import (
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/layers"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol/in"
+	"messenger-api/internal/modules/ws/layers/protocol"
+	"messenger-api/internal/modules/ws/layers/protocol/in"
 )
 
 type Consumer struct {
@@ -48,12 +48,6 @@ func (c *Consumer) ConsumeMessage(organizer *authentication.Organizer, msg *prot
 		c.consumeGetChatHistory(organizer.Id, msg)
 	default:
 		c.logger.Printf("invalid message type %s from organizer %d\n", msg.Type, organizer.Id)
-		c.organizersManager.SendErrorToOrganizer(organizer.Id, common.ErrInvalidMessageType)
+		c.organizersManager.SendError(organizer.Id, common.ErrInvalidMessageType)
 	}
 }
-
-//
-//func (c *Consumer) closeConnectionResources(conn *connections.OrganizerConnection) {
-//	c.chatsManager.DisconnectOrganizer(conn)
-//	conn.Close()
-//}

@@ -7,8 +7,8 @@ import (
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/ws/layers"
 	"messenger-api/internal/modules/ws/layers/connections"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol/out"
+	"messenger-api/internal/modules/ws/layers/protocol"
+	"messenger-api/internal/modules/ws/layers/protocol/out"
 	"sync"
 )
 

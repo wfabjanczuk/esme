@@ -6,8 +6,8 @@ import (
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/ws/layers"
 	"messenger-api/internal/modules/ws/layers/connection_pools"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol"
-	"messenger-api/internal/modules/ws/layers/consumers/protocol/out"
+	"messenger-api/internal/modules/ws/layers/protocol"
+	"messenger-api/internal/modules/ws/layers/protocol/out"
 	"sync"
 )
 
@@ -25,11 +25,11 @@ func NewParticipantsManager(logger *log.Logger) *ParticipantsManager {
 	}
 }
 
-func (pm *ParticipantsManager) SetParticipantConsumer(participantConsumer layers.ParticipantConsumer) {
+func (pm *ParticipantsManager) SetConsumer(participantConsumer layers.ParticipantConsumer) {
 	pm.participantConsumer = participantConsumer
 }
 
-func (pm *ParticipantsManager) AddParticipantConnection(
+func (pm *ParticipantsManager) AddConnection(
 	participant *authentication.Participant, wsConnection *websocket.Conn,
 ) error {
 	pm.mu.Lock()
@@ -46,7 +46,7 @@ func (pm *ParticipantsManager) AddParticipantConnection(
 	return pcp.AddConnection(participant, wsConnection)
 }
 
-func (pm *ParticipantsManager) SendToParticipant(id int32, outMsg *protocol.Message) {
+func (pm *ParticipantsManager) Send(id int32, outMsg *protocol.Message) {
 	pm.mu.RLock()
 	defer pm.mu.RUnlock()
 
@@ -56,20 +56,20 @@ func (pm *ParticipantsManager) SendToParticipant(id int32, outMsg *protocol.Mess
 	}
 }
 
-func (pm *ParticipantsManager) SendInfoToParticipant(id int32, info string) {
+func (pm *ParticipantsManager) SendInfo(id int32, info string) {
 	outMsg, e := out.BuildInfo(info)
 	if e != nil {
 		pm.logger.Printf("could not parse info for participant %d: %s\n", id, e)
 		return
 	}
-	pm.SendToParticipant(id, outMsg)
+	pm.Send(id, outMsg)
 }
 
-func (pm *ParticipantsManager) SendErrorToParticipant(id int32, err error) {
+func (pm *ParticipantsManager) SendError(id int32, err error) {
 	outMsg, e := out.BuildError(err)
 	if e != nil {
 		pm.logger.Printf("could not parse error for participant %d: %s\n", id, e)
 		return
 	}
-	pm.SendToParticipant(id, outMsg)
+	pm.Send(id, outMsg)
 }
