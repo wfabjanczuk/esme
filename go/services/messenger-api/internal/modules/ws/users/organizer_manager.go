@@ -4,10 +4,10 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"messenger-api/internal/modules/authentication"
+	"messenger-api/internal/modules/ws/connection_pools"
 	"messenger-api/internal/modules/ws/layers"
-	"messenger-api/internal/modules/ws/layers/connection_pools"
-	"messenger-api/internal/modules/ws/layers/protocol"
-	"messenger-api/internal/modules/ws/layers/protocol/out"
+	"messenger-api/internal/modules/ws/protocol"
+	"messenger-api/internal/modules/ws/protocol/out"
 	"sync"
 )
 

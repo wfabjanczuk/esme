@@ -7,8 +7,8 @@ import (
 	"log"
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/common"
-	"messenger-api/internal/modules/ws/layers/protocol"
-	"messenger-api/internal/modules/ws/layers/protocol/out"
+	"messenger-api/internal/modules/ws/protocol"
+	"messenger-api/internal/modules/ws/protocol/out"
 	"os"
 	"sync"
 	"time"
@@ -20,12 +20,12 @@ type ParticipantConnection struct {
 	Participant  *authentication.Participant
 	wsConnection *websocket.Conn
 	logger       *log.Logger
-	messages     chan *protocol.Message
+	messages     chan *ParticipantMessage
 	writeMu      sync.Mutex
 }
 
 func NewParticipantConnection(
-	participant *authentication.Participant, wsConnection *websocket.Conn, messages chan *protocol.Message,
+	participant *authentication.Participant, wsConnection *websocket.Conn, messages chan *ParticipantMessage,
 	logger *log.Logger,
 ) (*ParticipantConnection, error) {
 	participantConnection := &ParticipantConnection{
@@ -62,8 +62,7 @@ func (pc *ParticipantConnection) listenOnConnection() {
 		}
 
 		pc.resetReadTimer()
-		msg.TimeReceived = time.Now()
-		pc.messages <- msg
+		pc.messages <- NewParticipantMessage(msg, pc)
 	}
 }
 

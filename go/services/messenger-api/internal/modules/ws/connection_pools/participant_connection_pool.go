@@ -5,10 +5,10 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"messenger-api/internal/modules/authentication"
+	"messenger-api/internal/modules/ws/connections"
 	"messenger-api/internal/modules/ws/layers"
-	"messenger-api/internal/modules/ws/layers/connections"
-	"messenger-api/internal/modules/ws/layers/protocol"
-	"messenger-api/internal/modules/ws/layers/protocol/out"
+	"messenger-api/internal/modules/ws/protocol"
+	"messenger-api/internal/modules/ws/protocol/out"
 	"sync"
 )
 
@@ -17,7 +17,7 @@ type ParticipantConnectionPool struct {
 	consumer    layers.ParticipantConsumer
 	logger      *log.Logger
 	connections map[*connections.ParticipantConnection]struct{}
-	messages    chan *protocol.Message
+	messages    chan *connections.ParticipantMessage
 	done        chan struct{}
 	mu          sync.RWMutex
 }
@@ -30,7 +30,7 @@ func NewParticipantConnectionPool(
 		consumer:    consumer,
 		logger:      logger,
 		connections: make(map[*connections.ParticipantConnection]struct{}),
-		messages:    make(chan *protocol.Message, 10),
+		messages:    make(chan *connections.ParticipantMessage, 10),
 		done:        make(chan struct{}),
 	}
 
@@ -49,7 +49,7 @@ func (pcp *ParticipantConnectionPool) listenOnMessages() {
 			pcp.mu.Unlock()
 			return
 		case message := <-pcp.messages:
-			go pcp.consumer.ConsumeMessage(pcp.participant, message)
+			go pcp.consumer.ConsumeMessage(message)
 		}
 	}
 }

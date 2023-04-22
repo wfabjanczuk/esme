@@ -5,15 +5,16 @@ import (
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
-	"messenger-api/internal/modules/ws/layers/protocol"
+	"messenger-api/internal/modules/ws/connections"
+	"messenger-api/internal/modules/ws/protocol"
 )
 
 type OrganizerConsumer interface {
-	ConsumeMessage(organizer *authentication.Organizer, msg *protocol.Message)
+	ConsumeMessage(msg *connections.OrganizerMessage)
 }
 
 type ParticipantConsumer interface {
-	ConsumeMessage(participant *authentication.Participant, msg *protocol.Message)
+	ConsumeMessage(msg *connections.ParticipantMessage)
 }
 
 type OrganizersManager interface {

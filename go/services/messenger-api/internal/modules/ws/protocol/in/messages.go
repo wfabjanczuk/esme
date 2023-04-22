@@ -2,7 +2,7 @@ package in
 
 import (
 	"encoding/json"
-	"messenger-api/internal/modules/ws/layers/protocol"
+	"messenger-api/internal/modules/ws/protocol"
 )
 
 const (

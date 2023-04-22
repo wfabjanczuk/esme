@@ -5,8 +5,8 @@ import (
 	"log"
 	"messenger-api/internal/config"
 	"messenger-api/internal/modules/infrastructure"
-	"messenger-api/internal/modules/ws/layers/chats"
-	"messenger-api/internal/modules/ws/layers/users"
+	"messenger-api/internal/modules/ws/chats"
+	"messenger-api/internal/modules/ws/users"
 	"net/http"
 )
 

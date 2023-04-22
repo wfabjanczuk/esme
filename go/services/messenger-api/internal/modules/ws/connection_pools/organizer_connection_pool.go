@@ -5,10 +5,10 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"messenger-api/internal/modules/authentication"
+	"messenger-api/internal/modules/ws/connections"
 	"messenger-api/internal/modules/ws/layers"
-	"messenger-api/internal/modules/ws/layers/connections"
-	"messenger-api/internal/modules/ws/layers/protocol"
-	"messenger-api/internal/modules/ws/layers/protocol/out"
+	"messenger-api/internal/modules/ws/protocol"
+	"messenger-api/internal/modules/ws/protocol/out"
 	"sync"
 )
 
@@ -17,7 +17,7 @@ type OrganizerConnectionPool struct {
 	consumer    layers.OrganizerConsumer
 	logger      *log.Logger
 	connections map[*connections.OrganizerConnection]struct{}
-	messages    chan *protocol.Message
+	messages    chan *connections.OrganizerMessage
 	done        chan struct{}
 	mu          sync.RWMutex
 }
@@ -30,7 +30,7 @@ func NewOrganizerConnectionPool(
 		consumer:    consumer,
 		logger:      logger,
 		connections: make(map[*connections.OrganizerConnection]struct{}),
-		messages:    make(chan *protocol.Message, 10),
+		messages:    make(chan *connections.OrganizerMessage, 10),
 		done:        make(chan struct{}),
 	}
 
@@ -49,7 +49,7 @@ func (ocp *OrganizerConnectionPool) listenOnMessages() {
 			ocp.mu.Unlock()
 			return
 		case message := <-ocp.messages:
-			go ocp.consumer.ConsumeMessage(ocp.organizer, message)
+			go ocp.consumer.ConsumeMessage(message)
 		}
 	}
 }

@@ -8,11 +8,11 @@ import (
 	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
+	"messenger-api/internal/modules/ws/consumers/organizers"
+	"messenger-api/internal/modules/ws/consumers/participants"
 	"messenger-api/internal/modules/ws/layers"
-	"messenger-api/internal/modules/ws/layers/consumers/organizers"
-	"messenger-api/internal/modules/ws/layers/consumers/participants"
-	"messenger-api/internal/modules/ws/layers/protocol"
-	"messenger-api/internal/modules/ws/layers/protocol/out"
+	"messenger-api/internal/modules/ws/protocol"
+	"messenger-api/internal/modules/ws/protocol/out"
 	"sync"
 )
 
@@ -46,8 +46,8 @@ func NewManager(
 		mu:                  sync.RWMutex{},
 	}
 
-	organizersManager.SetConsumer(organizers.NewConsumer(infra, m.organizersManager, m, logger))
-	participantsManager.SetConsumer(participants.NewConsumer(infra, m.participantsManager, m, logger))
+	organizersManager.SetConsumer(organizers.NewConsumer(infra, m, logger))
+	participantsManager.SetConsumer(participants.NewConsumer(infra, m, logger))
 	return m
 }
 

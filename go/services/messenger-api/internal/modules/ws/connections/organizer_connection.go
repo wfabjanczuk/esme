@@ -7,8 +7,8 @@ import (
 	"log"
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/common"
-	"messenger-api/internal/modules/ws/layers/protocol"
-	"messenger-api/internal/modules/ws/layers/protocol/out"
+	"messenger-api/internal/modules/ws/protocol"
+	"messenger-api/internal/modules/ws/protocol/out"
 	"os"
 	"sync"
 	"time"
@@ -20,12 +20,12 @@ type OrganizerConnection struct {
 	Organizer    *authentication.Organizer
 	wsConnection *websocket.Conn
 	logger       *log.Logger
-	messages     chan *protocol.Message
+	messages     chan *OrganizerMessage
 	writeMu      sync.Mutex
 }
 
 func NewOrganizerConnection(
-	organizer *authentication.Organizer, wsConnection *websocket.Conn, messages chan *protocol.Message,
+	organizer *authentication.Organizer, wsConnection *websocket.Conn, messages chan *OrganizerMessage,
 	logger *log.Logger,
 ) (*OrganizerConnection, error) {
 	organizerConnection := &OrganizerConnection{
@@ -62,8 +62,7 @@ func (oc *OrganizerConnection) listenOnConnection() {
 		}
 
 		oc.resetReadTimer()
-		msg.TimeReceived = time.Now()
-		oc.messages <- msg
+		oc.messages <- NewOrganizerMessage(msg, oc)
 	}
 }
 

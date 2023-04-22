@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
-	"messenger-api/internal/modules/ws/layers/protocol"
+	"messenger-api/internal/modules/ws/protocol"
 )
 
 const (

@@ -2,52 +2,48 @@ package organizers
 
 import (
 	"log"
-	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/common"
 	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/infrastructure/chat_requests"
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
+	"messenger-api/internal/modules/ws/connections"
 	"messenger-api/internal/modules/ws/layers"
-	"messenger-api/internal/modules/ws/layers/protocol"
-	"messenger-api/internal/modules/ws/layers/protocol/in"
+	"messenger-api/internal/modules/ws/protocol/in"
 )
 
 type Consumer struct {
 	chatRequestsRepository *chat_requests.Repository
 	chatsRepository        *chats.Repository
 	messagesRepository     *messages.Repository
-	organizersManager      layers.OrganizersManager
 	chatsManager           layers.ChatsManager
 	logger                 *log.Logger
 }
 
 func NewConsumer(
-	infra *infrastructure.Module, organizersManager layers.OrganizersManager,
-	chatsManager layers.ChatsManager, logger *log.Logger,
+	infra *infrastructure.Module, chatsManager layers.ChatsManager, logger *log.Logger,
 ) *Consumer {
 	return &Consumer{
 		chatRequestsRepository: infra.ChatRequestsRepository,
 		chatsRepository:        infra.ChatsRepository,
 		messagesRepository:     infra.MessagesRepository,
-		organizersManager:      organizersManager,
 		chatsManager:           chatsManager,
 		logger:                 logger,
 	}
 }
 
-func (c *Consumer) ConsumeMessage(organizer *authentication.Organizer, msg *protocol.Message) {
-	switch msg.Type {
+func (c *Consumer) ConsumeMessage(msg *connections.OrganizerMessage) {
+	switch msg.Message.Type {
 	case in.MsgTypeGetChats:
-		c.consumeGetChats(organizer.Id)
+		c.consumeGetChats(msg)
 	case in.MsgTypeStartChat:
-		c.consumeStartChat(organizer, msg)
+		c.consumeStartChat(msg)
 	case in.MsgTypeSendMessage:
-		c.consumeSendMessage(organizer.Id, msg)
+		c.consumeSendMessage(msg)
 	case in.MsgTypeGetChatHistory:
-		c.consumeGetChatHistory(organizer.Id, msg)
+		c.consumeGetChatHistory(msg)
 	default:
-		c.logger.Printf("invalid message type %s from organizer %d\n", msg.Type, organizer.Id)
-		c.organizersManager.SendError(organizer.Id, common.ErrInvalidMessageType)
+		c.logger.Printf("invalid message type %s from organizer %d\n", msg.Message.Type, msg.Source.Organizer.Id)
+		msg.Source.SendError(common.ErrInvalidMessageType)
 	}
 }

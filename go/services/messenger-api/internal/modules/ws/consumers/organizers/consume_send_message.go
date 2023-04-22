@@ -3,21 +3,22 @@ package organizers
 import (
 	"messenger-api/internal/modules/common"
 	"messenger-api/internal/modules/infrastructure/messages"
-	"messenger-api/internal/modules/ws/layers/protocol"
-	"messenger-api/internal/modules/ws/layers/protocol/in"
+	"messenger-api/internal/modules/ws/connections"
+	"messenger-api/internal/modules/ws/protocol/in"
 )
 
-func (c *Consumer) consumeSendMessage(id int32, msg *protocol.Message) {
-	inPayload, err := in.ParseSendMessagePayload(msg)
+func (c *Consumer) consumeSendMessage(msg *connections.OrganizerMessage) {
+	id := msg.Source.Organizer.Id
+	inPayload, err := in.ParseSendMessagePayload(msg.Message)
 	if err != nil {
-		c.logger.Printf("organizer %d sent invalid %s payload\n", id, msg.Type)
-		c.organizersManager.SendError(id, common.ErrInvalidMessagePayload)
+		c.logger.Printf("organizer %d sent invalid %s payload\n", id, msg.Message.Type)
+		msg.Source.SendError(common.ErrInvalidMessagePayload)
 		return
 	}
 
 	if !c.chatsManager.IsOrganizerInChat(id, inPayload.ChatId) {
 		c.logger.Printf("organizer %d has no access to chat %s\n", id, inPayload.ChatId)
-		c.organizersManager.SendError(id, common.NewErrNoAccessToChat(inPayload.ChatId))
+		msg.Source.SendError(common.NewErrNoAccessToChat(inPayload.ChatId))
 		return
 	}
 
@@ -30,7 +31,7 @@ func (c *Consumer) consumeSendMessage(id int32, msg *protocol.Message) {
 	}
 	err = c.chatsManager.SendUserMessageToChat(inPayload.ChatId, organizerMessage)
 	if err != nil {
-		c.organizersManager.SendError(id, err)
+		msg.Source.SendError(err)
 		return
 	}
 }

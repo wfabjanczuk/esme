@@ -7,7 +7,7 @@ import (
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/infrastructure/chats"
-	mgmt_chats "messenger-api/internal/modules/ws/layers/chats"
+	mgmt_chats "messenger-api/internal/modules/ws/chats"
 	"net/http"
 	"time"
 )
