@@ -8,18 +8,26 @@ interface MessagesProps {
 }
 
 export const ChatHistory = ({ messages }: MessagesProps): JSX.Element => {
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const scrollToBottom = (): void => messagesEndRef.current?.scrollIntoView({ behavior: 'auto' })
+  const chatHistoryRef = useRef<HTMLDivElement>(null)
+  const handleResize = (): void => {
+    if (chatHistoryRef.current !== null) {
+      chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight
+    }
+  }
 
-  useEffect(scrollToBottom, [messagesEndRef, messages])
+  useEffect(handleResize, [chatHistoryRef.current, messages])
+  useEffect(() => {
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
-  return <Box sx={{
-    overflow: 'auto',
-    px: 1
-  }}>
+  return <Box ref={chatHistoryRef}
+    sx={{
+      overflow: 'auto',
+      px: 1
+    }}>
     {messages.map((msg) => (
       <ChatBubble key={`${msg.chatId}_${msg.id}`} message={msg}/>
     ))}
-    <div ref={messagesEndRef}/>
   </Box>
 }

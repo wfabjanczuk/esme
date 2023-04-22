@@ -13,18 +13,17 @@ interface ChatHistoryProps {
 export const ChatHistory = ({ messages }: ChatHistoryProps): JSX.Element => {
   const heightRef = useRef<number>(0)
   const scrollViewRef = useRef<ScrollView>(null)
-  const scrollToBottom = (width: number, height: number): void => {
-    heightRef.current = height
-    scrollViewRef.current?.scrollTo({
-      y: height,
-      animated: false
-    })
-  }
+  const scrollToBottom = (): void => scrollViewRef.current?.scrollTo({
+    y: heightRef.current,
+    animated: false
+  })
 
-  useEffect(() => scrollToBottom(0, heightRef.current), [heightRef.current])
+  useEffect(scrollToBottom, [heightRef.current])
 
-  return <ScrollView ref={scrollViewRef} onContentSizeChange={scrollToBottom}
-    onLayout={() => scrollToBottom(0, heightRef.current)}
+  return <ScrollView ref={scrollViewRef} onLayout={scrollToBottom}
+    onContentSizeChange={(width, height) => {
+      heightRef.current = height
+    }}
   >
     {messages.map(m => {
       const isOwn = m.fromOrganizer === 0
