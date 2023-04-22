@@ -6,8 +6,12 @@ import { useSignUp } from './sign-up.hook'
 import { DefaultForm, DefaultTextInput, FormErrors } from '../../common/components/form.component'
 import { FullScreenScrollView } from '../../common/components/containers/scroll-view.component'
 import { ButtonGroup, SuccessButton } from '../../common/components/button.component'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { EventStackParamsList } from '../../app/navigation/navigation-internal'
 
-export const SignUpScreen = (): JSX.Element => {
+type SignUpScreenProps = NativeStackScreenProps<EventStackParamsList, 'Registration'>
+
+export const SignUpScreen = ({ navigation }: SignUpScreenProps): JSX.Element => {
   const {
     signUp,
     errorMessages
@@ -39,7 +43,8 @@ export const SignUpScreen = (): JSX.Element => {
             onChangeText={newSetter('confirmPassword')}/>
           <FormErrors errorMessages={errorMessages}/>
           <ButtonGroup>
-            <SuccessButton icon='person-add' onPress={() => signUp(values)}>
+            <SuccessButton icon='person-add'
+              onPress={() => signUp(values, () => navigation.navigate('Authentication'))}>
               Register
             </SuccessButton>
           </ButtonGroup>

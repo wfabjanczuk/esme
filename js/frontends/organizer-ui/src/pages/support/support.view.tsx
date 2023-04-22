@@ -2,7 +2,6 @@ import React, { Fragment, useContext, useEffect, useState } from 'react'
 import Header from '../../layout/header'
 import { Box } from '@mui/material'
 import { Chats } from './chats.component'
-import { Participant } from './participant.components'
 import Divider from '@mui/material/Divider'
 import { Conversation } from './components/conversation.component'
 import { MessengerContext } from '../../common/messenger/messenger.context'
@@ -30,7 +29,7 @@ export const SupportView = (): JSX.Element => {
       <Divider orientation='vertical'/>
       <Conversation chatId={activeChatId}/>
       <Divider orientation='vertical'/>
-      <Participant/>
+      {/* <Participant/> */}
     </Box>
   </Fragment>
 }

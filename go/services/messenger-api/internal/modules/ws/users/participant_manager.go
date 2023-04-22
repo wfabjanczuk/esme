@@ -37,9 +37,7 @@ func (pm *ParticipantsManager) AddConnection(
 
 	pcp, exists := pm.participantConnectionPools[participant.Id]
 	if !exists {
-		pcp = connection_pools.NewParticipantConnectionPool(
-			participant, pm.participantConsumer, pm.logger,
-		)
+		pcp = connection_pools.NewParticipantConnectionPool(participant, pm.participantConsumer, pm.logger)
 		pm.participantConnectionPools[participant.Id] = pcp
 	}
 
