@@ -5,7 +5,7 @@ import (
 	"log"
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/ws/connection_pools"
-	"messenger-api/internal/modules/ws/layers"
+	"messenger-api/internal/modules/ws/consumers/organizers"
 	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/out"
 	"sync"
@@ -13,7 +13,7 @@ import (
 
 type OrganizersManager struct {
 	organizerConnectionPools map[int32]*connection_pools.OrganizerConnectionPool
-	organizerConsumer        layers.OrganizerConsumer
+	organizerConsumer        *organizers.Consumer
 	logger                   *log.Logger
 	mu                       sync.RWMutex
 }
@@ -25,7 +25,7 @@ func NewOrganizersManager(logger *log.Logger) *OrganizersManager {
 	}
 }
 
-func (om *OrganizersManager) SetConsumer(organizerConsumer layers.OrganizerConsumer) {
+func (om *OrganizersManager) SetConsumer(organizerConsumer *organizers.Consumer) {
 	om.organizerConsumer = organizerConsumer
 }
 

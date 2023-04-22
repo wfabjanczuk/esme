@@ -6,6 +6,8 @@ import (
 	"messenger-api/internal/config"
 	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/ws/chats"
+	"messenger-api/internal/modules/ws/consumers/organizers"
+	"messenger-api/internal/modules/ws/consumers/participants"
 	"messenger-api/internal/modules/ws/users"
 	"net/http"
 )
@@ -17,7 +19,10 @@ type Module struct {
 func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Logger) *Module {
 	organizersManager := users.NewOrganizersManager(logger)
 	participantsManager := users.NewParticipantsManager(logger)
+
 	chatsManager := chats.NewManager(infra, organizersManager, participantsManager, logger)
+	organizersManager.SetConsumer(organizers.NewConsumer(infra, chatsManager, logger))
+	participantsManager.SetConsumer(participants.NewConsumer(infra, chatsManager, logger))
 
 	controller := NewController(cfg, infra, chatsManager, logger)
 	router := httprouter.New()

@@ -6,7 +6,7 @@ import (
 	"log"
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/ws/connections"
-	"messenger-api/internal/modules/ws/layers"
+	"messenger-api/internal/modules/ws/consumers/participants"
 	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/out"
 	"sync"
@@ -14,7 +14,7 @@ import (
 
 type ParticipantConnectionPool struct {
 	participant         *authentication.Participant
-	consumer            layers.ParticipantConsumer
+	consumer            *participants.Consumer
 	logger              *log.Logger
 	connections         map[*connections.ParticipantConnection]struct{}
 	connectionMessages  chan *connections.ParticipantMessage
@@ -24,7 +24,7 @@ type ParticipantConnectionPool struct {
 }
 
 func NewParticipantConnectionPool(
-	participant *authentication.Participant, consumer layers.ParticipantConsumer, logger *log.Logger,
+	participant *authentication.Participant, consumer *participants.Consumer, logger *log.Logger,
 ) *ParticipantConnectionPool {
 	pcp := &ParticipantConnectionPool{
 		participant:         participant,

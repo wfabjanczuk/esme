@@ -6,7 +6,7 @@ import (
 	"log"
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/ws/connections"
-	"messenger-api/internal/modules/ws/layers"
+	"messenger-api/internal/modules/ws/consumers/organizers"
 	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/out"
 	"sync"
@@ -14,7 +14,7 @@ import (
 
 type OrganizerConnectionPool struct {
 	organizer           *authentication.Organizer
-	consumer            layers.OrganizerConsumer
+	consumer            *organizers.Consumer
 	logger              *log.Logger
 	connections         map[*connections.OrganizerConnection]struct{}
 	connectionMessages  chan *connections.OrganizerMessage
@@ -24,7 +24,7 @@ type OrganizerConnectionPool struct {
 }
 
 func NewOrganizerConnectionPool(
-	organizer *authentication.Organizer, consumer layers.OrganizerConsumer, logger *log.Logger,
+	organizer *authentication.Organizer, consumer *organizers.Consumer, logger *log.Logger,
 ) *OrganizerConnectionPool {
 	ocp := &OrganizerConnectionPool{
 		organizer:           organizer,

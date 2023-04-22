@@ -8,11 +8,9 @@ import (
 	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
-	"messenger-api/internal/modules/ws/consumers/organizers"
-	"messenger-api/internal/modules/ws/consumers/participants"
-	"messenger-api/internal/modules/ws/layers"
 	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/out"
+	"messenger-api/internal/modules/ws/users"
 	"sync"
 )
 
@@ -25,18 +23,18 @@ type chat struct {
 type Manager struct {
 	chatsRepository     *chats.Repository
 	messagesRepository  *messages.Repository
-	organizersManager   layers.OrganizersManager
-	participantsManager layers.ParticipantsManager
+	organizersManager   *users.OrganizersManager
+	participantsManager *users.ParticipantsManager
 	chats               map[string]*chat
 	logger              *log.Logger
 	mu                  sync.RWMutex
 }
 
 func NewManager(
-	infra *infrastructure.Module, organizersManager layers.OrganizersManager,
-	participantsManager layers.ParticipantsManager, logger *log.Logger,
+	infra *infrastructure.Module, organizersManager *users.OrganizersManager,
+	participantsManager *users.ParticipantsManager, logger *log.Logger,
 ) *Manager {
-	m := &Manager{
+	return &Manager{
 		chatsRepository:     infra.ChatsRepository,
 		messagesRepository:  infra.MessagesRepository,
 		organizersManager:   organizersManager,
@@ -45,10 +43,6 @@ func NewManager(
 		logger:              logger,
 		mu:                  sync.RWMutex{},
 	}
-
-	organizersManager.SetConsumer(organizers.NewConsumer(infra, m, logger))
-	participantsManager.SetConsumer(participants.NewConsumer(infra, m, logger))
-	return m
 }
 
 func (m *Manager) AddOrganizerConnection(organizer *authentication.Organizer, wsConnection *websocket.Conn) error {

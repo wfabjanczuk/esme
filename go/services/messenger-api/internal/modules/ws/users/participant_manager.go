@@ -5,7 +5,7 @@ import (
 	"log"
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/ws/connection_pools"
-	"messenger-api/internal/modules/ws/layers"
+	"messenger-api/internal/modules/ws/consumers/participants"
 	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/out"
 	"sync"
@@ -13,7 +13,7 @@ import (
 
 type ParticipantsManager struct {
 	participantConnectionPools map[int32]*connection_pools.ParticipantConnectionPool
-	participantConsumer        layers.ParticipantConsumer
+	participantConsumer        *participants.Consumer
 	logger                     *log.Logger
 	mu                         sync.RWMutex
 }
@@ -25,7 +25,7 @@ func NewParticipantsManager(logger *log.Logger) *ParticipantsManager {
 	}
 }
 
-func (pm *ParticipantsManager) SetConsumer(participantConsumer layers.ParticipantConsumer) {
+func (pm *ParticipantsManager) SetConsumer(participantConsumer *participants.Consumer) {
 	pm.participantConsumer = participantConsumer
 }
 
