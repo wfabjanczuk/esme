@@ -13,51 +13,52 @@ import (
 )
 
 type ParticipantConnectionPool struct {
-	participant *authentication.Participant
-	consumer    layers.ParticipantConsumer
-	logger      *log.Logger
-	connections map[*connections.ParticipantConnection]struct{}
-	messages    chan *connections.ParticipantMessage
-	done        chan struct{}
-	mu          sync.RWMutex
+	participant         *authentication.Participant
+	consumer            layers.ParticipantConsumer
+	logger              *log.Logger
+	connections         map[*connections.ParticipantConnection]struct{}
+	connectionMessages  chan *connections.ParticipantMessage
+	connectionShutdowns chan *connections.ParticipantConnection
+	done                chan struct{}
+	mu                  sync.RWMutex
 }
 
 func NewParticipantConnectionPool(
 	participant *authentication.Participant, consumer layers.ParticipantConsumer, logger *log.Logger,
 ) *ParticipantConnectionPool {
 	pcp := &ParticipantConnectionPool{
-		participant: participant,
-		consumer:    consumer,
-		logger:      logger,
-		connections: make(map[*connections.ParticipantConnection]struct{}),
-		messages:    make(chan *connections.ParticipantMessage, 10),
-		done:        make(chan struct{}),
+		participant:         participant,
+		consumer:            consumer,
+		logger:              logger,
+		connections:         make(map[*connections.ParticipantConnection]struct{}),
+		connectionMessages:  make(chan *connections.ParticipantMessage, 10),
+		connectionShutdowns: make(chan *connections.ParticipantConnection, 10),
+		done:                make(chan struct{}),
 	}
 
 	go pcp.listenOnMessages()
+	go pcp.listenOnShutdowns()
 	return pcp
 }
 
 func (pcp *ParticipantConnectionPool) listenOnMessages() {
 	for {
-		select {
-		case <-pcp.done:
-			pcp.mu.Lock()
-			for connection := range pcp.connections {
-				connection.Close()
-			}
-			pcp.mu.Unlock()
-			return
-		case message := <-pcp.messages:
-			go pcp.consumer.ConsumeMessage(message)
-		}
+		go pcp.consumer.ConsumeMessage(<-pcp.connectionMessages)
+	}
+}
+
+func (pcp *ParticipantConnectionPool) listenOnShutdowns() {
+	for {
+		go pcp.removeConnection(<-pcp.connectionShutdowns)
 	}
 }
 
 func (pcp *ParticipantConnectionPool) AddConnection(
 	participant *authentication.Participant, wsConnection *websocket.Conn,
 ) error {
-	participantConn, err := connections.NewParticipantConnection(participant, wsConnection, pcp.messages, pcp.logger)
+	participantConn, err := connections.NewParticipantConnection(
+		participant, wsConnection, pcp.connectionMessages, pcp.connectionShutdowns, pcp.logger,
+	)
 	if err != nil {
 		return err
 	}
@@ -69,6 +70,14 @@ func (pcp *ParticipantConnectionPool) AddConnection(
 	defer pcp.mu.Unlock()
 	pcp.connections[participantConn] = struct{}{}
 	return nil
+}
+
+func (pcp *ParticipantConnectionPool) removeConnection(conn *connections.ParticipantConnection) {
+	pcp.mu.Lock()
+	defer pcp.mu.Unlock()
+
+	delete(pcp.connections, conn)
+	pcp.logger.Printf("removed connection of %s", pcp.GetInfo())
 }
 
 func (pcp *ParticipantConnectionPool) GetInfo() string {

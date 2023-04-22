@@ -13,51 +13,52 @@ import (
 )
 
 type OrganizerConnectionPool struct {
-	organizer   *authentication.Organizer
-	consumer    layers.OrganizerConsumer
-	logger      *log.Logger
-	connections map[*connections.OrganizerConnection]struct{}
-	messages    chan *connections.OrganizerMessage
-	done        chan struct{}
-	mu          sync.RWMutex
+	organizer           *authentication.Organizer
+	consumer            layers.OrganizerConsumer
+	logger              *log.Logger
+	connections         map[*connections.OrganizerConnection]struct{}
+	connectionMessages  chan *connections.OrganizerMessage
+	connectionShutdowns chan *connections.OrganizerConnection
+	done                chan struct{}
+	mu                  sync.RWMutex
 }
 
 func NewOrganizerConnectionPool(
 	organizer *authentication.Organizer, consumer layers.OrganizerConsumer, logger *log.Logger,
 ) *OrganizerConnectionPool {
 	ocp := &OrganizerConnectionPool{
-		organizer:   organizer,
-		consumer:    consumer,
-		logger:      logger,
-		connections: make(map[*connections.OrganizerConnection]struct{}),
-		messages:    make(chan *connections.OrganizerMessage, 10),
-		done:        make(chan struct{}),
+		organizer:           organizer,
+		consumer:            consumer,
+		logger:              logger,
+		connections:         make(map[*connections.OrganizerConnection]struct{}),
+		connectionMessages:  make(chan *connections.OrganizerMessage, 10),
+		connectionShutdowns: make(chan *connections.OrganizerConnection, 10),
+		done:                make(chan struct{}),
 	}
 
 	go ocp.listenOnMessages()
+	go ocp.listenOnShutdowns()
 	return ocp
 }
 
 func (ocp *OrganizerConnectionPool) listenOnMessages() {
 	for {
-		select {
-		case <-ocp.done:
-			ocp.mu.Lock()
-			for connection := range ocp.connections {
-				connection.Close()
-			}
-			ocp.mu.Unlock()
-			return
-		case message := <-ocp.messages:
-			go ocp.consumer.ConsumeMessage(message)
-		}
+		go ocp.consumer.ConsumeMessage(<-ocp.connectionMessages)
+	}
+}
+
+func (ocp *OrganizerConnectionPool) listenOnShutdowns() {
+	for {
+		go ocp.removeConnection(<-ocp.connectionShutdowns)
 	}
 }
 
 func (ocp *OrganizerConnectionPool) AddConnection(
 	organizer *authentication.Organizer, wsConnection *websocket.Conn,
 ) error {
-	organizerConn, err := connections.NewOrganizerConnection(organizer, wsConnection, ocp.messages, ocp.logger)
+	organizerConn, err := connections.NewOrganizerConnection(
+		organizer, wsConnection, ocp.connectionMessages, ocp.connectionShutdowns, ocp.logger,
+	)
 	if err != nil {
 		return err
 	}
@@ -69,6 +70,14 @@ func (ocp *OrganizerConnectionPool) AddConnection(
 	defer ocp.mu.Unlock()
 	ocp.connections[organizerConn] = struct{}{}
 	return nil
+}
+
+func (ocp *OrganizerConnectionPool) removeConnection(conn *connections.OrganizerConnection) {
+	ocp.mu.Lock()
+	defer ocp.mu.Unlock()
+
+	delete(ocp.connections, conn)
+	ocp.logger.Printf("removed connection of %s", ocp.GetInfo())
 }
 
 func (ocp *OrganizerConnectionPool) GetInfo() string {

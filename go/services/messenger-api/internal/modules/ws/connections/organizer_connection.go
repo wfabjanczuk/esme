@@ -21,17 +21,19 @@ type OrganizerConnection struct {
 	wsConnection *websocket.Conn
 	logger       *log.Logger
 	messages     chan *OrganizerMessage
+	shutdowns    chan *OrganizerConnection
 	writeMu      sync.Mutex
 }
 
 func NewOrganizerConnection(
 	organizer *authentication.Organizer, wsConnection *websocket.Conn, messages chan *OrganizerMessage,
-	logger *log.Logger,
+	shutdowns chan *OrganizerConnection, logger *log.Logger,
 ) (*OrganizerConnection, error) {
 	organizerConnection := &OrganizerConnection{
 		Organizer:    organizer,
 		logger:       logger,
 		messages:     messages,
+		shutdowns:    shutdowns,
 		wsConnection: wsConnection,
 	}
 	err := organizerConnection.wsConnection.SetReadDeadline(time.Now().Add(organizerReadTimeout))
@@ -132,6 +134,7 @@ func (oc *OrganizerConnection) SendError(err error) {
 }
 
 func (oc *OrganizerConnection) Close() {
+	oc.shutdowns <- oc
 	oc.wsConnection.Close()
 	oc.logger.Printf("closed connection for %s\n", oc.GetInfo())
 }

@@ -21,17 +21,19 @@ type ParticipantConnection struct {
 	wsConnection *websocket.Conn
 	logger       *log.Logger
 	messages     chan *ParticipantMessage
+	shutdowns    chan *ParticipantConnection
 	writeMu      sync.Mutex
 }
 
 func NewParticipantConnection(
 	participant *authentication.Participant, wsConnection *websocket.Conn, messages chan *ParticipantMessage,
-	logger *log.Logger,
+	shutdowns chan *ParticipantConnection, logger *log.Logger,
 ) (*ParticipantConnection, error) {
 	participantConnection := &ParticipantConnection{
 		Participant:  participant,
 		wsConnection: wsConnection,
 		messages:     messages,
+		shutdowns:    shutdowns,
 		logger:       logger,
 	}
 	err := participantConnection.wsConnection.SetReadDeadline(time.Now().Add(participantReadTimeout))
@@ -133,6 +135,7 @@ func (pc *ParticipantConnection) SendError(err error) {
 }
 
 func (pc *ParticipantConnection) Close() {
+	pc.shutdowns <- pc
 	pc.wsConnection.Close()
 	pc.logger.Printf("closed connection for %s\n", pc.GetInfo())
 }
