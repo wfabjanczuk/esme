@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { ScrollView } from 'react-native'
-
 import { Spacer } from '../../../../common/components/spacer/spacer.component'
 import { ChatBubble } from './chat-bubble.component'
 import { Message } from '../../../../common/messenger/structures'
@@ -12,7 +11,21 @@ interface ChatHistoryProps {
 }
 
 export const ChatHistory = ({ messages }: ChatHistoryProps): JSX.Element => {
-  return <ScrollView>
+  const heightRef = useRef<number>(0)
+  const scrollViewRef = useRef<ScrollView>(null)
+  const scrollToBottom = (width: number, height: number): void => {
+    heightRef.current = height
+    scrollViewRef.current?.scrollTo({
+      y: height,
+      animated: false
+    })
+  }
+
+  useEffect(() => scrollToBottom(0, heightRef.current), [heightRef.current])
+
+  return <ScrollView ref={scrollViewRef} onContentSizeChange={scrollToBottom}
+    onLayout={() => scrollToBottom(0, heightRef.current)}
+  >
     {messages.map(m => {
       const isOwn = m.fromOrganizer === 0
       return (
@@ -24,6 +37,7 @@ export const ChatHistory = ({ messages }: ChatHistoryProps): JSX.Element => {
     })}
   </ScrollView>
 }
+
 const TimeLabel = styled.Text<{ isOwn: boolean }>`
   margin-left: ${props => props.isOwn ? props.theme.spaces[5] : props.theme.spaces[2]};
   margin-bottom: 3px;
