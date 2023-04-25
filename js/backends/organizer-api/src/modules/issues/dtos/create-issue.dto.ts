@@ -22,10 +22,6 @@ export class CreateIssueDto {
   @ApiProperty({ example: 'Somebody has broken his leg.' })
   description: string;
 
-  @IsEnum(IssueStatus)
-  @ApiProperty({ example: IssueStatus.toDo })
-  status: IssueStatus;
-
   @IsEnum(IssuePriority)
   @ApiProperty({ example: IssuePriority.medium })
   priority: IssuePriority;

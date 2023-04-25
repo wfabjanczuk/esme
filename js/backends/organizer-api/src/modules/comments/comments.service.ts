@@ -43,7 +43,10 @@ export class CommentsService {
     }
 
     const comment = this.commentsRepo.create(props);
+    comment.timeCreated = new Date();
+    comment.authorId = createdBy.id;
     comment.agencyId = createdBy.agencyId;
+
     return this.lem.create(this.commentsRepo, comment, createdBy);
   }
 

@@ -17,7 +17,7 @@ export class ParticipantsService {
     this.apiKey = this.configService.get('PARTICIPANT_API_KEY');
   }
 
-  // TODO: check if participant is chatting with the agency
+  // TODO: check if participant is chatting with the agency - move fetching participant data to messenger api
   async findOne(id: number): Promise<Participant> {
     const url = `${this.apiUrl}/users/${id}`;
 

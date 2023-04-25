@@ -4,12 +4,14 @@ import { FormErrors } from '../../common/components/form-errors.component'
 import { Add } from '@mui/icons-material'
 import React from 'react'
 import { useCreateIssue } from './issue.entity'
-import { IssueStatusSelect } from './issue-status-select.component'
 import { IssuePrioritySelect } from './issue-priority-select.component'
 import { EventSelect } from './event-select.component'
 
 export const AddIssueForm = (): JSX.Element => {
-  const { errorMessages, create } = useCreateIssue()
+  const {
+    errorMessages,
+    create
+  } = useCreateIssue()
   const isError = errorMessages.length > 0
 
   return <form onSubmit={create}>
@@ -29,8 +31,14 @@ export const AddIssueForm = (): JSX.Element => {
         multiline
       />
       <IssuePrioritySelect isError={isError}/>
-      <IssueStatusSelect isError={isError}/>
       <EventSelect isError={isError}/>
+      <TextField
+        name='status'
+        label='issue status'
+        defaultValue={'to do'}
+        sx={styles.forms.field}
+        disabled
+      />
       <FormErrors errorMessages={errorMessages}/>
       <Button type='submit' variant='contained' color='success' sx={styles.buttons.single}
         startIcon={<Add/>}

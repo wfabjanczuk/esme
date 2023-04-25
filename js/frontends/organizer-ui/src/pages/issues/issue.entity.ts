@@ -14,7 +14,7 @@ export const IssueStatusesList = [IssueStatus.toDo, IssueStatus.inProgress, Issu
 export const IssueStatusLabels = {
   [IssueStatus.toDo]: 'To do',
   [IssueStatus.inProgress]: 'In progress',
-  [IssueStatus.resolved]: 'Resolver',
+  [IssueStatus.resolved]: 'Resolved',
   [IssueStatus.cancelled]: 'Cancelled'
 }
 
@@ -37,6 +37,9 @@ export interface Issue {
   description: string
   status: IssueStatus
   priority: IssuePriority
+  timeCreated: string
+  timeClosed?: string
+  authorId: number
   eventId: number
 }
 
@@ -47,6 +50,9 @@ export const useCreateIssue = (): CreateHook => useCreate(issuesApiUrl, issuesVi
 
 export const useEditIssue = (id: number): EditHook<Issue> =>
   useEdit<Issue>(id, issuesApiUrl, issuesViewUrl)
+
+export const useIssueDetails = (id: number): Pick<EditHook<Issue>, 'errorMessages' | 'entity'> =>
+  useEdit<Issue>(id, issuesApiUrl, '')
 
 export const useIssuesList = (): ListHook<Issue> =>
   useList<Issue>(issuesApiUrl)

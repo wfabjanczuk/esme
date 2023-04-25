@@ -7,6 +7,8 @@ export interface Comment {
   id: number
   content: string
   issueId: number
+  authorId: number
+  timeCreated: string
 }
 
 const commentsApiUrl = `${config.organizerApiUrl}/agency/comments`

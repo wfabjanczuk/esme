@@ -6,13 +6,21 @@ import React from 'react'
 import { useEditIssue } from './issue.entity'
 import { IssuePrioritySelect } from './issue-priority-select.component'
 import { IssueStatusSelect } from './issue-status-select.component'
+import { parseDateTimeValue } from '../../common/utils'
+import { AssociatedEventField } from '../../common/components/associated-event-field.component'
+import { AssociatedAuthorField } from '../../common/components/associated-author-field.component'
 
 interface EditIssueFormProps {
   id: number
 }
 
 export const EditIssueForm = ({ id }: EditIssueFormProps): JSX.Element => {
-  const { errorMessages, entity, update, remove } = useEditIssue(id)
+  const {
+    errorMessages,
+    entity,
+    update,
+    remove
+  } = useEditIssue(id)
   const isError = errorMessages.length > 0
 
   if (entity === undefined) {
@@ -48,13 +56,25 @@ export const EditIssueForm = ({ id }: EditIssueFormProps): JSX.Element => {
       <IssuePrioritySelect currentValue={entity.priority} isError={isError}/>
       <IssueStatusSelect currentValue={entity.status} isError={isError}/>
       <TextField
-        type='number'
-        name='eventId'
-        label='event id'
-        defaultValue={entity.eventId}
+        type='datetime-local'
+        name='timeCreated'
+        label='time created'
+        defaultValue={parseDateTimeValue(entity.timeCreated)}
         sx={styles.forms.field}
+        InputLabelProps={{ shrink: true }}
         disabled
       />
+      <TextField
+        type={entity.timeClosed != null ? 'datetime-local' : 'text'}
+        name='timeClosed'
+        label='time closed'
+        value={entity.timeClosed != null ? parseDateTimeValue(entity.timeClosed) : '-'}
+        sx={styles.forms.field}
+        InputLabelProps={{ shrink: true }}
+        disabled
+      />
+      <AssociatedAuthorField authorId={entity.authorId}/>
+      <AssociatedEventField eventId={entity.eventId}/>
       <FormErrors errorMessages={errorMessages}/>
       <Box style={styles.buttons.group}>
         <Button type='submit' variant='contained' color='success' sx={styles.buttons.groupElement}
