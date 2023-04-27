@@ -163,11 +163,44 @@ const tables = {
   }
 }
 
+const comments = {
+  list: {
+    width: '100%'
+  },
+  commentInfo: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    m: 2
+  },
+  editableContainer: {
+    display: 'flex'
+  },
+  authorHeader: {
+    display: 'flex',
+    flexDirection: 'column',
+    mr: 2
+  },
+  editButton: {
+    flexShrink: 1,
+    textAlign: 'right',
+    m: 2
+  },
+  timeHeader: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end'
+  },
+  content: {
+    m: 2
+  }
+}
+
 export const styles = {
   layout,
   alertBar,
   forms,
   buttons,
   links,
-  tables
+  tables,
+  comments
 }

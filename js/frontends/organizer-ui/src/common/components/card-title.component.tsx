@@ -9,15 +9,25 @@ interface CardTitleProps {
   title: string
   redirectUrl?: string
   redirectLabel?: string
+  icon?: React.ReactNode
 }
 
-export const CardTitle = ({ title, redirectLabel, redirectUrl }: CardTitleProps): JSX.Element => {
+export const CardTitle = ({
+  title,
+  redirectLabel,
+  redirectUrl,
+  icon
+}: CardTitleProps): JSX.Element => {
   return <Typography component='h2' variant='h5' sx={styles.layout.editCardTitle}>
     {title}
     {redirectUrl === undefined
       ? <></>
       : <NavLink to={redirectUrl} style={styles.links.component}>
-        <Button variant='contained' color='primary' startIcon={<ArrowBack/>}>
+        <Button
+          variant='contained'
+          color='primary'
+          startIcon={icon === undefined ? <ArrowBack/> : icon}
+        >
           {redirectLabel}
         </Button>
       </NavLink>
