@@ -16,7 +16,6 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { AdminUsersModule } from './modules/admin-users/admin-users.module';
 import { AdminChangelogsModule } from './modules/admin-changelogs/admin-changelogs.module';
 import { ApiEventsModule } from './modules/api-events/api-events.module';
-import { ParticipantsModule } from './modules/participants/participants.module';
 
 @Module({
   imports: [
@@ -36,7 +35,6 @@ import { ParticipantsModule } from './modules/participants/participants.module';
     ContactsModule,
     IssuesModule,
     CommentsModule,
-    ParticipantsModule,
     ApiEventsModule,
   ],
   providers: [

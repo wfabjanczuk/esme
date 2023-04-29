@@ -3,7 +3,7 @@ package ws
 import (
 	"github.com/julienschmidt/httprouter"
 	"log"
-	"messenger-api/internal/config"
+	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/ws/chats"
 	"messenger-api/internal/modules/ws/consumers/organizers"
@@ -12,11 +12,12 @@ import (
 	"net/http"
 )
 
-type Module struct {
-	Router http.Handler
-}
+type Module struct{}
 
-func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Logger) *Module {
+func NewModule(
+	authenticator *authentication.Authenticator, infra *infrastructure.Module, router *httprouter.Router,
+	logger *log.Logger,
+) *Module {
 	organizersManager := users.NewOrganizersManager(logger)
 	participantsManager := users.NewParticipantsManager(logger)
 
@@ -24,11 +25,8 @@ func NewModule(cfg *config.Config, infra *infrastructure.Module, logger *log.Log
 	organizersManager.SetConsumer(organizers.NewConsumer(infra, chatsManager, logger))
 	participantsManager.SetConsumer(participants.NewConsumer(infra, chatsManager, logger))
 
-	controller := NewController(cfg, infra, chatsManager, logger)
-	router := httprouter.New()
+	controller := NewController(authenticator, infra, chatsManager, logger)
 	router.HandlerFunc(http.MethodGet, "/connect", controller.Connect)
 
-	return &Module{
-		Router: router,
-	}
+	return &Module{}
 }

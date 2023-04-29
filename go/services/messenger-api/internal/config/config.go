@@ -14,6 +14,7 @@ type Config struct {
 	DatabaseDsn       string
 	OrganizerApiUrl   string
 	ParticipantApiUrl string
+	ParticipantApiKey string
 }
 
 func GetConfigFromEnv(logger *log.Logger) *Config {
@@ -42,6 +43,11 @@ func GetConfigFromEnv(logger *log.Logger) *Config {
 	cfg.ParticipantApiUrl = os.Getenv("PARTICIPANT_API_URL")
 	if cfg.ParticipantApiUrl == "" {
 		logger.Fatal("Error loading PARTICIPANT_API_URL from .env file")
+	}
+
+	cfg.ParticipantApiKey = os.Getenv("PARTICIPANT_API_KEY")
+	if cfg.ParticipantApiKey == "" {
+		logger.Fatal("Error loading PARTICIPANT_API_KEY from .env file")
 	}
 
 	cfg.Port, _ = strconv.Atoi(os.Getenv("PORT"))

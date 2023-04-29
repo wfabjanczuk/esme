@@ -15,6 +15,7 @@ import (
 
 var ErrMalformedToken = errors.New("malformed token")
 var ErrUnknownUser = errors.New("unknown user")
+var ErrInvalidRole = errors.New("invalid role")
 
 const (
 	authenticationTimeout = time.Second
@@ -85,6 +86,12 @@ func (a *Authenticator) AuthenticateOrganizer(token string) (*Organizer, error) 
 	if err != nil {
 		a.logger.Printf("could not read organizer profile: %s\n", err)
 		return nil, ErrUnknownUser
+	}
+
+	_, isAgencyRole := OrganizerAgencyRoles[organizer.Role]
+	if !isAgencyRole {
+		a.logger.Printf("invalid organizer role: %d\n", organizer.Role)
+		return nil, ErrInvalidRole
 	}
 
 	return organizer, nil

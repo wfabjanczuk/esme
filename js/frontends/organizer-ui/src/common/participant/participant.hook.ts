@@ -6,7 +6,7 @@ import { parseErrorMessage } from '../utils'
 import { Participant } from './participant'
 import { AlertStore, AlertStoreContext } from '../alert-bar/alert-store.context'
 
-const participantsUrl = `${config.organizerApiUrl}/participants`
+const participantsUrl = `${config.messengerApiUrl}/chats`
 
 export interface ParticipantHook {
   participant?: Participant
@@ -18,7 +18,7 @@ interface ParticipantState {
   errorMessages: string[]
 }
 
-export const useParticipantDetails = (id: number): ParticipantHook => {
+export const useParticipantDetails = (chatId: string): ParticipantHook => {
   const authenticator = useContext(AuthenticatorContext)
   const alertStore = useContext(AlertStoreContext)
 
@@ -28,7 +28,7 @@ export const useParticipantDetails = (id: number): ParticipantHook => {
   })
 
   useEffect(() => {
-    void fetchParticipant(id, authenticator, setParticipantState, alertStore)
+    void fetchParticipant(chatId, authenticator, setParticipantState, alertStore)
   }, [authenticator])
 
   return {
@@ -38,12 +38,12 @@ export const useParticipantDetails = (id: number): ParticipantHook => {
 }
 
 const fetchParticipant = async (
-  id: number,
+  chatId: string,
   authenticator: Authenticator,
   setState: (state: ParticipantState) => void,
   alertStore: AlertStore
 ): Promise<void> => {
-  const participantUrl = `${participantsUrl}/${id}`
+  const participantUrl = `${participantsUrl}/${chatId}/participant`
   return await axios.get<Participant>(participantUrl, { headers: { Authorization: authenticator.authorizationHeader } })
     .then(({ data }) => setState({
       participant: data,
@@ -51,6 +51,7 @@ const fetchParticipant = async (
     }))
     .catch(e => {
       const authErrors = authenticator.parseAuthError(e)
+      console.log(e)
       setState({
         participant: undefined,
         errorMessages: authErrors.length > 0 ? authErrors : parseErrorMessage(e?.response?.data?.message)

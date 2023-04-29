@@ -2,9 +2,13 @@ package app
 
 import (
 	"fmt"
+	"github.com/julienschmidt/httprouter"
 	"log"
 	"messenger-api/internal/config"
+	"messenger-api/internal/modules/authentication"
+	"messenger-api/internal/modules/common/middlewares"
 	"messenger-api/internal/modules/infrastructure"
+	"messenger-api/internal/modules/rest"
 	"messenger-api/internal/modules/ws"
 	"net/http"
 	"os"
@@ -31,11 +35,16 @@ func (a *Application) Bootstrap() {
 	defer infrastructureModule.MqConnection.Close()
 	defer infrastructureModule.MqChannel.Close()
 
-	wsModule := ws.NewModule(a.config, infrastructureModule, a.logger)
+	authenticator := authentication.NewAuthenticator(a.config, a.logger)
+	mw := middlewares.NewModule(authenticator, a.logger)
+
+	router := httprouter.New()
+	ws.NewModule(authenticator, infrastructureModule, router, a.logger)
+	rest.NewModule(mw, infrastructureModule, router, a.logger)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", a.config.Port),
-		Handler:      wsModule.Router,
+		Handler:      mw.EnableCors.Handler(router),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,

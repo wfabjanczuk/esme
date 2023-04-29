@@ -11,7 +11,7 @@ interface ChatLabelProps {
 }
 
 export const ChatLabel = ({ chat, activeChatId, setActiveChatId }: ChatLabelProps): JSX.Element => {
-  const { participant } = useParticipantDetails(chat.participantId)
+  const { participant } = useParticipantDetails(chat.id)
 
   let label
   if (participant === undefined) {

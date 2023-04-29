@@ -2,7 +2,7 @@ import React from 'react'
 import { Action } from './structures'
 import { config } from '../../app/config'
 
-const connectUrl = `${config.messengerApiUrl}/connect`
+const connectUrl = `${config.messengerWsUrl}/connect`
 
 export const newWebSocket = (
   authorizationHeader: string,

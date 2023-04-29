@@ -3,7 +3,6 @@ package ws
 import (
 	"github.com/gorilla/websocket"
 	"log"
-	"messenger-api/internal/config"
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/infrastructure/chats"
@@ -28,10 +27,11 @@ type Controller struct {
 }
 
 func NewController(
-	cfg *config.Config, infra *infrastructure.Module, chatsManager *mgmt_chats.Manager, logger *log.Logger,
+	authenticator *authentication.Authenticator, infra *infrastructure.Module, chatsManager *mgmt_chats.Manager,
+	logger *log.Logger,
 ) *Controller {
 	return &Controller{
-		authenticator:   authentication.NewAuthenticator(cfg, logger),
+		authenticator:   authenticator,
 		chatsRepository: infra.ChatsRepository,
 		chatsManager:    chatsManager,
 		logger:          logger,

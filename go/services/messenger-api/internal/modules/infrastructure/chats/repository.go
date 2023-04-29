@@ -35,12 +35,12 @@ func (r *Repository) Create(chat *Chat) (*Chat, error) {
 	return primitiveChat.Chat(), err
 }
 
-func (r *Repository) FindAll() ([]*Chat, error) {
+func (r *Repository) FindAllByAgencyId(agencyId int32) ([]*Chat, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
 	chats := make([]*Chat, 0)
-	cursor, err := r.collection.Find(ctx, bson.M{})
+	cursor, err := r.collection.Find(ctx, bson.M{"agencyId": agencyId})
 
 	defer cursor.Close(ctx)
 	for cursor.Next(ctx) {
@@ -104,17 +104,17 @@ func (r *Repository) FindAllByParticipantId(participantId int32) ([]*Chat, error
 	return chats, nil
 }
 
-func (r *Repository) FindOne(id string) (*Chat, error) {
+func (r *Repository) FindOneInAgency(chatId string, agencyId int32) (*Chat, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
-	objectId, err := primitive.ObjectIDFromHex(id)
+	objectId, err := primitive.ObjectIDFromHex(chatId)
 	if err != nil {
 		return nil, err
 	}
 
 	var primitiveChat PrimitiveChat
-	err = r.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&primitiveChat)
+	err = r.collection.FindOne(ctx, bson.M{"_id": objectId, "agencyId": agencyId}).Decode(&primitiveChat)
 	if err != nil {
 		return nil, err
 	}
