@@ -2,7 +2,6 @@ import React from 'react'
 import { Chat } from '../../../../common/messenger/structures'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
-import { useParticipantDetails } from '../../../../common/participant/participant.hook'
 
 interface ChatLabelProps {
   chat: Chat
@@ -10,15 +9,14 @@ interface ChatLabelProps {
   setActiveChatId: (chatId: string) => void
 }
 
-export const ChatLabel = ({ chat, activeChatId, setActiveChatId }: ChatLabelProps): JSX.Element => {
-  const { participant } = useParticipantDetails(chat.id)
-
-  let label
-  if (participant === undefined) {
-    label = `Event ${chat.eventId} / Participant ${chat.participantId}`
-  } else {
-    label = `Event ${chat.eventId} / ${participant.email}`
-  }
+export const ChatLabel = ({
+  chat,
+  activeChatId,
+  setActiveChatId
+}: ChatLabelProps): JSX.Element => {
+  const label = (chat.participant === undefined)
+    ? `Event ${chat.eventId} / Participant ${chat.participantId}`
+    : `Event ${chat.eventId} / ${chat.participant.email}`
 
   return <ListItem disablePadding>
     <ListItemButton

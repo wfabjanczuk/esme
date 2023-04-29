@@ -15,7 +15,8 @@ func (c *Consumer) consumeGetChats(msg *connections.OrganizerMessage) {
 		return
 	}
 
-	outMsg, err := out.BuildChats(organizerChats)
+	enrichedChats := c.enrichedChatsService.EnrichWithParticipant(organizerChats)
+	outMsg, err := out.BuildEnrichedChats(enrichedChats)
 	if err != nil {
 		c.logger.Printf("could not send %s to organizer %d: %s\n", out.MsgTypeChats, id, err)
 		msg.Source.SendError(common.ErrInternal)

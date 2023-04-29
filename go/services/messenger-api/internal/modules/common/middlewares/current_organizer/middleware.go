@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"messenger-api/internal/modules/authentication"
-	"messenger-api/internal/modules/rest/common/responses"
+	"messenger-api/internal/modules/rest/responses"
 	"net/http"
 )
 

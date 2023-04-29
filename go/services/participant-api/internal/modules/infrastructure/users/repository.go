@@ -3,8 +3,11 @@ package users
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"participant-api/internal/modules/api/common/api_errors"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -18,6 +21,48 @@ func NewRepository(db *sql.DB, maxQueryTime time.Duration) *Repository {
 		db:           db,
 		maxQueryTime: maxQueryTime,
 	}
+}
+
+func (r *Repository) GetUsers(ids []int) (map[int]User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
+	defer cancel()
+
+	where, args := r.prepareWhereClause(ids)
+	query := fmt.Sprintf(
+		`select u.id, u.email, u.password, u."phoneNumber", u."timeCreated", u."timeSignOut"
+       from "user" u %s`, where,
+	)
+
+	users := make(map[int]User, len(ids))
+	rows, err := r.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		u := User{}
+		err := rows.Scan(&u.Id, &u.Email, &u.Password, &u.PhoneNumber, &u.TimeCreated, &u.TimeSignOut)
+		if err != nil {
+			return nil, err
+		}
+		users[u.Id] = u
+	}
+
+	if rows.Err() != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (r *Repository) prepareWhereClause(ids []int) (string, []any) {
+	sqlIds := make([]string, 0, len(ids))
+	args := make([]any, 0, len(ids))
+	for i, id := range ids {
+		sqlIds = append(sqlIds, "$"+strconv.Itoa(i+1))
+		args = append(args, id)
+	}
+	return "where u.id in (" + strings.Join(sqlIds, ", ") + ")", args
 }
 
 func (r *Repository) GetUserById(id int) (*User, error) {

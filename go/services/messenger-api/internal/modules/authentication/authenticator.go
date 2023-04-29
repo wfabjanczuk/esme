@@ -74,7 +74,7 @@ func (a *Authenticator) ParseHeader(authorizationHeader string) ParseHeaderResul
 }
 
 func (a *Authenticator) AuthenticateOrganizer(token string) (*Organizer, error) {
-	profileUrl := a.organizerApiUrl + "profile"
+	profileUrl := a.organizerApiUrl + "/profile"
 	rawProfile, err := a.getRawProfile(profileUrl, token)
 	if err != nil {
 		a.logger.Printf("could not fetch organizer profile: %s\n", err)
@@ -98,7 +98,7 @@ func (a *Authenticator) AuthenticateOrganizer(token string) (*Organizer, error) 
 }
 
 func (a *Authenticator) AuthenticateParticipant(token string) (*Participant, error) {
-	profileUrl := a.participantApiUrl + "profile"
+	profileUrl := a.participantApiUrl + "/profile"
 	rawProfile, err := a.getRawProfile(profileUrl, token)
 	if err != nil {
 		a.logger.Printf("could not fetch participant profile: %s\n", err)

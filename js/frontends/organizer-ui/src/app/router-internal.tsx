@@ -27,6 +27,7 @@ import { AdminAgencyDetailsView } from '../pages/admin-agencies/admin-agency-det
 import { AddAdminUserView } from '../pages/admin-users/add-admin-user.view'
 import { EditAdminUserView } from '../pages/admin-users/edit-admin-user.view'
 import { AdminChangelogDetailsView } from '../pages/admin-changelogs/admin-changelog-details.view'
+import { ArchivesView } from '../pages/support/archives/archives.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -108,6 +109,10 @@ export const RouterInternal = createBrowserRouter([
           {
             path: 'support',
             element: <SupportView/>
+          },
+          {
+            path: 'archives',
+            element: <ArchivesView/>
           },
           {
             path: 'profile',

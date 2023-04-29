@@ -60,5 +60,5 @@ func (m *Module) attachRoutes(
 	r.HandlerFunc(http.MethodGet, "/chat-requests", cu(m.chatRequests.DoesChatRequestExist))
 	r.HandlerFunc(http.MethodPost, "/chat-requests", cu(m.chatRequests.RequestChat))
 
-	r.HandlerFunc(http.MethodGet, "/users/:id", ak(m.users.GetUser))
+	r.HandlerFunc(http.MethodGet, "/users", ak(m.users.GetUsers))
 }

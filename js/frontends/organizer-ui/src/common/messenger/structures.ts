@@ -54,11 +54,12 @@ export interface Chat {
   eventId: number
   organizerId: number
   participantId: number
-  ended: 0
+  ended: number
   latStart: number
   lngStart: number
   timeStart: string
   timeEnd: string
+  participant?: Participant
 }
 
 export interface Message {
@@ -68,4 +69,10 @@ export interface Message {
   fromOrganizer: number
   content: string
   timeSent: string
+}
+
+export interface Participant {
+  id: number
+  email: string
+  phoneNumber: string
 }

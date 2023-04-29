@@ -24,5 +24,6 @@ func NewModule(
 }
 
 func (m *Module) attachRoutes(r *httprouter.Router, co func(http.HandlerFunc) http.HandlerFunc) {
-	r.HandlerFunc(http.MethodGet, "/chats/:chatId/participant", co(m.chats.GetChatParticipant))
+	r.HandlerFunc(http.MethodGet, "/chats", co(m.chats.GetAgencyChats))
+	r.HandlerFunc(http.MethodGet, "/chats/:chatId/messages", co(m.chats.GetChatMessages))
 }

@@ -3,6 +3,7 @@ package out
 import (
 	"encoding/json"
 	"messenger-api/internal/modules/infrastructure/chats"
+	"messenger-api/internal/modules/infrastructure/enriched_chats"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/protocol"
 )
@@ -70,6 +71,22 @@ type chatsPayload struct {
 
 func BuildChats(chats []*chats.Chat) (*protocol.Message, error) {
 	outPayloadBytes, err := json.Marshal(chatsPayload{Chats: chats})
+	if err != nil {
+		return nil, err
+	}
+
+	return &protocol.Message{
+		Type:    MsgTypeChats,
+		Payload: outPayloadBytes,
+	}, nil
+}
+
+type enrichedChatsPayload struct {
+	Chats []*enriched_chats.EnrichedChat `json:"chats"`
+}
+
+func BuildEnrichedChats(chats []*enriched_chats.EnrichedChat) (*protocol.Message, error) {
+	outPayloadBytes, err := json.Marshal(enrichedChatsPayload{Chats: chats})
 	if err != nil {
 		return nil, err
 	}

@@ -17,9 +17,8 @@ var (
 	ErrChatNotFoundMessageSaved = errors.New("message saved but chat not found")
 	ErrMessageNotSaved          = errors.New("message could not be saved")
 
-	ErrChatNotCreated      = errors.New("chat could not be created")
-	ErrChatNotFound        = errors.New("chat not found")
-	ErrParticipantNotFound = errors.New("participant not found")
+	ErrChatNotCreated = errors.New("chat could not be created")
+	ErrChatNotFound   = errors.New("chat not found")
 
 	ErrMessagesNotFetchedFromDb       = errors.New("could not get messages")
 	ErrChatRequestNotFetchedFromQueue = errors.New("could not get chat from queue")
