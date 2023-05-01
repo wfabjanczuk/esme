@@ -1,14 +1,14 @@
 import React, { useContext, useEffect } from 'react'
-import { ChatHistory } from '../components/chat-history/chat-history.component'
+import { ChatHistory } from '../shared/chat-history/chat-history.component'
 import { Box } from '@mui/material'
 import { ArchivesContext } from './archives.context'
 import { styles } from '../../../layout/styles'
 
-interface MessagesProps {
+interface ArchivesMessagesProps {
   activeChatId: string
 }
 
-export const Messages = ({ activeChatId }: MessagesProps): JSX.Element => {
+export const ArchivesMessages = ({ activeChatId }: ArchivesMessagesProps): JSX.Element => {
   const archives = useContext(ArchivesContext)
   const chatMessages = archives.messages[activeChatId]
 

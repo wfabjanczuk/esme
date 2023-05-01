@@ -3,10 +3,10 @@ import Header from '../../layout/header'
 import { Box } from '@mui/material'
 import { Chats } from './chats.component'
 import Divider from '@mui/material/Divider'
-import { Conversation } from './components/conversation.component'
+import { Messages } from './messages.component'
 import { MessengerContext } from '../../common/messenger/messenger.context'
 import { AlertStoreContext } from '../../common/alert-bar/alert-store.context'
-import { InfoPanel } from './components/info-bar/info-panel.component'
+import { InfoPanel } from './shared/info-bar/info-panel.component'
 import { InboxContext } from '../../common/messenger/inbox.context'
 import { styles } from '../../layout/styles'
 
@@ -28,7 +28,7 @@ export const SupportView = (): JSX.Element => {
     <Box sx={styles.messenger.container}>
       <Chats activeChatId={activeChatId} setActiveChatId={setActiveChatId}/>
       <Divider orientation='vertical'/>
-      <Conversation activeChatId={activeChatId}/>
+      <Messages activeChatId={activeChatId}/>
       <Divider orientation='vertical'/>
       <InfoPanel activeChat={activeChat}/>
     </Box>

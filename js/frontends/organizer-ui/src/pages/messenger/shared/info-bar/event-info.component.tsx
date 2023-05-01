@@ -33,10 +33,7 @@ export const EventInfo = ({ eventId }: EventInfoProps): JSX.Element => {
     </Box>
     <CardMedia
       image={placeholderImage}
-      sx={{
-        height: '150px',
-        width: '300px'
-      }}
+      sx={styles.messenger.eventImage}
     />
   </Box>
 }

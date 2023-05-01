@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Box } from '@mui/material'
-import { ParticipantInfo } from '../components/info-bar/participant-info.component'
-import { EventInfo } from '../components/info-bar/event-info.component'
+import { ParticipantInfo } from '../shared/info-bar/participant-info.component'
+import { EventInfo } from '../shared/info-bar/event-info.component'
 import { ArchivesContext } from './archives.context'
 import { styles } from '../../../layout/styles'
 

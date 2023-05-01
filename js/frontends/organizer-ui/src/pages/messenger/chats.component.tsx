@@ -1,28 +1,26 @@
 import React, { useContext } from 'react'
-import { Box, Typography } from '@mui/material'
+import { InboxContext } from '../../common/messenger/inbox.context'
+import { Box } from '@mui/material'
 import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
 import Divider from '@mui/material/Divider'
-import { ChatLabel } from '../components/chat-label/chat-label.component'
-import { ArchivesContext } from './archives.context'
-import { styles } from '../../../layout/styles'
+import { ChatLabel } from './shared/chat-label/chat-label.component'
+import { styles } from '../../layout/styles'
+import { ChatStarter } from './chat-starter.component'
 
-interface ArchivesChatsProps {
+interface ChatsProps {
   activeChatId: string
   setActiveChatId: (chatId: string) => void
 }
 
-export const ArchivesChats = ({
+export const Chats = ({
   activeChatId,
   setActiveChatId
-}: ArchivesChatsProps): JSX.Element => {
-  const { chats } = useContext(ArchivesContext)
+}: ChatsProps): JSX.Element => {
+  const { chats } = useContext(InboxContext)
 
   return <Box sx={styles.messenger.chats}>
     <List disablePadding>
-      <ListItem>
-        <Typography variant='h6' component='div'>Ended chats</Typography>
-      </ListItem>
+      <ChatStarter/>
       <Divider/>
       {Object.entries(chats).map(([id, chat]) => (
         <ChatLabel

@@ -229,6 +229,10 @@ const messenger = {
   infoPanelSection: {
     p: 2,
     maxWidth: '300px'
+  },
+  eventImage: {
+    height: '150px',
+    width: '300px'
   }
 }
 

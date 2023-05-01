@@ -1,15 +1,15 @@
 import React, { useContext } from 'react'
-import { ChatHistory } from './chat-history/chat-history.component'
-import { ChatInput } from './chat-input/chat-input.component'
+import { ChatHistory } from './shared/chat-history/chat-history.component'
+import { ChatInput } from './shared/chat-input/chat-input.component'
 import { Box } from '@mui/material'
-import { InboxContext } from '../../../common/messenger/inbox.context'
-import { styles } from '../../../layout/styles'
+import { InboxContext } from '../../common/messenger/inbox.context'
+import { styles } from '../../layout/styles'
 
-interface ConversationProps {
+interface MessagesProps {
   activeChatId: string
 }
 
-export const Conversation = ({ activeChatId }: ConversationProps): JSX.Element => {
+export const Messages = ({ activeChatId }: MessagesProps): JSX.Element => {
   const { messages } = useContext(InboxContext)
 
   if (activeChatId === '' || messages[activeChatId] === undefined) {

@@ -17,7 +17,6 @@ export interface Inbox {
 export const NewInboxReducer: (alertStore: AlertStore) => Reducer<Inbox, Action> = (alertStore: AlertStore) => (state, action) => {
   switch (action.type) {
   case ActionType.info:
-    alertStore.add('success', action.payload.message)
     return state
   case ActionType.error:
     alertStore.add('error', action.payload.message)
@@ -36,6 +35,7 @@ export const NewInboxReducer: (alertStore: AlertStore) => Reducer<Inbox, Action>
       }
     }
   case ActionType.newChat:
+    alertStore.add('success', 'New chat started')
     return {
       ...state,
       chats: [...state.chats, action.payload]

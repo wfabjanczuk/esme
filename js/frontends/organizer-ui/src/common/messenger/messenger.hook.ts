@@ -4,18 +4,23 @@ import { AuthenticatorContext } from '../authenticator/authenticator.context'
 import { emptyInbox, Inbox, NewInboxReducer } from './inbox.context'
 import { Action } from './structures'
 import { AlertStoreContext } from '../alert-bar/alert-store.context'
+import { ChatStarter } from './chat-starter.context'
 
 const restartIntervalTime = 5000
 
 export interface NewMessengerHook {
   messenger: Messenger
   inbox: Inbox
+  chatStarter: ChatStarter
 }
 
 export const useNewMessenger = (): NewMessengerHook => {
   const alertStore = useContext(AlertStoreContext)
   const [messenger, setMessenger] = useState<Messenger>(new Messenger())
-  const [inbox, dispatch] = useReducer<Reducer<Inbox, Action>>(NewInboxReducer(alertStore), emptyInbox)
+  const [isWaitingForNewChat, setIsWaitingForNewChat] = useState<boolean>(false)
+  const [chatStarter, setChatStarter] = useState<ChatStarter>(new ChatStarter(isWaitingForNewChat, setIsWaitingForNewChat))
+
+  const [inbox, dispatch] = useReducer<Reducer<Inbox, Action>>(NewInboxReducer(setIsWaitingForNewChat, alertStore), emptyInbox)
   const { authorizationHeader } = useContext(AuthenticatorContext)
 
   useEffect(() => {
@@ -53,8 +58,25 @@ export const useNewMessenger = (): NewMessengerHook => {
     })
   }, [inbox.chats])
 
+  useEffect(() => {
+    setChatStarter(new ChatStarter(isWaitingForNewChat, setIsWaitingForNewChat))
+  }, [isWaitingForNewChat])
+
+  useEffect(() => {
+    if (isWaitingForNewChat) {
+      const restartInterval = setInterval(
+        () => {
+          messenger.startChat()
+        },
+        restartIntervalTime
+      )
+      return () => clearTimeout(restartInterval)
+    }
+  }, [messenger.hasState(), messenger.isInitialized(), isWaitingForNewChat])
+
   return {
     messenger,
-    inbox
+    inbox,
+    chatStarter
   }
 }

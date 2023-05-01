@@ -3,7 +3,7 @@ import Header from '../../../layout/header'
 import { Box } from '@mui/material'
 import { ArchivesChats } from './archives-chats.component'
 import Divider from '@mui/material/Divider'
-import { Messages } from './messages.component'
+import { ArchivesMessages } from './archives-messages.component'
 import { useNewArchives } from './archives.hook'
 import { ArchivesInfoPanel } from './archives-info-panel.component'
 import { ArchivesContext } from './archives.context'
@@ -26,7 +26,7 @@ export const ArchivesView = (): JSX.Element => {
           setActiveChatId={setActiveChatId}
         />
         <Divider orientation='vertical'/>
-        <Messages activeChatId={activeChatId}/>
+        <ArchivesMessages activeChatId={activeChatId}/>
         <Divider orientation='vertical'/>
         <ArchivesInfoPanel activeChatId={activeChatId}/>
       </ArchivesContext.Provider>
