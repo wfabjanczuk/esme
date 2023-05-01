@@ -10,14 +10,14 @@ export enum ActionType {
 export interface InfoAction {
   type: ActionType.info
   payload: {
-    Message: string
+    message: string
   }
 }
 
 export interface ErrorAction {
   type: ActionType.error
   payload: {
-    Message: string
+    message: string
   }
 }
 

@@ -10,14 +10,14 @@ export enum ActionType {
 export interface InfoAction {
   type: ActionType.info
   payload: {
-    Message: string
+    message: string
   }
 }
 
 export interface ErrorAction {
   type: ActionType.error
   payload: {
-    Message: string
+    message: string
   }
 }
 
@@ -55,11 +55,12 @@ export interface Chat {
   organizerId: number
   participantId: number
   ended: number
-  latStart: number
-  lngStart: number
+  latStart?: number
+  lngStart?: number
   timeStart: string
   timeEnd: string
   participant?: Participant
+  location?: Location
 }
 
 export interface Message {
@@ -69,6 +70,13 @@ export interface Message {
   fromOrganizer: number
   content: string
   timeSent: string
+  lat?: number
+  lng?: number
+}
+
+export interface Location {
+  lat: number
+  lng: number
 }
 
 export interface Participant {

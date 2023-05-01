@@ -4,11 +4,11 @@ import { Box } from '@mui/material'
 import { useChatMessagesList } from './chat-messages-list.hook'
 
 interface MessagesProps {
-  chatId: string
+  activeChatId: string
 }
 
-export const Messages = ({ chatId }: MessagesProps): JSX.Element => {
-  const { messages } = useChatMessagesList(chatId)
+export const Messages = ({ activeChatId }: MessagesProps): JSX.Element => {
+  const { messages } = useChatMessagesList(activeChatId)
 
   return <Box sx={{
     flexGrow: 1,

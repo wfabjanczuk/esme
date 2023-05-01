@@ -40,7 +40,8 @@ func (c *Consumer) consumeStartChat(msg *connections.OrganizerMessage) {
 
 	c.chatsManager.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
 
-	outMsg, err := out.BuildNewChat(chat)
+	enrichedChat := c.enrichedChatsService.EnrichWithParticipant([]*chats.Chat{chat})[0]
+	outMsg, err := out.BuildNewEnrichedChat(enrichedChat)
 	if err != nil {
 		c.logger.Printf("could not send %s to chat %d: %s\n", out.MsgTypeNewChat, chat.Id, err)
 		msg.Source.SendError(common.ErrInternal)

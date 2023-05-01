@@ -5,13 +5,13 @@ import { Box } from '@mui/material'
 import { InboxContext } from '../../../common/messenger/inbox.context'
 
 interface ConversationProps {
-  chatId: string
+  activeChatId: string
 }
 
-export const Conversation = ({ chatId }: ConversationProps): JSX.Element => {
+export const Conversation = ({ activeChatId }: ConversationProps): JSX.Element => {
   const { messages } = useContext(InboxContext)
 
-  if (messages[chatId] === undefined) {
+  if (activeChatId === '' || messages[activeChatId] === undefined) {
     return <Box sx={{ flexGrow: 1 }}></Box>
   }
 
@@ -21,7 +21,7 @@ export const Conversation = ({ chatId }: ConversationProps): JSX.Element => {
     flexDirection: 'column',
     justifyContent: 'space-between'
   }}>
-    <ChatHistory messages={messages[chatId]}/>
-    <ChatInput chatId={chatId}/>
+    <ChatHistory messages={messages[activeChatId]}/>
+    <ChatInput chatId={activeChatId}/>
   </Box>
 }

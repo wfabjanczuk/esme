@@ -4,21 +4,21 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import Divider from '@mui/material/Divider'
 import { ChatLabel } from '../components/chat-label/chat-label.component'
-import { useChatsList } from './chats-list.hook'
+import { Chat } from '../../../common/messenger/structures'
 
-interface ChatsProps {
+interface ArchivedChatsProps {
+  chats: Chat[]
   activeChatId: string
   setActiveChatId: (chatId: string) => void
 }
 
-export const Chats = ({
+export const ArchivedChats = ({
+  chats,
   activeChatId,
   setActiveChatId
-}: ChatsProps): JSX.Element => {
-  const { chats } = useChatsList()
-
+}: ArchivedChatsProps): JSX.Element => {
   return <Box sx={{
-    width: '400px',
+    minWidth: '400px',
     backgroundColor: '#eaeff1'
   }}>
     <List disablePadding>

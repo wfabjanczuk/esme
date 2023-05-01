@@ -28,6 +28,8 @@ func (c *Consumer) consumeSendMessage(msg *connections.ParticipantMessage) {
 		FromOrganizer: 0,
 		AuthorId:      id,
 		TimeSent:      msg.TimeReceived,
+		Lat:           inPayload.Lat,
+		Lng:           inPayload.Lng,
 	}
 	err = c.chatsManager.SendUserMessageToChat(inPayload.ChatId, participantMessage)
 	if err != nil {

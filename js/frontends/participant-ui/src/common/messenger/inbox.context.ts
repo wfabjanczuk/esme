@@ -1,5 +1,6 @@
 import React, { Reducer } from 'react'
 import { Action, ActionType, Chat, Message } from './structures'
+import { AlertStore } from '../alert-bar/alert-store.context'
 
 export const emptyInbox: Inbox = {
   chats: [],
@@ -13,11 +14,13 @@ export interface Inbox {
   }
 }
 
-export const InboxReducer: Reducer<Inbox, Action> = (state, action) => {
+export const NewInboxReducer: (alertStore: AlertStore) => Reducer<Inbox, Action> = (alertStore: AlertStore) => (state, action) => {
   switch (action.type) {
   case ActionType.info:
+    alertStore.add('success', action.payload.message)
+    return state
   case ActionType.error:
-    console.log(action.type, action.payload)
+    alertStore.add('error', action.payload.message)
     return state
   case ActionType.chats:
     return {

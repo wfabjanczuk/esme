@@ -49,12 +49,12 @@ func BuildError(error error) (*protocol.Message, error) {
 	}, nil
 }
 
-type newChatPayload struct {
-	*chats.Chat
+type newEnrichedChatPayload struct {
+	*enriched_chats.EnrichedChat
 }
 
-func BuildNewChat(chat *chats.Chat) (*protocol.Message, error) {
-	outPayloadBytes, err := json.Marshal(newChatPayload{Chat: chat})
+func BuildNewEnrichedChat(chat *enriched_chats.EnrichedChat) (*protocol.Message, error) {
+	outPayloadBytes, err := json.Marshal(newEnrichedChatPayload{EnrichedChat: chat})
 	if err != nil {
 		return nil, err
 	}

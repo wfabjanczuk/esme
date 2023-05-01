@@ -13,8 +13,10 @@ const (
 )
 
 type SendMessagePayload struct {
-	ChatId  string `json:"chatId"`
-	Message string `json:"message"`
+	ChatId  string  `json:"chatId"`
+	Message string  `json:"message"`
+	Lat     float64 `json:"lat,omitempty"`
+	Lng     float64 `json:"lng,omitempty"`
 }
 
 func ParseSendMessagePayload(msg *protocol.Message) (*SendMessagePayload, error) {

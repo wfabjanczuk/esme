@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import { Action } from './structures'
 import { newWebSocket } from './websocket'
+import { AlertStore } from '../alert-bar/alert-store.context'
 
 const emptySetState = (): void => {
 }
@@ -20,12 +21,12 @@ export class Messenger {
     return this.webSocket?.readyState === WebSocket.OPEN
   }
 
-  initialize (authorizationHeader: string, dispatch: React.Dispatch<Action>): void {
+  initialize (authorizationHeader: string, dispatch: React.Dispatch<Action>, alertStore: AlertStore): void {
     if (this.webSocket !== undefined && this.webSocket.readyState !== WebSocket.CLOSED) {
       return
     }
 
-    this.webSocket = newWebSocket(authorizationHeader, dispatch,
+    this.webSocket = newWebSocket(authorizationHeader, dispatch, alertStore,
       () => {
         this.webSocket.send(JSON.stringify({
           Authorization: authorizationHeader

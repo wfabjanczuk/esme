@@ -6,11 +6,15 @@ import Divider from '@mui/material/Divider'
 import { Conversation } from './components/conversation.component'
 import { MessengerContext } from '../../common/messenger/messenger.context'
 import { AlertStoreContext } from '../../common/alert-bar/alert-store.context'
+import { InfoPanel } from './components/info-bar/info-panel.component'
+import { InboxContext } from '../../common/messenger/inbox.context'
 
 export const SupportView = (): JSX.Element => {
   const [activeChatId, setActiveChatId] = useState<string>('')
   const alertStore = useContext(AlertStoreContext)
   const messenger = useContext(MessengerContext)
+  const { chats } = useContext(InboxContext)
+  const activeChat = chats[activeChatId]
 
   useEffect(() => {
     if (!messenger.isInitialized()) {
@@ -27,9 +31,9 @@ export const SupportView = (): JSX.Element => {
     }}>
       <Chats activeChatId={activeChatId} setActiveChatId={setActiveChatId}/>
       <Divider orientation='vertical'/>
-      <Conversation chatId={activeChatId}/>
+      <Conversation activeChatId={activeChatId}/>
       <Divider orientation='vertical'/>
-      {/* <Participant/> */}
+      <InfoPanel activeChat={activeChat}/>
     </Box>
   </Fragment>
 }

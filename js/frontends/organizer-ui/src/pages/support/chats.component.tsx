@@ -22,13 +22,19 @@ export const Chats = ({
   const { chats } = useContext(InboxContext)
 
   return <Box sx={{
-    width: '400px',
-    backgroundColor: '#eaeff1'
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    backgroundColor: '#eaeff1',
+    minWidth: '300px',
+    maxWidth: '300px'
   }}>
     <List disablePadding>
       <ListItem style={{
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        backgroundColor: '#eaeff1',
+        overflow: 'auto'
       }}>
         <Typography variant='h6' component='div'>Chats</Typography>
         <Button type='submit' variant='contained' color='success' sx={styles.buttons.single}
@@ -38,9 +44,9 @@ export const Chats = ({
         </Button>
       </ListItem>
       <Divider/>
-      {chats.map((chat) => (
+      {Object.entries(chats).map(([id, chat]) => (
         <ChatLabel
-          key={`chats_${chat.id}`}
+          key={`chats_${id}`}
           chat={chat}
           activeChatId={activeChatId}
           setActiveChatId={setActiveChatId}

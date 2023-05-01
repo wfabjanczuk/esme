@@ -1,7 +1,6 @@
 import { Comment } from './comment.entity'
 import { Profile } from '../../profile/profile.entity'
-import React, { useContext } from 'react'
-import { AlertStoreContext } from '../../../common/alert-bar/alert-store.context'
+import React from 'react'
 import { UserRoleLabels, useUserDetails } from '../../users/user.entity'
 import { Box, Button, Divider, Typography } from '@mui/material'
 import { styles } from '../../../layout/styles'
@@ -20,16 +19,8 @@ export const CommentDetailsComponent = ({
   comment,
   profile
 }: CommentDetailsComponentProps): JSX.Element => {
-  const alertStore = useContext(AlertStoreContext)
-  const {
-    errorMessages,
-    entity: user
-  } = useUserDetails(comment.authorId)
+  const { entity: user } = useUserDetails(comment.authorId)
 
-  if (errorMessages.length > 0) {
-    errorMessages.forEach(e => alertStore.add('error', e))
-    return <></>
-  }
   if (user === undefined) {
     return <></>
   }

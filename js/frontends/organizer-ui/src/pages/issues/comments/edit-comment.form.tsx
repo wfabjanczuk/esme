@@ -6,6 +6,7 @@ import { styles } from '../../../layout/styles'
 import { FormErrors } from '../../../common/components/form-errors.component'
 import { parseDateTimeValue } from '../../../common/utils'
 import { AssociatedAuthorField } from '../../../common/components/associated-author-field.component'
+import { AssociatedIssueField } from '../../../common/components/associated-issue-field.component'
 
 interface EditCommentFormProps {
   issueId: number
@@ -49,6 +50,7 @@ export const EditCommentForm = ({
         disabled
       />
       <AssociatedAuthorField authorId={entity.authorId}/>
+      <AssociatedIssueField issueId={entity.issueId}/>
       <FormErrors errorMessages={errorMessages}/>
       <Box style={styles.buttons.group}>
         <Button type='submit' variant='contained' color='success' sx={styles.buttons.groupElement}

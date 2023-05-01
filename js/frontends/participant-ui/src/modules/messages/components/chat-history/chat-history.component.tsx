@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import { ScrollView } from 'react-native'
 import { Spacer } from '../../../../common/components/spacer/spacer.component'
 import { ChatBubble } from './chat-bubble.component'
@@ -13,16 +13,17 @@ interface ChatHistoryProps {
 export const ChatHistory = ({ messages }: ChatHistoryProps): JSX.Element => {
   const heightRef = useRef<number>(0)
   const scrollViewRef = useRef<ScrollView>(null)
-  const scrollToBottom = (): void => scrollViewRef.current?.scrollTo({
-    y: heightRef.current,
-    animated: false
-  })
-
-  useEffect(scrollToBottom, [heightRef.current])
+  const scrollToBottom = (): void => {
+    scrollViewRef.current?.scrollTo({
+      y: heightRef.current,
+      animated: false
+    })
+  }
 
   return <ScrollView ref={scrollViewRef} onLayout={scrollToBottom}
     onContentSizeChange={(width, height) => {
       heightRef.current = height
+      scrollToBottom()
     }}
   >
     {messages.map(m => {
