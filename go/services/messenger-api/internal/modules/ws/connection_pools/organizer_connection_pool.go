@@ -62,8 +62,6 @@ func (ocp *OrganizerConnectionPool) AddConnection(
 	if err != nil {
 		return err
 	}
-
-	organizerConn.SendInfo(fmt.Sprintf("%s successfully connected", organizerConn.GetInfo()))
 	ocp.logger.Printf("%s opened connection\n", organizerConn.GetInfo())
 
 	ocp.mu.Lock()

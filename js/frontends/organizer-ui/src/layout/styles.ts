@@ -195,6 +195,43 @@ const comments = {
   }
 }
 
+const messenger = {
+  container: {
+    display: 'flex',
+    overflow: 'auto',
+    height: '100%'
+  },
+  chats: {
+    backgroundColor: '#eaeff1',
+    minWidth: '300px',
+    maxWidth: '300px'
+  },
+  chatsHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    backgroundColor: '#eaeff1',
+    overflow: 'auto'
+  },
+  messages: {
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+  },
+  infoPanel: {
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: '300px',
+    height: '100%',
+    overflow: 'auto',
+    backgroundColor: '#eaeff1'
+  },
+  infoPanelSection: {
+    p: 2,
+    maxWidth: '300px'
+  }
+}
+
 export const styles = {
   layout,
   alertBar,
@@ -202,5 +239,6 @@ export const styles = {
   buttons,
   links,
   tables,
-  comments
+  comments,
+  messenger
 }

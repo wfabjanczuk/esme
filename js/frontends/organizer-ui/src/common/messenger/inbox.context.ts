@@ -1,6 +1,7 @@
 import React, { Reducer } from 'react'
-import { Action, ActionType, Chat, Location, Message } from './structures'
+import { Action, ActionType, Chat, Message } from './structures'
 import { AlertStore } from '../alert-bar/alert-store.context'
+import { getLastLocationFromMessages } from '../utils'
 
 export const emptyInbox: Inbox = {
   chats: {},
@@ -26,13 +27,12 @@ export const NewInboxReducer: (alertStore: AlertStore) => Reducer<Inbox, Action>
     return state
   case ActionType.chats: {
     for (const chat of action.payload.chats) {
+      state.chats[chat.id] = chat
+
       if (chat.latStart != null && chat.lngStart != null) {
-        state.chats[chat.id] = {
-          ...chat,
-          location: {
-            lat: chat.latStart,
-            lng: chat.lngStart
-          }
+        state.chats[chat.id].location = {
+          lat: chat.latStart,
+          lng: chat.lngStart
         }
       }
     }
@@ -110,21 +110,6 @@ export const NewInboxReducer: (alertStore: AlertStore) => Reducer<Inbox, Action>
     }
   }
   }
-}
-
-const getLastLocationFromMessages = (messages: Message[]): Location | undefined => {
-  const last = messages.length - 1
-  for (let i = last; i >= 0; i--) {
-    const msg = messages[i]
-    if (msg.lat != null && msg.lng != null) {
-      return {
-        lat: msg.lat,
-        lng: msg.lng
-      }
-    }
-  }
-
-  return undefined
 }
 
 export const InboxContext = React.createContext<Inbox>(emptyInbox)

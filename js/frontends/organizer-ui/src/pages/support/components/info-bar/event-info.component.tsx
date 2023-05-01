@@ -3,6 +3,7 @@ import { useEventDetails } from '../../../events/event.entity'
 import { Box, Typography } from '@mui/material'
 import CardMedia from '@mui/material/CardMedia'
 import { parseDateTimeLabel } from '../../../../common/utils'
+import { styles } from '../../../../layout/styles'
 
 const placeholderImage = 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
 
@@ -17,10 +18,7 @@ export const EventInfo = ({ eventId }: EventInfoProps): JSX.Element => {
   }
 
   return <Box>
-    <Box sx={{
-      p: 2,
-      maxWidth: '300px'
-    }}>
+    <Box sx={styles.messenger.infoPanelSection}>
       <Typography variant='h6' fontWeight='bold' sx={{ mb: 2 }}>Event {event.id}</Typography>
       <Typography variant='subtitle2' fontWeight='bold'>Name:</Typography>
       <Typography variant='subtitle2'>{event.name}</Typography>

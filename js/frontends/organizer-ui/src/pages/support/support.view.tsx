@@ -8,6 +8,7 @@ import { MessengerContext } from '../../common/messenger/messenger.context'
 import { AlertStoreContext } from '../../common/alert-bar/alert-store.context'
 import { InfoPanel } from './components/info-bar/info-panel.component'
 import { InboxContext } from '../../common/messenger/inbox.context'
+import { styles } from '../../layout/styles'
 
 export const SupportView = (): JSX.Element => {
   const [activeChatId, setActiveChatId] = useState<string>('')
@@ -24,11 +25,7 @@ export const SupportView = (): JSX.Element => {
 
   return <Fragment>
     <Header title='Live support'/>
-    <Box sx={{
-      display: 'flex',
-      overflow: 'auto',
-      height: '100%'
-    }}>
+    <Box sx={styles.messenger.container}>
       <Chats activeChatId={activeChatId} setActiveChatId={setActiveChatId}/>
       <Divider orientation='vertical'/>
       <Conversation activeChatId={activeChatId}/>

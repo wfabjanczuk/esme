@@ -62,8 +62,6 @@ func (pcp *ParticipantConnectionPool) AddConnection(
 	if err != nil {
 		return err
 	}
-
-	participantConn.SendInfo(fmt.Sprintf("%s successfully connected", participantConn.GetInfo()))
 	pcp.logger.Printf("%s opened connection\n", participantConn.GetInfo())
 
 	pcp.mu.Lock()

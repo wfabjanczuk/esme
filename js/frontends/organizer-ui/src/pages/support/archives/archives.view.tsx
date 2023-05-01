@@ -1,33 +1,35 @@
 import React, { Fragment, useState } from 'react'
 import Header from '../../../layout/header'
 import { Box } from '@mui/material'
-import { ArchivedChats } from './archived-chats.component'
+import { ArchivesChats } from './archives-chats.component'
 import Divider from '@mui/material/Divider'
 import { Messages } from './messages.component'
-import { useChatsList } from './chats-list.hook'
-import { InfoPanel } from '../components/info-bar/info-panel.component'
+import { useNewArchives } from './archives.hook'
+import { ArchivesInfoPanel } from './archives-info-panel.component'
+import { ArchivesContext } from './archives.context'
+import { styles } from '../../../layout/styles'
 
 export const ArchivesView = (): JSX.Element => {
+  const { archives } = useNewArchives()
   const [activeChatId, setActiveChatId] = useState<string>('')
-  const { chats } = useChatsList()
-  const activeChat = chats.find((chat) => chat.id === activeChatId)
+
+  if (!archives.hasState()) {
+    return <></>
+  }
 
   return <Fragment>
-    <Header title='Live support'/>
-    <Box sx={{
-      display: 'flex',
-      overflow: 'auto',
-      height: '100%'
-    }}>
-      <ArchivedChats
-        chats={chats}
-        activeChatId={activeChatId}
-        setActiveChatId={setActiveChatId}
-      />
-      <Divider orientation='vertical'/>
-      <Messages activeChatId={activeChatId}/>
-      <Divider orientation='vertical'/>
-      <InfoPanel activeChat={activeChat}/>
+    <Header title='Archives'/>
+    <Box sx={styles.messenger.container}>
+      <ArchivesContext.Provider value={archives}>
+        <ArchivesChats
+          activeChatId={activeChatId}
+          setActiveChatId={setActiveChatId}
+        />
+        <Divider orientation='vertical'/>
+        <Messages activeChatId={activeChatId}/>
+        <Divider orientation='vertical'/>
+        <ArchivesInfoPanel activeChatId={activeChatId}/>
+      </ArchivesContext.Provider>
     </Box>
   </Fragment>
 }

@@ -21,21 +21,9 @@ export const Chats = ({
   const messenger = useContext(MessengerContext)
   const { chats } = useContext(InboxContext)
 
-  return <Box sx={{
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    backgroundColor: '#eaeff1',
-    minWidth: '300px',
-    maxWidth: '300px'
-  }}>
+  return <Box sx={styles.messenger.chats}>
     <List disablePadding>
-      <ListItem style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        backgroundColor: '#eaeff1',
-        overflow: 'auto'
-      }}>
+      <ListItem style={styles.messenger.chatsHeader}>
         <Typography variant='h6' component='div'>Chats</Typography>
         <Button type='submit' variant='contained' color='success' sx={styles.buttons.single}
           startIcon={<Start/>} onClick={() => messenger.startChat()}
