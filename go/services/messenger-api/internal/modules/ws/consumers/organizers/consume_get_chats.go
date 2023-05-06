@@ -6,20 +6,22 @@ import (
 	"messenger-api/internal/modules/ws/protocol/out"
 )
 
-func (c *Consumer) consumeGetChats(conn *connections.OrganizerConnection) {
-	organizerChats, err := c.chatsRepository.FindAllByOrganizerId(conn.Organizer.Id)
+func (c *Consumer) consumeGetChats(msg *connections.OrganizerMessage) {
+	id := msg.Source.Organizer.Id
+	organizerChats, err := c.chatsRepository.FindAllByOrganizerId(id)
 	if err != nil {
-		c.logger.Printf("%s could not fetch chats: %s\n", conn.GetInfo(), err)
-		conn.SendError(common.ErrChatsNotFetchedFromDb)
+		c.logger.Printf("organizer %d could not fetch chats: %s\n", id, err)
+		msg.Source.SendError(common.ErrChatsNotFetchedFromDb)
 		return
 	}
 
-	outMsg, err := out.BuildChats(organizerChats)
+	enrichedChats := c.enrichedChatsService.EnrichWithParticipant(organizerChats)
+	outMsg, err := out.BuildEnrichedChats(enrichedChats)
 	if err != nil {
-		c.logger.Printf("could not send %s to %s: %s\n", out.MsgTypeChats, conn.GetInfo(), err)
-		conn.SendError(common.ErrInternal)
+		c.logger.Printf("could not send %s to organizer %d: %s\n", out.MsgTypeChats, id, err)
+		msg.Source.SendError(common.ErrInternal)
 		return
 	}
 
-	conn.Send(outMsg)
+	msg.Source.Send(outMsg)
 }

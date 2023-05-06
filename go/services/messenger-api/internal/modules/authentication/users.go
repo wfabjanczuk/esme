@@ -1,5 +1,11 @@
 package authentication
 
+var OrganizerAgencyRoles = map[int32]struct{}{
+	2: {},
+	3: {},
+	4: {},
+}
+
 type Organizer struct {
 	Id          int32  `json:"id"`
 	AgencyId    int32  `json:"agencyId"`

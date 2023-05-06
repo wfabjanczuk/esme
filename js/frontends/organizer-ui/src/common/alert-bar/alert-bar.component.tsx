@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useLayoutEffect } from 'react'
 import { AlertStoreContext, FlashAlert } from './alert-store.context'
 import { Alert, Box, Typography } from '@mui/material'
 import { styles } from '../../layout/styles'
@@ -31,7 +31,7 @@ const AlertBarElement = ({
   },
   remove
 }: AlertBarElementProps): JSX.Element => {
-  useEffect(() => {
+  useLayoutEffect(() => {
     setTimeout(() => remove(id), alertDisplayTime)
   }, [id, remove])
 

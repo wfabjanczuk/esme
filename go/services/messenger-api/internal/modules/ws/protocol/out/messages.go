@@ -3,6 +3,7 @@ package out
 import (
 	"encoding/json"
 	"messenger-api/internal/modules/infrastructure/chats"
+	"messenger-api/internal/modules/infrastructure/enriched_chats"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/protocol"
 )
@@ -11,6 +12,7 @@ const (
 	MsgTypeInfo        = "info"
 	MsgTypeError       = "error"
 	MsgTypeNewChat     = "new_chat"
+	MsgTypeClosedChat  = "closed_chat"
 	MsgTypeChats       = "chats"
 	MsgTypeChatHistory = "chat_history"
 	MsgTypeUserMessage = "user_message"
@@ -48,12 +50,12 @@ func BuildError(error error) (*protocol.Message, error) {
 	}, nil
 }
 
-type newChatPayload struct {
-	*chats.Chat
+type newEnrichedChatPayload struct {
+	*enriched_chats.EnrichedChat
 }
 
-func BuildNewChat(chat *chats.Chat) (*protocol.Message, error) {
-	outPayloadBytes, err := json.Marshal(newChatPayload{Chat: chat})
+func BuildNewEnrichedChat(chat *enriched_chats.EnrichedChat) (*protocol.Message, error) {
+	outPayloadBytes, err := json.Marshal(newEnrichedChatPayload{EnrichedChat: chat})
 	if err != nil {
 		return nil, err
 	}
@@ -70,6 +72,22 @@ type chatsPayload struct {
 
 func BuildChats(chats []*chats.Chat) (*protocol.Message, error) {
 	outPayloadBytes, err := json.Marshal(chatsPayload{Chats: chats})
+	if err != nil {
+		return nil, err
+	}
+
+	return &protocol.Message{
+		Type:    MsgTypeChats,
+		Payload: outPayloadBytes,
+	}, nil
+}
+
+type enrichedChatsPayload struct {
+	Chats []*enriched_chats.EnrichedChat `json:"chats"`
+}
+
+func BuildEnrichedChats(chats []*enriched_chats.EnrichedChat) (*protocol.Message, error) {
+	outPayloadBytes, err := json.Marshal(enrichedChatsPayload{Chats: chats})
 	if err != nil {
 		return nil, err
 	}
@@ -109,6 +127,22 @@ func BuildUserMessage(message *messages.Message) (*protocol.Message, error) {
 
 	return &protocol.Message{
 		Type:    MsgTypeUserMessage,
+		Payload: outPayloadBytes,
+	}, nil
+}
+
+type closedChatPayload struct {
+	ChatId string `json:"chatId"`
+}
+
+func BuildClosedChat(chatId string) (*protocol.Message, error) {
+	outPayloadBytes, err := json.Marshal(closedChatPayload{ChatId: chatId})
+	if err != nil {
+		return nil, err
+	}
+
+	return &protocol.Message{
+		Type:    MsgTypeClosedChat,
 		Payload: outPayloadBytes,
 	}, nil
 }

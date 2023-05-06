@@ -10,7 +10,7 @@ type SignUpValues = Record<'email' | 'phoneNumber' | 'password' | 'confirmPasswo
 
 interface SignUpHook {
   errorMessages: string[]
-  signUp: (values: SignUpValues) => void
+  signUp: (values: SignUpValues, onSuccess: () => void) => void
 }
 
 interface State {
@@ -23,8 +23,8 @@ export const useSignUp = (): SignUpHook => {
     errorMessages: []
   })
 
-  const signUp = (formValues: SignUpValues): void => {
-    void signUpAsync(formValues, setState, alertStore)
+  const signUp = (formValues: SignUpValues, onSuccess: () => void): void => {
+    void signUpAsync(formValues, onSuccess, setState, alertStore)
   }
 
   return {
@@ -35,13 +35,15 @@ export const useSignUp = (): SignUpHook => {
 
 const signUpAsync = async (
   formValues: SignUpValues,
+  onSuccess: () => void,
   setState: Dispatch<SetStateAction<State>>,
   alertStore: AlertStore
 ): Promise<void> => {
   await axios.post(signUpUrl, formValues)
     .then(() => {
-      alertStore.add('success', 'Participant created successfully')
+      alertStore.add('success', 'Participant registered successfully')
       setState({ errorMessages: [] })
+      onSuccess()
     })
     .catch(e => {
       alertStore.add('error', 'Could not register participant')

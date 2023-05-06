@@ -15,6 +15,7 @@ import (
 
 var ErrMalformedToken = errors.New("malformed token")
 var ErrUnknownUser = errors.New("unknown user")
+var ErrInvalidRole = errors.New("invalid role")
 
 const (
 	authenticationTimeout = time.Second
@@ -73,7 +74,7 @@ func (a *Authenticator) ParseHeader(authorizationHeader string) ParseHeaderResul
 }
 
 func (a *Authenticator) AuthenticateOrganizer(token string) (*Organizer, error) {
-	profileUrl := a.organizerApiUrl + "profile"
+	profileUrl := a.organizerApiUrl + "/profile"
 	rawProfile, err := a.getRawProfile(profileUrl, token)
 	if err != nil {
 		a.logger.Printf("could not fetch organizer profile: %s\n", err)
@@ -87,11 +88,17 @@ func (a *Authenticator) AuthenticateOrganizer(token string) (*Organizer, error) 
 		return nil, ErrUnknownUser
 	}
 
+	_, isAgencyRole := OrganizerAgencyRoles[organizer.Role]
+	if !isAgencyRole {
+		a.logger.Printf("invalid organizer role: %d\n", organizer.Role)
+		return nil, ErrInvalidRole
+	}
+
 	return organizer, nil
 }
 
 func (a *Authenticator) AuthenticateParticipant(token string) (*Participant, error) {
-	profileUrl := a.participantApiUrl + "profile"
+	profileUrl := a.participantApiUrl + "/profile"
 	rawProfile, err := a.getRawProfile(profileUrl, token)
 	if err != nil {
 		a.logger.Printf("could not fetch participant profile: %s\n", err)

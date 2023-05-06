@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { LoggingEntityManager } from '../changelogs/logging-entity-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -18,7 +22,10 @@ export class CommentsService {
   ) {}
 
   async findOne(id: number, agencyId: number) {
-    const comment = await this.commentsRepo.findOneBy({ id, agencyId });
+    const comment = await this.commentsRepo.findOneBy({
+      id,
+      agencyId,
+    });
     if (!comment) {
       throw new NotFoundException(
         `Comment with id ${id} not found in agency ${agencyId}`,
@@ -28,7 +35,10 @@ export class CommentsService {
   }
 
   findAll(options: FindCommentsOptionsDto) {
-    return this.commentsRepo.find({ where: options });
+    return this.commentsRepo.find({
+      where: options,
+      order: { timeCreated: 'DESC' },
+    });
   }
 
   async create(props: CreateCommentDto, createdBy: User) {
@@ -43,7 +53,10 @@ export class CommentsService {
     }
 
     const comment = this.commentsRepo.create(props);
+    comment.timeCreated = new Date();
+    comment.authorId = createdBy.id;
     comment.agencyId = createdBy.agencyId;
+
     return this.lem.create(this.commentsRepo, comment, createdBy);
   }
 
@@ -52,6 +65,11 @@ export class CommentsService {
       await this.findOne(id, updatedBy.agencyId),
       props,
     );
+
+    if (comment.authorId !== updatedBy.id) {
+      throw new UnauthorizedException('Only the author can update his comment');
+    }
+
     return this.lem.update(this.commentsRepo, comment, updatedBy);
   }
 

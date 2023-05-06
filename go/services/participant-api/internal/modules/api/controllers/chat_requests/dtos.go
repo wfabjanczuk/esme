@@ -12,16 +12,21 @@ type doesChatRequestExistResponse struct {
 	Result bool `json:"result"`
 }
 
-type requestChatDto struct {
-	EventId     int     `json:"eventId"`
-	Description string  `json:"description"`
-	Lat         float64 `json:"lat"`
-	Lng         float64 `json:"lng"`
+type createChatRequestDto struct {
+	EventId     int      `json:"eventId"`
+	Description string   `json:"description"`
+	Lat         *float64 `json:"lat,omitempty"`
+	Lng         *float64 `json:"lng,omitempty"`
 }
 
-func (d *requestChatDto) validate() error {
+func (d *createChatRequestDto) validate() error {
 	if len(d.Description) > 2000 {
 		return api_errors.ErrDescriptionTooLong
 	}
 	return nil
+}
+
+type deleteChatRequestDto struct {
+	ParticipantId int `json:"participantId"`
+	EventId       int `json:"eventId"`
 }

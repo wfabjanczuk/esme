@@ -1,8 +1,10 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import { Action } from './structures'
 import { newWebSocket } from './websocket'
+import { AlertStore } from '../alert-bar/alert-store.context'
 
-const emptySetState = (): void => {}
+const emptySetState = (): void => {
+}
 
 export class Messenger {
   constructor (
@@ -19,17 +21,20 @@ export class Messenger {
     return this.webSocket?.readyState === WebSocket.OPEN
   }
 
-  initialize (authorizationHeader: string, dispatch: React.Dispatch<Action>): void {
-    if (this.webSocket !== undefined) {
+  initialize (authorizationHeader: string, dispatch: React.Dispatch<Action>, alertStore: AlertStore): void {
+    if (this.webSocket !== undefined && this.webSocket.readyState !== WebSocket.CLOSED) {
       return
     }
 
-    this.webSocket = newWebSocket(authorizationHeader, dispatch, () => {
-      this.webSocket.send(JSON.stringify({
-        Authorization: authorizationHeader
-      }))
-      this.refreshState()
-    })
+    this.webSocket = newWebSocket(authorizationHeader, dispatch, alertStore,
+      () => {
+        this.webSocket.send(JSON.stringify({
+          Authorization: authorizationHeader
+        }))
+        this.refreshState()
+      },
+      () => this.refreshState()
+    )
   }
 
   getChats (): void {
@@ -46,13 +51,20 @@ export class Messenger {
     }))
   }
 
-  sendMessage (chatId: string, message: string): void {
+  sendMessage (chatId: string, message: string, lat?: number, lng?: number): void {
+    const payload: any = {
+      chatId,
+      message
+    }
+
+    if (lat !== undefined && lng !== undefined) {
+      payload.lat = lat
+      payload.lng = lng
+    }
+
     this.webSocket.send(JSON.stringify({
       type: 'send_message',
-      payload: {
-        chatId,
-        message
-      }
+      payload
     }))
   }
 

@@ -1,13 +1,16 @@
 import React from 'react'
 import { Action } from './structures'
 import { config } from '../../app/config'
+import { AlertStore } from '../alert-bar/alert-store.context'
 
-const connectUrl = `${config.messengerApiUrl}/connect`
+const connectUrl = `${config.messengerWsUrl}/connect`
 
 export const newWebSocket = (
   authorizationHeader: string,
   dispatch: React.Dispatch<Action>,
-  onOpen: () => void
+  alertStore: AlertStore,
+  onOpen: () => void,
+  onClose: () => void
 ): WebSocket => {
   const webSocket = new WebSocket(connectUrl)
 
@@ -17,13 +20,11 @@ export const newWebSocket = (
     dispatch(JSON.parse(e.data))
   })
 
-  webSocket.addEventListener('error', (e) => {
-    console.log(e)
+  webSocket.addEventListener('error', () => {
+    alertStore.add('error', 'WebSocket error')
   })
 
-  webSocket.addEventListener('close', (e) => {
-    console.log(e)
-  })
+  webSocket.addEventListener('close', onClose)
 
   return webSocket
 }

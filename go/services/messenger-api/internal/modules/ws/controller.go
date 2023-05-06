@@ -3,13 +3,10 @@ package ws
 import (
 	"github.com/gorilla/websocket"
 	"log"
-	"messenger-api/internal/config"
 	"messenger-api/internal/modules/authentication"
 	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/infrastructure/chats"
-	"messenger-api/internal/modules/ws/consumers/organizers"
-	"messenger-api/internal/modules/ws/consumers/participants"
-	mgmt_chats "messenger-api/internal/modules/ws/managers/chats"
+	mgmt_chats "messenger-api/internal/modules/ws/chats"
 	"net/http"
 	"time"
 )
@@ -23,24 +20,21 @@ var wsUpgrader = websocket.Upgrader{
 }
 
 type Controller struct {
-	authenticator        *authentication.Authenticator
-	chatsRepository      *chats.Repository
-	out                  *mgmt_chats.Manager
-	organizersConsumer   *organizers.Consumer
-	participantsConsumer *participants.Consumer
-	logger               *log.Logger
+	authenticator   *authentication.Authenticator
+	chatsRepository *chats.Repository
+	chatsManager    *mgmt_chats.Manager
+	logger          *log.Logger
 }
 
 func NewController(
-	cfg *config.Config, infra *infrastructure.Module, chatsManager *mgmt_chats.Manager, logger *log.Logger,
+	authenticator *authentication.Authenticator, infra *infrastructure.Module, chatsManager *mgmt_chats.Manager,
+	logger *log.Logger,
 ) *Controller {
 	return &Controller{
-		authenticator:        authentication.NewAuthenticator(cfg, logger),
-		chatsRepository:      infra.ChatsRepository,
-		organizersConsumer:   organizers.NewConsumer(infra, chatsManager, logger),
-		participantsConsumer: participants.NewConsumer(infra, chatsManager, logger),
-		out:                  chatsManager,
-		logger:               logger,
+		authenticator:   authenticator,
+		chatsRepository: infra.ChatsRepository,
+		chatsManager:    chatsManager,
+		logger:          logger,
 	}
 }
 
@@ -83,4 +77,36 @@ func (c *Controller) readAuthorizationHeader(wsConnection *websocket.Conn) (stri
 		Authorization string `json:"Authorization"`
 	}{}
 	return msg.Authorization, wsConnection.ReadJSON(msg)
+}
+
+func (c *Controller) connectOrganizer(r *http.Request, wsConnection *websocket.Conn, token string) {
+	organizer, err := c.authenticator.AuthenticateOrganizer(token)
+	if err != nil {
+		c.logger.Printf("could not authenticate organizer %s: %s\n", r.RemoteAddr, err)
+		wsConnection.Close()
+		return
+	}
+
+	err = c.chatsManager.AddOrganizerConnection(organizer, wsConnection)
+	if err != nil {
+		c.logger.Printf("could not set up organizer connection %s: %s\n", r.RemoteAddr, err)
+		wsConnection.Close()
+		return
+	}
+}
+
+func (c *Controller) connectParticipant(r *http.Request, wsConnection *websocket.Conn, token string) {
+	participant, err := c.authenticator.AuthenticateParticipant(token)
+	if err != nil {
+		c.logger.Printf("could not authenticate participant %s: %s\n", r.RemoteAddr, err)
+		wsConnection.Close()
+		return
+	}
+
+	err = c.chatsManager.AddParticipantConnection(participant, wsConnection)
+	if err != nil {
+		c.logger.Printf("could not set up participant connection %s: %s\n", r.RemoteAddr, err)
+		wsConnection.Close()
+		return
+	}
 }

@@ -6,10 +6,10 @@ type ChatRequestDb struct {
 }
 
 type ChatRequestMq struct {
-	ParticipantId int     `json:"participantId"`
-	AgencyId      int     `json:"agencyId"`
-	EventId       int     `json:"eventId"`
-	Description   string  `json:"description"`
-	Lat           float64 `json:"lat"`
-	Lng           float64 `json:"lng"`
+	ParticipantId int      `json:"participantId"`
+	AgencyId      int      `json:"agencyId"`
+	EventId       int      `json:"eventId"`
+	Description   string   `json:"description"`
+	Lat           *float64 `json:"lat,omitempty"`
+	Lng           *float64 `json:"lng,omitempty"`
 }

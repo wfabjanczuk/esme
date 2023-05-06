@@ -3,7 +3,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import { ErrorView } from './error.view'
 import { Layout } from '../layout/layout'
 import { EditAgencyView } from '../pages/agency/edit-agency.view'
-import { SupportView } from '../pages/support/support.view'
+import { SupportView } from '../pages/messenger/support.view'
 import { EventsView } from '../pages/events/events.view'
 import { EditEventView } from '../pages/events/edit-event.view'
 import { AddEventView } from '../pages/events/add-event.view'
@@ -27,6 +27,7 @@ import { AdminAgencyDetailsView } from '../pages/admin-agencies/admin-agency-det
 import { AddAdminUserView } from '../pages/admin-users/add-admin-user.view'
 import { EditAdminUserView } from '../pages/admin-users/edit-admin-user.view'
 import { AdminChangelogDetailsView } from '../pages/admin-changelogs/admin-changelog-details.view'
+import { ArchivesView } from '../pages/messenger/archives/archives.view'
 
 export const RouterInternal = createBrowserRouter([
   {
@@ -108,6 +109,10 @@ export const RouterInternal = createBrowserRouter([
           {
             path: 'support',
             element: <SupportView/>
+          },
+          {
+            path: 'archives',
+            element: <ArchivesView/>
           },
           {
             path: 'profile',

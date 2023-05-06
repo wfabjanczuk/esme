@@ -32,7 +32,7 @@ export const useEdit = <T> (id: number, baseUrl: string, onDeleteRedirectUrl: st
 
   useEffect(() => {
     void fetchAsync(url, authenticator, setState, alertStore)
-  }, [authenticator])
+  }, [authenticator, url])
 
   const update = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault()

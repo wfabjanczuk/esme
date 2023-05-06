@@ -4,6 +4,7 @@ import StarOutlineIcon from '@mui/icons-material/StarOutline'
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined'
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined'
 import CellTowerIcon from '@mui/icons-material/CellTower'
+import ArchiveIcon from '@mui/icons-material/Archive'
 import * as React from 'react'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
@@ -127,6 +128,12 @@ const messengerCategories: Category[] = [
         id: 'Live support',
         icon: <CellTowerIcon/>,
         route: '/support'
+      },
+      {
+        type: 'route',
+        id: 'Archives',
+        icon: <ArchiveIcon/>,
+        route: '/archives'
       }
     ]
   }

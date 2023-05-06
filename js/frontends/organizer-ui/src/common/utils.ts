@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { GridValueGetterParams } from '@mui/x-data-grid/models/params/gridCellParams'
+import { Location, Message } from './messenger/structures'
 
 dayjs.extend(utc)
 const utcdayjs = (date?: dayjs.ConfigType): dayjs.Dayjs => dayjs(date).utc()
@@ -41,4 +42,19 @@ export const parseErrorMessage = (message: string[] | string | undefined): strin
   }
 
   return message
+}
+
+export const getLastLocationFromMessages = (messages: Message[]): Location | undefined => {
+  const last = messages.length - 1
+  for (let i = last; i >= 0; i--) {
+    const msg = messages[i]
+    if (msg.lat != null && msg.lng != null) {
+      return {
+        lat: msg.lat,
+        lng: msg.lng
+      }
+    }
+  }
+
+  return undefined
 }

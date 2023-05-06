@@ -9,7 +9,7 @@ type routeName = keyof typeof icons
 const isIos = Platform.OS === 'ios'
 
 const icons = {
-  Messages: 'chatbubble-ellipses',
+  Chats: 'chatbubble-ellipses',
   Help: 'medkit',
   Settings: 'settings'
 }

@@ -1,30 +1,34 @@
 package organizers
 
 import (
+	"fmt"
 	"messenger-api/internal/modules/common"
+	"messenger-api/internal/modules/infrastructure/chat_requests"
 	"messenger-api/internal/modules/infrastructure/chats"
+	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/connections"
-	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/out"
+	"time"
 )
 
-func (c *Consumer) consumeStartChat(conn *connections.OrganizerConnection, msg *protocol.Message) {
-	chatRequest, ok, err := c.chatRequestsRepository.GetChatRequest(conn.Organizer.AgencyId)
+func (c *Consumer) consumeStartChat(msg *connections.OrganizerMessage) {
+	organizer := msg.Source.Organizer
+	chatRequest, ok, err := c.chatRequestsRepository.GetChatRequest(organizer.AgencyId)
 	if err != nil {
-		c.logger.Printf("%s get_chat error: %s\n", conn.GetInfo(), err)
-		conn.SendError(common.ErrChatRequestNotFetchedFromQueue)
+		c.logger.Printf("organizer %d get_chat error: %s\n", organizer.Id, err)
+		msg.Source.SendError(common.ErrChatRequestNotFetchedFromQueue)
 		return
 	}
 	if !ok {
-		c.logger.Printf("%s get_chat found no new chats\n", conn.GetInfo())
-		conn.SendInfo(common.InfoNoNewChats)
+		c.logger.Printf("organizer %d get_chat found no new chats\n", organizer.Id)
+		msg.Source.SendInfo(common.InfoNoNewChats)
 		return
 	}
 
 	chat, err := c.chatsRepository.Create(
 		&chats.Chat{
-			OrganizerId:   conn.Organizer.Id,
-			AgencyId:      conn.Organizer.AgencyId,
+			OrganizerId:   organizer.Id,
+			AgencyId:      organizer.AgencyId,
 			EventId:       chatRequest.EventId,
 			ParticipantId: chatRequest.ParticipantId,
 			LatStart:      chatRequest.Lat,
@@ -33,25 +37,46 @@ func (c *Consumer) consumeStartChat(conn *connections.OrganizerConnection, msg *
 		},
 	)
 	if err != nil {
-		c.logger.Printf("%s get_chat could not create new chat: %s\n", conn.GetInfo(), err)
-		conn.SendError(common.ErrChatNotCreated)
+		c.logger.Printf("organizer %d get_chat could not create new chat: %s\n", organizer.Id, err)
+		msg.Source.SendError(common.ErrChatNotCreated)
 		return
 	}
 
-	err = c.chatsManager.SetChatOrganizer(chat.Id, conn)
+	c.chatsManager.SetChatCache(chat.Id, chat.OrganizerId, chat.ParticipantId, chat.EventId)
+
+	enrichedChat := c.enrichedChatsService.EnrichWithParticipant([]*chats.Chat{chat})[0]
+	newEnrichedChatMsg, err := out.BuildNewEnrichedChat(enrichedChat)
 	if err != nil {
-		c.logger.Printf("could not connect %s to chat %s: %s\n", conn.GetInfo(), chat.Id, err)
-		conn.SendError(common.ErrChatNotConnected)
+		c.logger.Printf("could not send %s to chat %d: %s\n", out.MsgTypeNewChat, chat.Id, err)
+		msg.Source.SendError(common.ErrInternal)
 		return
 	}
 
-	outMsg, err := out.BuildNewChat(chat)
+	err = c.chatsManager.SendProtocolMessageToChat(chat, newEnrichedChatMsg)
 	if err != nil {
-		c.logger.Printf("could not send %s to %s: %s\n", out.MsgTypeNewChat, conn.GetInfo(), err)
-		conn.SendError(common.ErrInternal)
+		c.logger.Printf("could not send %s to chat %d: %s\n", out.MsgTypeNewChat, chat.Id, err)
+		msg.Source.SendError(common.ErrInternal)
 		return
 	}
 
-	conn.Send(outMsg)
-	c.logger.Printf("%s started new chat %s\n", conn.GetInfo(), chat.Id)
+	if chatRequest.Description != "" {
+		go c.sendProblemDescription(chatRequest, chat.Id)
+	}
+
+	c.logger.Printf("organizer %d started new chat %s\n", organizer.Id, chat.Id)
+}
+
+func (c *Consumer) sendProblemDescription(chatRequest *chat_requests.ChatRequest, chatId string) {
+	participantMessage := &messages.Message{
+		ChatId:        chatId,
+		Content:       fmt.Sprintf("Problem description: %s", chatRequest.Description),
+		FromOrganizer: 0,
+		AuthorId:      chatRequest.ParticipantId,
+		TimeSent:      time.Now(),
+	}
+
+	err := c.chatsManager.SendUserMessageToChat(chatId, participantMessage)
+	if err != nil {
+		c.logger.Printf("could not send problem description to chat %s: %s\n", chatId, err)
+	}
 }

@@ -8,7 +8,7 @@ import { CardTitle } from '../../common/components/card-title.component'
 import { JsonViewer } from '@textea/json-viewer'
 import { useChangelogDetails } from './changelog.entity'
 import { parseDateTimeLabel } from '../../common/utils'
-import { useUserDetails } from '../users/user.entity'
+import { UserRoleLabels, useUserDetails } from '../users/user.entity'
 import { FormErrors } from '../../common/components/form-errors.component'
 
 export const ChangelogDetailsView = (): JSX.Element => {
@@ -27,7 +27,10 @@ export const ChangelogDetailsView = (): JSX.Element => {
 }
 
 const ChangelogDetailsCard = ({ id }: { id: number }): JSX.Element => {
-  const { errorMessages, entity: changelog } = useChangelogDetails(id)
+  const {
+    errorMessages,
+    entity: changelog
+  } = useChangelogDetails(id)
 
   if (changelog === undefined) {
     return <Paper sx={styles.layout.cardMedium}>
@@ -38,17 +41,20 @@ const ChangelogDetailsCard = ({ id }: { id: number }): JSX.Element => {
 
   return <Paper sx={styles.layout.cardMedium}>
     <CardTitle title='Changelog details' redirectLabel='Go to changelogs list' redirectUrl='/changelogs'/>
-    <ChangelogField name='action' value={changelog.type} bold={true}/>
-    <ChangelogField name='id' value={changelog.id}/>
-    <ChangelogField name='entity' value={`${changelog.entityClass} ${changelog.entityId}`}/>
+    <ChangelogField name='Action' value={changelog.type}/>
+    <ChangelogField name='Entity' value={`${changelog.entityClass} ${changelog.entityId}`}/>
     {changelog.userId === undefined
-      ? <ChangelogField name='user' value='unknown user'/>
+      ? <ChangelogField name='User' value='unknown user'/>
       : <ChangelogUser userId={changelog.userId}/>
     }
-    <ChangelogField name='time' value={parseDateTimeLabel(changelog.changedAt)}/>
+    <ChangelogField name='Time' value={parseDateTimeLabel(changelog.changedAt)}/>
     {changelog.valueAfter == null
       ? <></>
-      : <Box sx={{ backgroundColor: '#f8fafa', my: 2, p: 2 }}>
+      : <Box sx={{
+        backgroundColor: '#f8fafa',
+        my: 2,
+        p: 2
+      }}>
         <JsonViewer rootName={false} value={JSON.parse(changelog.valueAfter)}/>
       </Box>
     }
@@ -58,17 +64,20 @@ const ChangelogDetailsCard = ({ id }: { id: number }): JSX.Element => {
 interface ChangelogFieldProps {
   name: string
   value: number | string | undefined
-  bold?: boolean
 }
 
-const ChangelogField = ({ name, value, bold = false }: ChangelogFieldProps): JSX.Element => {
-  const fontWeight = bold ? 'bolder' : 'normal'
-
+const ChangelogField = ({
+  name,
+  value
+}: ChangelogFieldProps): JSX.Element => {
   return <Box>
-    <Box sx={{ width: '80px', display: 'inline-block' }}>
-      <Typography variant='overline' fontWeight={fontWeight}>{name}:</Typography>
+    <Box sx={{
+      width: '80px',
+      display: 'inline-block'
+    }}>
+      <Typography fontWeight='bold'>{name}:</Typography>
     </Box>
-    <Typography component='span' fontWeight={fontWeight}>{value}</Typography>
+    <Typography component='span'>{value}</Typography>
   </Box>
 }
 
@@ -83,5 +92,5 @@ const ChangelogUser = ({ userId }: ChangelogUserProps): JSX.Element => {
     return <ChangelogField name='user id' value={userId}/>
   }
 
-  return <ChangelogField name='user' value={`${user.firstName} ${user.lastName}`}/>
+  return <ChangelogField name='User' value={`${user.firstName} ${user.lastName} (${UserRoleLabels[user.role]})`}/>
 }

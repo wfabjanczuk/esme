@@ -23,5 +23,8 @@ export const useCreateEvent = (): CreateHook => useCreate(eventsApiUrl, eventsVi
 export const useEditEvent = (id: number): EditHook<Event> =>
   useEdit<Event>(id, eventsApiUrl, eventsViewUrl)
 
+export const useEventDetails = (id: number): Pick<EditHook<Event>, 'errorMessages' | 'entity'> =>
+  useEdit<Event>(id, eventsApiUrl, '')
+
 export const useEventsList = (): ListHook<Event> =>
   useList<Event>(eventsApiUrl)

@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	ErrInternal         = errors.New("internal server error")
-	ErrTimeout          = errors.New("timeout")
-	ErrConnectionExists = errors.New("connection already exists")
+	ErrUnexpected = errors.New("unexpected error")
+	ErrInternal   = errors.New("internal server error")
+	ErrTimeout    = errors.New("timeout")
 
 	ErrMalformedMessage      = errors.New("malformed message")
 	ErrInvalidMessageType    = errors.New("invalid message type")
@@ -19,11 +19,13 @@ var (
 
 	ErrChatNotCreated = errors.New("chat could not be created")
 	ErrChatNotFound   = errors.New("chat not found")
+	ErrChatNotClosed  = errors.New("chat could not be closed")
 
 	ErrMessagesNotFetchedFromDb       = errors.New("could not get messages")
 	ErrChatRequestNotFetchedFromQueue = errors.New("could not get chat from queue")
 	ErrChatsNotFetchedFromDb          = errors.New("could not get chats")
-	ErrChatNotConnected               = errors.New("could not connect to chat")
+
+	ErrConnectionPoolClosing = errors.New("connection pool is in closing state")
 )
 
 func NewErrNoAccessToChat(chatId string) error {

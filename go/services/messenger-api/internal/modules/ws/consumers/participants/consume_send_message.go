@@ -4,34 +4,36 @@ import (
 	"messenger-api/internal/modules/common"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/connections"
-	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/in"
 )
 
-func (c *Consumer) consumeSendMessage(conn *connections.ParticipantConnection, msg *protocol.Message) {
-	inPayload, err := in.ParseSendMessagePayload(msg)
+func (c *Consumer) consumeSendMessage(msg *connections.ParticipantMessage) {
+	id := msg.Source.Participant.Id
+	inPayload, err := in.ParseSendMessagePayload(msg.Message)
 	if err != nil {
-		c.logger.Printf("%s sent invalid %s payload\n", conn.GetInfo(), msg.Type)
-		conn.SendError(common.ErrInvalidMessagePayload)
+		c.logger.Printf("participant %d sent invalid %s payload\n", id, msg.Message.Type)
+		msg.Source.SendError(common.ErrInvalidMessagePayload)
 		return
 	}
 
-	if !c.chatsManager.HasChatParticipant(inPayload.ChatId, conn) {
-		c.logger.Printf("%s has no access to chat %s\n", conn.GetInfo(), inPayload.ChatId)
-		conn.SendError(common.NewErrNoAccessToChat(inPayload.ChatId))
+	if !c.chatsManager.IsParticipantInChat(id, inPayload.ChatId) {
+		c.logger.Printf("participant %d has no access to chat %s\n", id, inPayload.ChatId)
+		msg.Source.SendError(common.NewErrNoAccessToChat(inPayload.ChatId))
 		return
 	}
 
-	organizerMessage := &messages.Message{
+	participantMessage := &messages.Message{
 		ChatId:        inPayload.ChatId,
 		Content:       inPayload.Message,
 		FromOrganizer: 0,
-		AuthorId:      conn.Participant.Id,
+		AuthorId:      id,
 		TimeSent:      msg.TimeReceived,
+		Lat:           inPayload.Lat,
+		Lng:           inPayload.Lng,
 	}
-	err = c.chatsManager.SendChatMessage(inPayload.ChatId, organizerMessage)
+	err = c.chatsManager.SendUserMessageToChat(inPayload.ChatId, participantMessage)
 	if err != nil {
-		conn.SendError(err)
+		msg.Source.SendError(err)
 		return
 	}
 }

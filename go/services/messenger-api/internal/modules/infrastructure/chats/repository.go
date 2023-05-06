@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
@@ -35,12 +36,13 @@ func (r *Repository) Create(chat *Chat) (*Chat, error) {
 	return primitiveChat.Chat(), err
 }
 
-func (r *Repository) FindAll() ([]*Chat, error) {
+func (r *Repository) FindAllByAgencyId(agencyId, ended int32) ([]*Chat, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
 	chats := make([]*Chat, 0)
-	cursor, err := r.collection.Find(ctx, bson.M{})
+	opts := options.Find().SetSort(bson.D{{"timeStart", -1}})
+	cursor, err := r.collection.Find(ctx, bson.M{"agencyId": agencyId, "ended": ended}, opts)
 
 	defer cursor.Close(ctx)
 	for cursor.Next(ctx) {
@@ -63,7 +65,8 @@ func (r *Repository) FindAllByOrganizerId(organizerId int32) ([]*Chat, error) {
 	defer cancel()
 
 	chats := make([]*Chat, 0)
-	cursor, err := r.collection.Find(ctx, bson.M{"organizerId": organizerId})
+	opts := options.Find().SetSort(bson.D{{"timeStart", -1}})
+	cursor, err := r.collection.Find(ctx, bson.M{"organizerId": organizerId, "ended": 0}, opts)
 
 	defer cursor.Close(ctx)
 	for cursor.Next(ctx) {
@@ -81,12 +84,13 @@ func (r *Repository) FindAllByOrganizerId(organizerId int32) ([]*Chat, error) {
 	return chats, nil
 }
 
-func (r *Repository) FindAllByParticipantId(participantId int32) ([]*Chat, error) {
+func (r *Repository) FindAllByParticipantId(participantId, ended int32) ([]*Chat, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
 	chats := make([]*Chat, 0)
-	cursor, err := r.collection.Find(ctx, bson.M{"participantId": participantId})
+	opts := options.Find().SetSort(bson.D{{"timeStart", -1}})
+	cursor, err := r.collection.Find(ctx, bson.M{"participantId": participantId, "ended": ended}, opts)
 
 	defer cursor.Close(ctx)
 	for cursor.Next(ctx) {
@@ -104,17 +108,17 @@ func (r *Repository) FindAllByParticipantId(participantId int32) ([]*Chat, error
 	return chats, nil
 }
 
-func (r *Repository) FindOne(id string) (*Chat, error) {
+func (r *Repository) FindOneByAgencyId(chatId string, agencyId int32) (*Chat, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
-	objectId, err := primitive.ObjectIDFromHex(id)
+	objectId, err := primitive.ObjectIDFromHex(chatId)
 	if err != nil {
 		return nil, err
 	}
 
 	var primitiveChat PrimitiveChat
-	err = r.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&primitiveChat)
+	err = r.collection.FindOne(ctx, bson.M{"_id": objectId, "agencyId": agencyId}).Decode(&primitiveChat)
 	if err != nil {
 		return nil, err
 	}
@@ -122,24 +126,46 @@ func (r *Repository) FindOne(id string) (*Chat, error) {
 	return primitiveChat.Chat(), nil
 }
 
-func (r *Repository) Replace(chat *Chat) (*Chat, error) {
+func (r *Repository) FindOneByParticipantId(chatId string, participantId int32) (*Chat, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
 	defer cancel()
 
-	primitiveChat, err := chat.Primitive()
+	objectId, err := primitive.ObjectIDFromHex(chatId)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := r.collection.ReplaceOne(ctx, bson.M{"_id": primitiveChat.Id}, primitiveChat)
+	var primitiveChat PrimitiveChat
+	err = r.collection.FindOne(ctx, bson.M{"_id": objectId, "participantId": participantId}).Decode(&primitiveChat)
 	if err != nil {
 		return nil, err
+	}
+
+	return primitiveChat.Chat(), nil
+}
+
+func (r *Repository) CloseById(chatId string) error {
+	if chatId == "" {
+		return ErrChatInvalidId
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), r.maxQueryTime)
+	defer cancel()
+
+	objectId, err := primitive.ObjectIDFromHex(chatId)
+	if err != nil {
+		return ErrChatInvalidId
+	}
+
+	result, err := r.collection.UpdateByID(ctx, objectId, bson.D{{"$set", bson.D{{"ended", 1}}}})
+	if err != nil {
+		return err
 	}
 	if result.ModifiedCount == 0 {
-		return nil, errors.New("chat not updated (not found)")
+		return errors.New("chat not closed (not found)")
 	}
 
-	return chat, nil
+	return nil
 }
 
 func (r *Repository) Delete(id string) error {

@@ -67,10 +67,11 @@ const alertBar = {
     flexDirection: 'column',
     alignItems: 'center',
     position: 'absolute',
-    zIndex: 10000,
-    width: '100%',
-    px: 4,
-    py: 2
+    left: '20px',
+    right: '20px',
+    margin: 'auto',
+    maxWidth: '960px',
+    zIndex: 10000
   },
   alert: {
     width: '960px',
@@ -162,11 +163,86 @@ const tables = {
   }
 }
 
+const comments = {
+  list: {
+    width: '100%'
+  },
+  commentInfo: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    m: 2
+  },
+  editableContainer: {
+    display: 'flex'
+  },
+  authorHeader: {
+    display: 'flex',
+    flexDirection: 'column',
+    mr: 2
+  },
+  editButton: {
+    flexShrink: 1,
+    textAlign: 'right',
+    m: 2
+  },
+  timeHeader: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end'
+  },
+  content: {
+    m: 2
+  }
+}
+
+const messenger = {
+  container: {
+    display: 'flex',
+    overflow: 'auto',
+    height: '100%'
+  },
+  chats: {
+    backgroundColor: '#eaeff1',
+    minWidth: '300px',
+    maxWidth: '300px'
+  },
+  chatsHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    backgroundColor: '#eaeff1',
+    overflow: 'auto'
+  },
+  messages: {
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+  },
+  infoPanel: {
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: '300px',
+    height: '100%',
+    overflow: 'auto',
+    backgroundColor: '#eaeff1'
+  },
+  infoPanelSection: {
+    p: 2,
+    maxWidth: '300px'
+  },
+  eventImage: {
+    height: '150px',
+    width: '300px'
+  }
+}
+
 export const styles = {
   layout,
   alertBar,
   forms,
   buttons,
   links,
-  tables
+  tables,
+  comments,
+  messenger
 }

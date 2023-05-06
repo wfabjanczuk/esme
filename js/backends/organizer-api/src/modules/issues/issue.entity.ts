@@ -8,6 +8,7 @@ import {
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Event } from '../events/event.entity';
 import { Agency } from '../agency/agency.entity';
+import { User } from '../users/user.entity';
 
 export enum IssueStatus {
   toDo = 'to_do',
@@ -37,12 +38,29 @@ export class Issue {
   description: string;
 
   @Column({ length: 50 })
-  @ApiProperty({ example: 'to do' })
+  @ApiProperty({ example: 'to_do' })
   status: IssueStatus;
 
   @Column({ length: 50 })
   @ApiProperty({ example: 'medium' })
   priority: IssuePriority;
+
+  @Column({ type: 'timestamptz' })
+  @ApiProperty({ example: '2022-11-26T18:47:02.541Z' })
+  timeCreated: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  @ApiProperty({ example: '2022-11-26T18:47:02.541Z' })
+  timeClosed: Date;
+
+  @Column()
+  @ApiProperty({ example: 1 })
+  authorId: number;
+
+  @ManyToOne(() => User, null, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'authorId' })
+  @ApiHideProperty()
+  author: User;
 
   @Column()
   @ApiProperty({ example: 1 })
@@ -62,5 +80,3 @@ export class Issue {
   @ApiHideProperty()
   agency: Agency;
 }
-
-// TODO: add issue date creation and issue date closed
