@@ -3,10 +3,9 @@ import React, { Dispatch, SetStateAction } from 'react'
 import { AlertStore } from '../../../common/alert-bar/alert-store.context'
 import { Authenticator } from '../../../common/authenticator/authenticator.context'
 import axios from 'axios'
-import { getLastLocationFromMessages } from '../../../common/utils'
 import { config } from '../../../app/config'
 
-const chatsBaseUrl = `${config.messengerApiUrl}/agency/chats`
+const chatsBaseUrl = `${config.messengerApiUrl}/participant/chats`
 
 const emptySetState = (): void => {
 }
@@ -31,13 +30,6 @@ export class Archives {
         this.chats = {}
         for (const chat of chats) {
           this.chats[chat.id] = chat
-
-          if (chat.latStart != null && chat.lngStart != null) {
-            this.chats[chat.id].location = {
-              lat: chat.latStart,
-              lng: chat.lngStart
-            }
-          }
         }
         this.refreshState()
       })
@@ -49,18 +41,6 @@ export class Archives {
 
     void axios.get<Message[]>(url, { headers: { Authorization: this.authenticator.authorizationHeader } })
       .then(({ data: messages }) => {
-        const location = getLastLocationFromMessages(messages)
-
-        let chats = this.chats
-        if (location !== undefined) {
-          chats[chatId] = {
-            ...this.chats[chatId],
-            location
-          }
-          chats = { ...this.chats }
-        }
-
-        this.chats = chats
         this.messages = {
           ...this.messages,
           [chatId]: messages

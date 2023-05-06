@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useLayoutEffect } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { StyledText } from '../components/typography/styled-text.component'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -42,7 +42,7 @@ const AlertBarElement = ({
   },
   remove
 }: AlertBarElementProps): JSX.Element => {
-  useEffect(() => {
+  useLayoutEffect(() => {
     setTimeout(() => remove(id), alertDisplayTime)
   }, [id, remove])
 

@@ -10,15 +10,22 @@ import { useHeaderHeight } from '@react-navigation/elements'
 import { MessengerContext } from '../../common/messenger/messenger.context'
 import { AlertStoreContext } from '../../common/alert-bar/alert-store.context'
 import { StyledText } from '../../common/components/typography/styled-text.component'
+import { ArchivesContext } from './archives/archives.context'
 
 type ConversationScreenProps = NativeStackScreenProps<FrontStackParamsList, 'Conversation'>
 
-export const ConversationScreen = ({ route: { params: { chatId } } }: ConversationScreenProps): JSX.Element => {
+export const ConversationScreen = ({ navigation, route: { params: { chatId } } }: ConversationScreenProps): JSX.Element => {
   const alertStore = useContext(AlertStoreContext)
   const messenger = useContext(MessengerContext)
   const { chats, messages } = useContext(InboxContext)
-  const chat = chats.get(chatId)
-  const chatMessages = messages.get(chatId)
+  const archives = useContext(ArchivesContext)
+
+  let chat = chats.get(chatId)
+  let chatMessages = messages.get(chatId)
+  if (chat === undefined || chatMessages === undefined) {
+    chat = archives.chats[chatId]
+    chatMessages = archives.messages[chatId]
+  }
 
   const headerHeight = useHeaderHeight()
   const keyboardVerticalOffset = Platform.OS === 'ios' ? headerHeight : 0
@@ -28,6 +35,12 @@ export const ConversationScreen = ({ route: { params: { chatId } } }: Conversati
       alertStore.add('error', 'WebSocket connection could not be initialized')
     }
   }, [messenger.isInitialized()])
+
+  useEffect(() => {
+    if (chat === undefined || chatMessages === undefined) {
+      navigation.navigate('Chats')
+    }
+  }, [chats])
 
   if (chat === undefined || chatMessages === undefined) {
     return <></>

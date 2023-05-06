@@ -23,7 +23,7 @@ export const EventDetailsScreen = ({
   navigation,
   route: { params: { id } }
 }: EventDetailsScreenProps): JSX.Element => {
-  const navigateToMessages = (): void => navigation.navigate('Messages')
+  const navigateToChats = (): void => navigation.navigate('Chats')
   const [location, setLocation] = useState<LocationObject | undefined>(undefined)
   const [description, setDescription] = useState('')
   const {
@@ -57,7 +57,7 @@ export const EventDetailsScreen = ({
     description,
     ...coords,
     eventId: id
-  }, navigateToMessages)
+  }, navigateToChats)
 
   return (
     <SafeArea>
@@ -82,7 +82,7 @@ export const EventDetailsScreen = ({
               <Spacer size='medium' position='all'>
                 <StyledText variant='placeholder'>Help already requested.</StyledText>
               </Spacer>
-              <PrimaryButton icon='arrow-back' onPress={navigateToMessages}>
+              <PrimaryButton icon='arrow-back' onPress={navigateToChats}>
                 Go to Messages
               </PrimaryButton>
             </Fragment>

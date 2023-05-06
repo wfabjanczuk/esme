@@ -8,7 +8,7 @@ import (
 
 func (c *Consumer) consumeGetChats(msg *connections.ParticipantMessage) {
 	id := msg.Source.Participant.Id
-	participantChats, err := c.chatsRepository.FindAllByParticipantId(id)
+	participantChats, err := c.chatsRepository.FindAllByParticipantId(id, 0)
 	if err != nil {
 		c.logger.Printf("participant %d could not fetch chats: %s\n", id, err)
 		msg.Source.SendError(common.ErrChatsNotFetchedFromDb)

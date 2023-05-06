@@ -64,7 +64,7 @@ func (m *Manager) AddOrganizerConnection(organizer *authentication.Organizer, ws
 func (m *Manager) AddParticipantConnection(
 	participant *authentication.Participant, wsConnection *websocket.Conn,
 ) error {
-	participantChats, err := m.chatsRepository.FindAllByParticipantId(participant.Id)
+	participantChats, err := m.chatsRepository.FindAllByParticipantId(participant.Id, 0)
 	if err != nil {
 		return err
 	}

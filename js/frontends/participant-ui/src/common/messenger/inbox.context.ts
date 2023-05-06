@@ -44,9 +44,9 @@ export const NewInboxReducer: (alertStore: AlertStore) => Reducer<Inbox, Action>
     }
   }
   case ActionType.newChat: {
+    const callbacks = [...state.callbacks, () => alertStore.add('success', 'New chat started')]
     const chats = new Map(state.chats)
     chats.set(action.payload.id, action.payload)
-    const callbacks = [...state.callbacks, () => alertStore.add('success', 'New chat started')]
 
     return {
       ...state,
@@ -55,17 +55,19 @@ export const NewInboxReducer: (alertStore: AlertStore) => Reducer<Inbox, Action>
     }
   }
   case ActionType.closedChat: {
-    const chatToClose = state.chats.get(action.payload.chatId)
-    if (chatToClose === undefined) {
-      return state
-    }
+    const callbacks = [...state.callbacks, () => alertStore.add('warning', 'Chat has ended')]
+    const { chatId } = action.payload
 
     const chats = new Map(state.chats)
-    chatToClose.ended = 1
+    const messages = new Map(state.messages)
+    chats.delete(chatId)
+    messages.delete(chatId)
 
     return {
       ...state,
-      chats
+      callbacks,
+      chats,
+      messages
     }
   }
   case ActionType.userMessage: {

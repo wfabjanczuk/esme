@@ -13,6 +13,8 @@ import { useNewMessenger } from '../../common/messenger/messenger.hook'
 import { MessengerContext } from '../../common/messenger/messenger.context'
 import { ChangePasswordScreen } from '../../modules/settings/change-password.screen'
 import { EditProfileScreen } from '../../modules/settings/edit-profile.screen'
+import { useNewArchives } from '../../modules/messages/archives/archives.hook'
+import { ArchivesContext } from '../../modules/messages/archives/archives.context'
 
 export type FrontStackParamsList = {
   'Main': undefined
@@ -31,7 +33,7 @@ export type SettingsStackParamsList = {
 } & ParamListBase
 
 export type BottomTabsParamsList = {
-  'Messages': undefined
+  'Chats': undefined
   'Help': undefined
   'Settings': undefined
 } & ParamListBase
@@ -45,7 +47,7 @@ const MainNavigator = (): JSX.Element => (
   <BottomTabs.Navigator
     initialRouteName='Help'
     screenOptions={getScreenOptions}>
-    <BottomTabs.Screen name='Messages' component={ChatsScreen}/>
+    <BottomTabs.Screen name='Chats' component={ChatsScreen}/>
     <BottomTabs.Screen name='Help' component={HelpNavigator}/>
     <BottomTabs.Screen name='Settings' component={SettingsNavigator}/>
   </BottomTabs.Navigator>
@@ -94,14 +96,17 @@ export const NavigationInternal = (): JSX.Element => {
     messenger,
     inbox
   } = useNewMessenger()
+  const { archives } = useNewArchives()
 
   return (
-    <MessengerContext.Provider value={messenger}>
-      <InboxContext.Provider value={inbox}>
-        <NavigationContainer>
-          <InternalNavigator/>
-        </NavigationContainer>
-      </InboxContext.Provider>
-    </MessengerContext.Provider>
+    <ArchivesContext.Provider value={archives}>
+      <MessengerContext.Provider value={messenger}>
+        <InboxContext.Provider value={inbox}>
+          <NavigationContainer>
+            <InternalNavigator/>
+          </NavigationContainer>
+        </InboxContext.Provider>
+      </MessengerContext.Provider>
+    </ArchivesContext.Provider>
   )
 }

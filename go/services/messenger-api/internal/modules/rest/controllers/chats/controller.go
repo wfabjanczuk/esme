@@ -53,7 +53,7 @@ func (c *Controller) GetAgencyChats(w http.ResponseWriter, r *http.Request) {
 	c.responder.WriteJson(w, http.StatusOK, enrichedChats)
 }
 
-func (c *Controller) GetChatMessages(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) GetAgencyChatMessages(w http.ResponseWriter, r *http.Request) {
 	organizer, err := requests.GetCurrentOrganizer(r)
 	if err != nil {
 		c.logger.Println(err)
@@ -62,7 +62,52 @@ func (c *Controller) GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	chatId := httprouter.ParamsFromContext(r.Context()).ByName("chatId")
-	chat, err := c.chatsRepository.FindOneInAgency(chatId, organizer.AgencyId)
+	chat, err := c.chatsRepository.FindOneByAgencyId(chatId, organizer.AgencyId)
+	if err != nil {
+		c.logger.Println(err)
+		c.responder.WriteError(w, common.ErrChatNotFound, http.StatusBadRequest)
+		return
+	}
+
+	chatMessages, err := c.messagesRepository.FindAll(chat.Id)
+	if err != nil {
+		c.logger.Println(err)
+		c.responder.WriteError(w, common.ErrMessagesNotFetchedFromDb, http.StatusBadRequest)
+		return
+	}
+
+	c.responder.WriteJson(w, http.StatusOK, chatMessages)
+}
+
+func (c *Controller) GetParticipantChats(w http.ResponseWriter, r *http.Request) {
+	participant, err := requests.GetCurrentParticipant(r)
+	if err != nil {
+		c.logger.Println(err)
+		c.responder.WriteError(w, common.ErrUnexpected, http.StatusInternalServerError)
+		return
+	}
+
+	agencyChats, err := c.chatsRepository.FindAllByParticipantId(participant.Id, 1)
+	if err != nil {
+		c.logger.Println(err)
+		c.responder.WriteError(w, common.ErrChatNotFound, http.StatusBadRequest)
+		return
+	}
+
+	enrichedChats := c.enrichedChatsService.EnrichWithParticipant(agencyChats)
+	c.responder.WriteJson(w, http.StatusOK, enrichedChats)
+}
+
+func (c *Controller) GetParticipantChatMessages(w http.ResponseWriter, r *http.Request) {
+	participant, err := requests.GetCurrentParticipant(r)
+	if err != nil {
+		c.logger.Println(err)
+		c.responder.WriteError(w, common.ErrUnexpected, http.StatusInternalServerError)
+		return
+	}
+
+	chatId := httprouter.ParamsFromContext(r.Context()).ByName("chatId")
+	chat, err := c.chatsRepository.FindOneByParticipantId(chatId, participant.Id)
 	if err != nil {
 		c.logger.Println(err)
 		c.responder.WriteError(w, common.ErrChatNotFound, http.StatusBadRequest)

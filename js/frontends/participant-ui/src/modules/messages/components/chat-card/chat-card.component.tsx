@@ -33,7 +33,7 @@ export const ChatCard = ({
           title={
             <ChatCardTitle eventName={event.name} isEnded={isEnded}/>
           }
-          description={<ChatDescription timeStart={parseDate(event.timeStart)} isEnded={isEnded}/>}
+          description={<ChatDescription timeStart={parseDate(chat.timeStart)} isEnded={isEnded}/>}
           left={() => (
             <ChatIcon isEnded={isEnded}/>
           )}
