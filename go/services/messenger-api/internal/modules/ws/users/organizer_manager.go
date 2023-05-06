@@ -48,6 +48,13 @@ func (om *OrganizersManager) SetConsumer(organizerConsumer *organizers.Consumer)
 	om.organizerConsumer = organizerConsumer
 }
 
+func (om *OrganizersManager) IsConnected(id int32) bool {
+	om.mu.RLock()
+	defer om.mu.RUnlock()
+
+	return om.organizerConnectionPools[id] != nil
+}
+
 func (om *OrganizersManager) AddConnection(
 	organizer *authentication.Organizer, wsConnection *websocket.Conn,
 ) error {

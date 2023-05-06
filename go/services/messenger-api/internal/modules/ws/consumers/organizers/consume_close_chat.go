@@ -43,7 +43,7 @@ func (c *Consumer) consumeCloseChat(msg *connections.OrganizerMessage) {
 		return
 	}
 
-	c.chatsManager.CloseChat(inPayload.ChatId)
+	c.chatsManager.RemoveChatCache(inPayload.ChatId)
 	go c.chatsManager.GetOrganizersManager().Send(msg.Source.Organizer.Id, closedChatMessage)
 	go func() {
 		id := chatCache.ParticipantId

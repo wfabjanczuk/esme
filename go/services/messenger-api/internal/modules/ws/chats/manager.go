@@ -13,7 +13,10 @@ import (
 	"messenger-api/internal/modules/ws/protocol/out"
 	"messenger-api/internal/modules/ws/users"
 	"sync"
+	"time"
 )
+
+const garbageCollectionInterval = 1 * time.Minute
 
 type Manager struct {
 	chatsRepository     *chats.Repository
@@ -29,7 +32,7 @@ func NewManager(
 	infra *infrastructure.Module, organizersManager *users.OrganizersManager,
 	participantsManager *users.ParticipantsManager, logger *log.Logger,
 ) *Manager {
-	return &Manager{
+	m := &Manager{
 		chatsRepository:     infra.ChatsRepository,
 		messagesRepository:  infra.MessagesRepository,
 		organizersManager:   organizersManager,
@@ -38,6 +41,9 @@ func NewManager(
 		logger:              logger,
 		mu:                  sync.RWMutex{},
 	}
+
+	go m.RunGarbageCollection()
+	return m
 }
 
 func (m *Manager) GetOrganizersManager() layers.OrganizersManager {
@@ -54,11 +60,15 @@ func (m *Manager) AddOrganizerConnection(organizer *authentication.Organizer, ws
 		return err
 	}
 
-	for _, chat := range organizerChats {
-		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId, chat.EventId)
+	err = m.organizersManager.AddConnection(organizer, wsConnection)
+	if err != nil {
+		return err
 	}
 
-	return m.organizersManager.AddConnection(organizer, wsConnection)
+	for _, chat := range organizerChats {
+		m.SetChatCache(chat.Id, chat.OrganizerId, chat.ParticipantId, chat.EventId)
+	}
+	return nil
 }
 
 func (m *Manager) AddParticipantConnection(
@@ -69,21 +79,24 @@ func (m *Manager) AddParticipantConnection(
 		return err
 	}
 
-	for _, chat := range participantChats {
-		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId, chat.EventId)
+	err = m.participantsManager.AddConnection(participant, wsConnection)
+	if err != nil {
+		return err
 	}
 
-	return m.participantsManager.AddConnection(participant, wsConnection)
+	for _, chat := range participantChats {
+		m.SetChatCache(chat.Id, chat.OrganizerId, chat.ParticipantId, chat.EventId)
+	}
+	return nil
 }
 
-func (m *Manager) SetChat(chatId string, organizerId, participantId, eventId int32) {
+func (m *Manager) SetChatCache(chatId string, organizerId, participantId, eventId int32) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	_, exists := m.chats[chatId]
 	if !exists {
 		m.chats[chatId] = layers.ChatCache{
-			ChatId:        chatId,
 			EventId:       eventId,
 			OrganizerId:   organizerId,
 			ParticipantId: participantId,
@@ -91,7 +104,7 @@ func (m *Manager) SetChat(chatId string, organizerId, participantId, eventId int
 	}
 }
 
-func (m *Manager) CloseChat(chatId string) {
+func (m *Manager) RemoveChatCache(chatId string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -147,13 +160,6 @@ func (m *Manager) SendUserMessageToChat(chatId string, message *messages.Message
 		return common.ErrMessageNotSaved
 	}
 
-	m.mu.RLock()
-	c, exists = m.chats[chatId]
-	m.mu.RUnlock()
-	if !exists {
-		return common.ErrChatNotFoundMessageSaved
-	}
-
 	outMsg, err := out.BuildUserMessage(msg)
 	if err != nil {
 		m.logger.Printf("could not build user message: %s", err)
@@ -169,4 +175,31 @@ func (m *Manager) SendProtocolMessageToChat(chat *chats.Chat, protocolMessage *p
 	go m.organizersManager.Send(chat.OrganizerId, protocolMessage)
 	go m.participantsManager.Send(chat.ParticipantId, protocolMessage)
 	return nil
+}
+
+func (m *Manager) RunGarbageCollection() {
+	for range time.Tick(garbageCollectionInterval) {
+		m.removeInactiveChats()
+	}
+}
+
+func (m *Manager) removeInactiveChats() {
+	m.mu.Lock()
+	copiedChats := make(map[string]layers.ChatCache, len(m.chats))
+	for cId, c := range m.chats {
+		copiedChats[cId] = c
+	}
+	m.mu.Unlock()
+
+	removedCount := 0
+	for cId, c := range copiedChats {
+		if !m.participantsManager.IsConnected(c.ParticipantId) && !m.organizersManager.IsConnected(c.OrganizerId) {
+			m.RemoveChatCache(cId)
+			removedCount++
+		}
+	}
+
+	if removedCount > 0 {
+		m.logger.Printf("removed %d inactive chats\n", removedCount)
+	}
 }

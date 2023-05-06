@@ -48,6 +48,13 @@ func (pm *ParticipantsManager) SetConsumer(participantConsumer *participants.Con
 	pm.participantConsumer = participantConsumer
 }
 
+func (pm *ParticipantsManager) IsConnected(id int32) bool {
+	pm.mu.RLock()
+	defer pm.mu.RUnlock()
+
+	return pm.participantConnectionPools[id] != nil
+}
+
 func (pm *ParticipantsManager) AddConnection(
 	participant *authentication.Participant, wsConnection *websocket.Conn,
 ) error {
