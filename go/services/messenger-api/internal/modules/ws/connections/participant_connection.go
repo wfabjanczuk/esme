@@ -135,6 +135,9 @@ func (pc *ParticipantConnection) SendError(err error) {
 }
 
 func (pc *ParticipantConnection) Close() {
+	pc.writeMu.Lock()
+	defer pc.writeMu.Unlock()
+
 	pc.shutdowns <- pc
 	pc.wsConnection.Close()
 	pc.logger.Printf("closed connection for %s\n", pc.GetInfo())

@@ -13,16 +13,35 @@ import (
 
 type ParticipantsManager struct {
 	participantConnectionPools map[int32]*connection_pools.ParticipantConnectionPool
+	connectionPoolShutdowns    chan int32
 	participantConsumer        *participants.Consumer
 	logger                     *log.Logger
 	mu                         sync.RWMutex
 }
 
 func NewParticipantsManager(logger *log.Logger) *ParticipantsManager {
-	return &ParticipantsManager{
+	pm := &ParticipantsManager{
 		participantConnectionPools: make(map[int32]*connection_pools.ParticipantConnectionPool),
+		connectionPoolShutdowns:    make(chan int32, 10),
 		logger:                     logger,
 	}
+
+	go pm.listenOnShutdowns()
+	return pm
+}
+
+func (pm *ParticipantsManager) listenOnShutdowns() {
+	for {
+		go pm.removeConnectionPool(<-pm.connectionPoolShutdowns)
+	}
+}
+
+func (pm *ParticipantsManager) removeConnectionPool(id int32) {
+	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
+	delete(pm.participantConnectionPools, id)
+	pm.logger.Printf("closed connection pool for participant %d\n", id)
 }
 
 func (pm *ParticipantsManager) SetConsumer(participantConsumer *participants.Consumer) {
@@ -37,7 +56,9 @@ func (pm *ParticipantsManager) AddConnection(
 
 	pcp, exists := pm.participantConnectionPools[participant.Id]
 	if !exists {
-		pcp = connection_pools.NewParticipantConnectionPool(participant, pm.participantConsumer, pm.logger)
+		pcp = connection_pools.NewParticipantConnectionPool(
+			participant, pm.participantConsumer, pm.connectionPoolShutdowns, pm.logger,
+		)
 		pm.participantConnectionPools[participant.Id] = pcp
 	}
 

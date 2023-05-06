@@ -13,12 +13,18 @@ export const useNewArchives = (): NewArchivesHook => {
   const [archives, setArchives] = useState<Archives>(new Archives({}, {}, undefined, undefined))
 
   useEffect(() => {
-    setArchives(new Archives({}, {}, authenticator, alertStore, setArchives))
-  }, [])
+    if (!archives.hasState()) {
+      setArchives(new Archives({}, {}, authenticator, alertStore, setArchives))
+    }
+  }, [archives.hasState()])
 
   useEffect(() => {
     if (archives.hasState()) {
-      Object.entries(archives.chats).forEach(([chatId]) => archives.fetchChatMessages(chatId))
+      Object.entries(archives.chats).forEach(([chatId]) => {
+        if (archives.messages[chatId] === undefined) {
+          archives.fetchChatMessages(chatId)
+        }
+      })
     }
   }, [authenticator, archives.chats])
 

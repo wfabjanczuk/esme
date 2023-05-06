@@ -13,16 +13,35 @@ import (
 
 type OrganizersManager struct {
 	organizerConnectionPools map[int32]*connection_pools.OrganizerConnectionPool
+	connectionPoolShutdowns  chan int32
 	organizerConsumer        *organizers.Consumer
 	logger                   *log.Logger
 	mu                       sync.RWMutex
 }
 
 func NewOrganizersManager(logger *log.Logger) *OrganizersManager {
-	return &OrganizersManager{
+	om := &OrganizersManager{
 		organizerConnectionPools: make(map[int32]*connection_pools.OrganizerConnectionPool),
+		connectionPoolShutdowns:  make(chan int32, 10),
 		logger:                   logger,
 	}
+
+	go om.listenOnShutdowns()
+	return om
+}
+
+func (om *OrganizersManager) listenOnShutdowns() {
+	for {
+		go om.removeConnectionPool(<-om.connectionPoolShutdowns)
+	}
+}
+
+func (om *OrganizersManager) removeConnectionPool(id int32) {
+	om.mu.Lock()
+	defer om.mu.Unlock()
+
+	delete(om.organizerConnectionPools, id)
+	om.logger.Printf("closed connection pool for organizer %d\n", id)
 }
 
 func (om *OrganizersManager) SetConsumer(organizerConsumer *organizers.Consumer) {
@@ -37,7 +56,9 @@ func (om *OrganizersManager) AddConnection(
 
 	ocp, exists := om.organizerConnectionPools[organizer.Id]
 	if !exists {
-		ocp = connection_pools.NewOrganizerConnectionPool(organizer, om.organizerConsumer, om.logger)
+		ocp = connection_pools.NewOrganizerConnectionPool(
+			organizer, om.organizerConsumer, om.connectionPoolShutdowns, om.logger,
+		)
 		om.organizerConnectionPools[organizer.Id] = ocp
 	}
 

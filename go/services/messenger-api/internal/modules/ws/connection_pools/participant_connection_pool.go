@@ -5,12 +5,16 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"messenger-api/internal/modules/authentication"
+	"messenger-api/internal/modules/common"
 	"messenger-api/internal/modules/ws/connections"
 	"messenger-api/internal/modules/ws/consumers/participants"
 	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/out"
 	"sync"
+	"time"
 )
+
+const participantConnectionPoolTimeout = 30 * time.Second
 
 type ParticipantConnectionPool struct {
 	participant         *authentication.Participant
@@ -19,12 +23,13 @@ type ParticipantConnectionPool struct {
 	connections         map[*connections.ParticipantConnection]struct{}
 	connectionMessages  chan *connections.ParticipantMessage
 	connectionShutdowns chan *connections.ParticipantConnection
-	done                chan struct{}
+	shutdowns           chan int32
+	doneChan            chan struct{}
 	mu                  sync.RWMutex
 }
 
 func NewParticipantConnectionPool(
-	participant *authentication.Participant, consumer *participants.Consumer, logger *log.Logger,
+	participant *authentication.Participant, consumer *participants.Consumer, shutdowns chan int32, logger *log.Logger,
 ) *ParticipantConnectionPool {
 	pcp := &ParticipantConnectionPool{
 		participant:         participant,
@@ -33,7 +38,8 @@ func NewParticipantConnectionPool(
 		connections:         make(map[*connections.ParticipantConnection]struct{}),
 		connectionMessages:  make(chan *connections.ParticipantMessage, 10),
 		connectionShutdowns: make(chan *connections.ParticipantConnection, 10),
-		done:                make(chan struct{}),
+		shutdowns:           shutdowns,
+		doneChan:            make(chan struct{}),
 	}
 
 	go pcp.listenOnMessages()
@@ -43,19 +49,37 @@ func NewParticipantConnectionPool(
 
 func (pcp *ParticipantConnectionPool) listenOnMessages() {
 	for {
-		go pcp.consumer.ConsumeMessage(<-pcp.connectionMessages)
+		select {
+		case <-pcp.doneChan:
+			pcp.logger.Printf("stopped listening on messages for %s\n", pcp.GetInfo())
+			return
+		case msg := <-pcp.connectionMessages:
+			go pcp.consumer.ConsumeMessage(msg)
+		}
 	}
 }
 
 func (pcp *ParticipantConnectionPool) listenOnShutdowns() {
 	for {
-		go pcp.removeConnection(<-pcp.connectionShutdowns)
+		select {
+		case <-pcp.doneChan:
+			pcp.logger.Printf("stopped listening on shutdowns for %s\n", pcp.GetInfo())
+			return
+		case conn := <-pcp.connectionShutdowns:
+			go pcp.removeConnection(conn)
+		}
 	}
 }
 
 func (pcp *ParticipantConnectionPool) AddConnection(
 	participant *authentication.Participant, wsConnection *websocket.Conn,
 ) error {
+	select {
+	case <-pcp.doneChan:
+		return common.ErrConnectionPoolClosing
+	default:
+	}
+
 	participantConn, err := connections.NewParticipantConnection(
 		participant, wsConnection, pcp.connectionMessages, pcp.connectionShutdowns, pcp.logger,
 	)
@@ -76,6 +100,24 @@ func (pcp *ParticipantConnectionPool) removeConnection(conn *connections.Partici
 
 	delete(pcp.connections, conn)
 	pcp.logger.Printf("removed connection of %s", pcp.GetInfo())
+
+	if len(pcp.connections) > 0 {
+		return
+	}
+
+	time.AfterFunc(
+		participantConnectionPoolTimeout,
+		func() {
+			pcp.mu.Lock()
+			defer pcp.mu.Unlock()
+
+			if len(pcp.connections) == 0 {
+				pcp.logger.Printf("starting to close connection pool for %s\n", pcp.GetInfo())
+				close(pcp.doneChan)
+				pcp.shutdowns <- pcp.participant.Id
+			}
+		},
+	)
 }
 
 func (pcp *ParticipantConnectionPool) GetInfo() string {
@@ -83,6 +125,12 @@ func (pcp *ParticipantConnectionPool) GetInfo() string {
 }
 
 func (pcp *ParticipantConnectionPool) Send(outMsg *protocol.Message) {
+	select {
+	case <-pcp.doneChan:
+		return
+	default:
+	}
+
 	pcp.mu.RLock()
 	defer pcp.mu.RUnlock()
 

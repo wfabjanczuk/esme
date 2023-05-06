@@ -24,6 +24,8 @@ var (
 	ErrMessagesNotFetchedFromDb       = errors.New("could not get messages")
 	ErrChatRequestNotFetchedFromQueue = errors.New("could not get chat from queue")
 	ErrChatsNotFetchedFromDb          = errors.New("could not get chats")
+
+	ErrConnectionPoolClosing = errors.New("connection pool is in closing state")
 )
 
 func NewErrNoAccessToChat(chatId string) error {

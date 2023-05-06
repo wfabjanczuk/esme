@@ -134,6 +134,9 @@ func (oc *OrganizerConnection) SendError(err error) {
 }
 
 func (oc *OrganizerConnection) Close() {
+	oc.writeMu.Lock()
+	defer oc.writeMu.Unlock()
+
 	oc.shutdowns <- oc
 	oc.wsConnection.Close()
 	oc.logger.Printf("closed connection for %s\n", oc.GetInfo())

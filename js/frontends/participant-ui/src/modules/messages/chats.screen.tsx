@@ -34,7 +34,7 @@ export const ChatsScreen = ({ navigation }: ChatsScreenProps): JSX.Element => {
   }, [messenger.isInitialized(), isFocused])
 
   useEffect(() => {
-    if (archives.hasState()) {
+    if (archives.hasState() && isFocused) {
       archives.fetchChats()
     }
   }, [archives.hasState(), isFocused])
