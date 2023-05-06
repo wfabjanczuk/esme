@@ -54,7 +54,7 @@ func (r *Repository) DoesChatRequestExist(userId, eventId int) (bool, error) {
 	return true, nil
 }
 
-func (r *Repository) RequestChat(chatRequest *ChatRequestMq) error {
+func (r *Repository) CreateChatRequest(chatRequest *ChatRequestMq) error {
 	err := r.insertChatRequest(chatRequest.ParticipantId, chatRequest.EventId)
 	if err != nil {
 		if strings.Contains(err.Error(), duplicateChatRequestMessage) {
@@ -70,6 +70,15 @@ func (r *Repository) RequestChat(chatRequest *ChatRequestMq) error {
 			err = fmt.Errorf("%w; unable to delete chat request from participant db: %s", err, dbErr)
 		}
 		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) DeleteChatRequest(userId, eventId int) error {
+	dbErr := r.deleteChatRequest(userId, eventId)
+	if dbErr != nil {
+		return fmt.Errorf("unable to delete chat request from participant db: %w", dbErr)
 	}
 
 	return nil

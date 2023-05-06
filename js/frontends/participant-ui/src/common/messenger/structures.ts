@@ -2,6 +2,7 @@ export enum ActionType {
   info = 'info',
   error = 'error',
   newChat = 'new_chat',
+  closedChat = 'closed_chat',
   chats = 'chats',
   chatHistory = 'chat_history',
   userMessage = 'user_message'
@@ -26,6 +27,13 @@ export interface NewChatAction {
   payload: Chat
 }
 
+export interface ClosedChatAction {
+  type: ActionType.closedChat
+  payload: {
+    chatId: string
+  }
+}
+
 export interface ChatsAction {
   type: ActionType.chats
   payload: {
@@ -46,7 +54,7 @@ export interface UserMessageAction {
   payload: Message
 }
 
-export type Action = InfoAction | ErrorAction | NewChatAction | ChatsAction | ChatHistoryAction | UserMessageAction
+export type Action = InfoAction | ErrorAction | NewChatAction | ClosedChatAction | ChatsAction | ChatHistoryAction | UserMessageAction
 
 export interface Chat {
   id: string
@@ -54,7 +62,7 @@ export interface Chat {
   eventId: number
   organizerId: number
   participantId: number
-  ended: 0
+  ended: number
   latStart: number
   lngStart: number
   timeStart: string

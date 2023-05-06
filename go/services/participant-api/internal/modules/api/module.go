@@ -58,7 +58,8 @@ func (m *Module) attachRoutes(
 	r.HandlerFunc(http.MethodGet, "/events/:id", cu(m.events.GetEvent))
 
 	r.HandlerFunc(http.MethodGet, "/chat-requests", cu(m.chatRequests.DoesChatRequestExist))
-	r.HandlerFunc(http.MethodPost, "/chat-requests", cu(m.chatRequests.RequestChat))
+	r.HandlerFunc(http.MethodPost, "/chat-requests", cu(m.chatRequests.CreateChatRequest))
+	r.HandlerFunc(http.MethodDelete, "/chat-requests", ak(m.chatRequests.DeleteChatRequest))
 
-	r.HandlerFunc(http.MethodGet, "/users", ak(m.users.GetUsers))
+	r.HandlerFunc(http.MethodGet, "/users", ak(m.users.GetUsersByIds))
 }

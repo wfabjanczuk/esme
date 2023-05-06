@@ -46,12 +46,20 @@ export const useNewMessenger = (): NewMessengerHook => {
   }, [messenger.hasState(), messenger.isInitialized()])
 
   useEffect(() => {
-    inbox.chats.forEach(chat => {
-      if (inbox.messages[chat.id] === undefined) {
-        messenger.getChatHistory(chat.id)
+    inbox.chats.forEach((chat, chatId) => {
+      const chatMessages = inbox.messages.get(chatId)
+      if (chatMessages === undefined) {
+        messenger.getChatHistory(chatId)
       }
     })
   }, [inbox.chats])
+
+  useEffect(() => {
+    if (inbox.callbacks.length > 0) {
+      inbox.callbacks.forEach(cb => cb())
+      inbox.callbacks = []
+    }
+  }, [inbox.callbacks])
 
   return {
     messenger,

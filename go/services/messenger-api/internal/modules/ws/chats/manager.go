@@ -8,24 +8,19 @@ import (
 	"messenger-api/internal/modules/infrastructure"
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
+	"messenger-api/internal/modules/ws/layers"
 	"messenger-api/internal/modules/ws/protocol"
 	"messenger-api/internal/modules/ws/protocol/out"
 	"messenger-api/internal/modules/ws/users"
 	"sync"
 )
 
-type chat struct {
-	ChatId        string
-	OrganizerId   int32
-	ParticipantId int32
-}
-
 type Manager struct {
 	chatsRepository     *chats.Repository
 	messagesRepository  *messages.Repository
 	organizersManager   *users.OrganizersManager
 	participantsManager *users.ParticipantsManager
-	chats               map[string]*chat
+	chats               map[string]layers.ChatCache
 	logger              *log.Logger
 	mu                  sync.RWMutex
 }
@@ -39,10 +34,18 @@ func NewManager(
 		messagesRepository:  infra.MessagesRepository,
 		organizersManager:   organizersManager,
 		participantsManager: participantsManager,
-		chats:               make(map[string]*chat),
+		chats:               make(map[string]layers.ChatCache),
 		logger:              logger,
 		mu:                  sync.RWMutex{},
 	}
+}
+
+func (m *Manager) GetOrganizersManager() layers.OrganizersManager {
+	return m.organizersManager
+}
+
+func (m *Manager) GetParticipantsManager() layers.ParticipantsManager {
+	return m.participantsManager
 }
 
 func (m *Manager) AddOrganizerConnection(organizer *authentication.Organizer, wsConnection *websocket.Conn) error {
@@ -52,7 +55,7 @@ func (m *Manager) AddOrganizerConnection(organizer *authentication.Organizer, ws
 	}
 
 	for _, chat := range organizerChats {
-		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
+		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId, chat.EventId)
 	}
 
 	return m.organizersManager.AddConnection(organizer, wsConnection)
@@ -67,24 +70,44 @@ func (m *Manager) AddParticipantConnection(
 	}
 
 	for _, chat := range participantChats {
-		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
+		m.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId, chat.EventId)
 	}
 
 	return m.participantsManager.AddConnection(participant, wsConnection)
 }
 
-func (m *Manager) SetChat(chatId string, organizerId, participantId int32) {
+func (m *Manager) SetChat(chatId string, organizerId, participantId, eventId int32) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	_, exists := m.chats[chatId]
 	if !exists {
-		m.chats[chatId] = &chat{
+		m.chats[chatId] = layers.ChatCache{
 			ChatId:        chatId,
+			EventId:       eventId,
 			OrganizerId:   organizerId,
 			ParticipantId: participantId,
 		}
 	}
+}
+
+func (m *Manager) CloseChat(chatId string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	delete(m.chats, chatId)
+}
+
+func (m *Manager) GetChatCache(chatId string) (layers.ChatCache, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	c, exists := m.chats[chatId]
+	if !exists {
+		return c, common.ErrChatNotFound
+	}
+
+	return c, nil
 }
 
 func (m *Manager) IsOrganizerInChat(organizerId int32, chatId string) bool {

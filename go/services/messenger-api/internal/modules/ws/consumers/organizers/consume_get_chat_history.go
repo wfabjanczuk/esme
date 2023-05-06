@@ -16,6 +16,12 @@ func (c *Consumer) consumeGetChatHistory(msg *connections.OrganizerMessage) {
 		return
 	}
 
+	if !c.chatsManager.IsOrganizerInChat(id, inPayload.ChatId) {
+		c.logger.Printf("organizer %d has no access to chat %s\n", id, inPayload.ChatId)
+		msg.Source.SendError(common.NewErrNoAccessToChat(inPayload.ChatId))
+		return
+	}
+
 	chatMessages, err := c.messagesRepository.FindAll(inPayload.ChatId)
 	if err != nil {
 		c.logger.Printf(

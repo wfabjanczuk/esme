@@ -42,14 +42,14 @@ func (c *Controller) GetAgencyChats(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	chats, err := c.chatsRepository.FindAllByAgencyId(organizer.AgencyId)
+	agencyChats, err := c.chatsRepository.FindAllByAgencyId(organizer.AgencyId, 1)
 	if err != nil {
 		c.logger.Println(err)
 		c.responder.WriteError(w, common.ErrChatNotFound, http.StatusBadRequest)
 		return
 	}
 
-	enrichedChats := c.enrichedChatsService.EnrichWithParticipant(chats)
+	enrichedChats := c.enrichedChatsService.EnrichWithParticipant(agencyChats)
 	c.responder.WriteJson(w, http.StatusOK, enrichedChats)
 }
 

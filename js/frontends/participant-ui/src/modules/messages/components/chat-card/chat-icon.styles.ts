@@ -1,6 +1,6 @@
 import styled from 'styled-components/native'
 
-export const ThreadCardIconContainer = styled.View.attrs({
+export const ChatCardIconContainer = styled.View.attrs({
   pointerEvents: 'box-none'
 })`
   margin: 8px;

@@ -16,8 +16,8 @@ type Message struct {
 	FromOrganizer int32     `json:"fromOrganizer"`
 	Content       string    `json:"content"`
 	TimeSent      time.Time `json:"timeSent"`
-	Lat           float64   `json:"lat,omitempty"`
-	Lng           float64   `json:"lng,omitempty"`
+	Lat           *float64  `json:"lat,omitempty"`
+	Lng           *float64  `json:"lng,omitempty"`
 }
 
 type PrimitiveMessage struct {
@@ -27,8 +27,8 @@ type PrimitiveMessage struct {
 	FromOrganizer int32              `bson:"fromOrganizer"`
 	Content       string             `bson:"content"`
 	TimeSent      primitive.DateTime `bson:"timeSent"`
-	Lat           float64            `json:"lat,omitempty"`
-	Lng           float64            `json:"lng,omitempty"`
+	Lat           *float64           `json:"lat,omitempty"`
+	Lng           *float64           `json:"lng,omitempty"`
 }
 
 func (m *Message) Primitive() (*PrimitiveMessage, error) {

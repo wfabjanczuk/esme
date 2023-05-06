@@ -3,53 +3,80 @@ import { Action, ActionType, Chat, Message } from './structures'
 import { AlertStore } from '../alert-bar/alert-store.context'
 
 export const emptyInbox: Inbox = {
-  chats: [],
-  messages: {}
+  callbacks: [],
+  chats: new Map<string, Chat>(),
+  messages: new Map<string, Message[]>()
 }
 
 export interface Inbox {
-  chats: Chat[]
-  messages: {
-    [chatId: string]: Message[]
-  }
+  callbacks: Array<() => void>
+  chats: Map<string, Chat>
+  messages: Map<string, Message[]>
 }
 
 export const NewInboxReducer: (alertStore: AlertStore) => Reducer<Inbox, Action> = (alertStore: AlertStore) => (state, action) => {
   switch (action.type) {
   case ActionType.info:
     return state
-  case ActionType.error:
-    alertStore.add('error', action.payload.message)
-    return state
-  case ActionType.chats:
+  case ActionType.error: {
+    const callbacks = [...state.callbacks, () => alertStore.add('error', action.payload.message)]
     return {
       ...state,
-      chats: action.payload.chats
+      callbacks
     }
-  case ActionType.chatHistory:
-    return {
-      ...state,
-      messages: {
-        ...state.messages,
-        [action.payload.chatId]: action.payload.messages
-      }
-    }
-  case ActionType.newChat:
-    alertStore.add('success', 'New chat started')
-    return {
-      ...state,
-      chats: [...state.chats, action.payload]
-    }
-  case ActionType.userMessage: {
-    const { chatId } = action.payload
-    const chatMessages = state.messages[chatId]
+  }
+  case ActionType.chats: {
+    const chats = new Map<string, Chat>()
+    action.payload.chats.forEach(chat => chats.set(chat.id, chat))
 
     return {
       ...state,
-      messages: {
-        ...state.messages,
-        [chatId]: [...chatMessages, action.payload]
-      }
+      chats
+    }
+  }
+  case ActionType.chatHistory: {
+    const messages = new Map(state.messages)
+    messages.set(action.payload.chatId, action.payload.messages)
+
+    return {
+      ...state,
+      messages
+    }
+  }
+  case ActionType.newChat: {
+    const chats = new Map(state.chats)
+    chats.set(action.payload.id, action.payload)
+    const callbacks = [...state.callbacks, () => alertStore.add('success', 'New chat started')]
+
+    return {
+      ...state,
+      callbacks,
+      chats
+    }
+  }
+  case ActionType.closedChat: {
+    const chatToClose = state.chats.get(action.payload.chatId)
+    if (chatToClose === undefined) {
+      return state
+    }
+
+    const chats = new Map(state.chats)
+    chatToClose.ended = 1
+
+    return {
+      ...state,
+      chats
+    }
+  }
+  case ActionType.userMessage: {
+    const { chatId } = action.payload
+    const chatMessages = state.messages.get(chatId) ?? []
+    const messages = new Map(state.messages)
+    messages.set(chatId, [...chatMessages, action.payload])
+
+    return {
+      ...state,
+      messages
     }
   }
   }

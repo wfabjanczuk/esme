@@ -67,6 +67,15 @@ export class Messenger {
     }))
   }
 
+  closeChat (chatId: string): void {
+    this.webSocket.send(JSON.stringify({
+      type: 'close_chat',
+      payload: {
+        chatId
+      }
+    }))
+  }
+
   private refreshState (): void {
     this.setState(new Messenger(this.setState, this.webSocket))
   }

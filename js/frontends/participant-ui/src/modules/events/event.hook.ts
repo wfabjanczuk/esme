@@ -13,8 +13,8 @@ const chatRequestsUrl = `${config.participantApiUrl}/chat-requests`
 interface RequestChatDto {
   eventId: number
   description: string
-  lat: number
-  lng: number
+  lat?: number
+  lng?: number
 }
 
 export interface EventHook {

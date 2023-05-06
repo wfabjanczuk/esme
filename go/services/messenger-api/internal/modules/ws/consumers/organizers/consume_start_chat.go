@@ -38,7 +38,7 @@ func (c *Consumer) consumeStartChat(msg *connections.OrganizerMessage) {
 		return
 	}
 
-	c.chatsManager.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId)
+	c.chatsManager.SetChat(chat.Id, chat.OrganizerId, chat.ParticipantId, chat.EventId)
 
 	enrichedChat := c.enrichedChatsService.EnrichWithParticipant([]*chats.Chat{chat})[0]
 	outMsg, err := out.BuildNewEnrichedChat(enrichedChat)

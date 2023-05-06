@@ -1,36 +1,52 @@
-import React, { Dispatch, Reducer, SetStateAction } from 'react'
+import React, { Reducer } from 'react'
 import { Action, ActionType, Chat, Message } from './structures'
 import { AlertStore } from '../alert-bar/alert-store.context'
 import { getLastLocationFromMessages } from '../utils'
 
 export const emptyInbox: Inbox = {
-  chats: {},
-  messages: {}
+  callbacks: [],
+  chatsCount: 0,
+  chats: new Map<string, Chat>(),
+  messages: new Map<string, Message[]>()
 }
 
 export interface Inbox {
-  chats: {
-    [chatId: string]: Chat
-  }
-  messages: {
-    [chatId: string]: Message[]
-  }
+  callbacks: Array<() => void>
+  chatsCount: number
+  chats: Map<string, Chat>
+  messages: Map<string, Message[]>
 }
 
-export const NewInboxReducer: (setIsWaitingForNewChat: Dispatch<SetStateAction<boolean>>, alertStore: AlertStore) => Reducer<Inbox, Action> =
-  (setIsWaitingForNewChat: Dispatch<SetStateAction<boolean>>, alertStore: AlertStore) => (state, action) => {
+export const NewInboxReducer: (alertStore: AlertStore) => Reducer<Inbox, Action> =
+  (alertStore: AlertStore) => (state, action) => {
     switch (action.type) {
     case ActionType.info:
       return state
-    case ActionType.error:
-      alertStore.add('error', action.payload.message)
-      return state
+    case ActionType.error: {
+      const callbacks = [...state.callbacks, () => alertStore.add('error', action.payload.message)]
+      return {
+        ...state,
+        callbacks
+      }
+    }
     case ActionType.chats: {
+      const chats = new Map<string, Chat>()
+      const messages = new Map<string, Message[]>()
+
       for (const chat of action.payload.chats) {
-        state.chats[chat.id] = chat
+        chats.set(chat.id, chat)
+        const chatMessages = state.messages.get(chat.id)
+        if (chatMessages !== undefined) {
+          messages.set(chat.id, chatMessages)
+        }
 
         if (chat.latStart != null && chat.lngStart != null) {
-          state.chats[chat.id].location = {
+          const chatToUpdate = chats.get(chat.id)
+          if (chatToUpdate === undefined) {
+            continue
+          }
+
+          chatToUpdate.location = {
             lat: chat.latStart,
             lng: chat.lngStart
           }
@@ -38,8 +54,9 @@ export const NewInboxReducer: (setIsWaitingForNewChat: Dispatch<SetStateAction<b
       }
 
       return {
-        chats: { ...state.chats },
-        messages: state.messages
+        ...state,
+        chats,
+        messages
       }
     }
     case ActionType.chatHistory: {
@@ -48,24 +65,27 @@ export const NewInboxReducer: (setIsWaitingForNewChat: Dispatch<SetStateAction<b
 
       let chats = state.chats
       if (location !== undefined) {
-        state.chats[chatId] = {
-          ...state.chats[chatId],
-          location
+        const chatToUpdate = chats.get(chatId)
+        if (chatToUpdate !== undefined) {
+          chats.set(chatId, {
+            ...chatToUpdate,
+            location
+          })
+          chats = new Map(state.chats)
         }
-        chats = { ...state.chats }
       }
 
+      const messages = new Map(state.messages)
+      messages.set(chatId, action.payload.messages)
+
       return {
+        ...state,
         chats,
-        messages: {
-          ...state.messages,
-          [action.payload.chatId]: action.payload.messages
-        }
+        messages
       }
     }
     case ActionType.newChat: {
-      setIsWaitingForNewChat(false)
-      alertStore.add('success', 'New chat started')
+      const callbacks = [...state.callbacks, () => alertStore.add('success', 'New chat started')]
       const chat = action.payload
       if (chat.latStart != null && chat.lngStart != null) {
         chat.location = {
@@ -74,12 +94,32 @@ export const NewInboxReducer: (setIsWaitingForNewChat: Dispatch<SetStateAction<b
         }
       }
 
+      const chats = new Map(state.chats)
+      chats.set(chat.id, chat)
+
       return {
-        chats: {
-          ...state.chats,
-          [chat.id]: chat
-        },
-        messages: state.messages
+        ...state,
+        callbacks,
+        chatsCount: state.chatsCount + 1,
+        chats
+      }
+    }
+    case ActionType.closedChat: {
+      const chatId = action.payload.chatId
+      const chatToDelete = state.chats.get(chatId)
+      if (chatToDelete === undefined) {
+        return state
+      }
+
+      const chats = new Map(state.chats)
+      const messages = new Map(state.messages)
+      chats.delete(chatId)
+      messages.delete(chatId)
+
+      return {
+        ...state,
+        chats,
+        messages
       }
     }
     case ActionType.userMessage: {
@@ -89,26 +129,27 @@ export const NewInboxReducer: (setIsWaitingForNewChat: Dispatch<SetStateAction<b
         lng,
         fromOrganizer
       } = action.payload
-      const chatMessages = state.messages[chatId] ?? []
+      const chatMessages = state.messages.get(chatId) ?? []
 
       let chats = state.chats
       if (fromOrganizer === 0 && lat != null && lng != null) {
-        state.chats[chatId] = {
-          ...state.chats[chatId],
-          location: {
+        const chatToUpdate = chats.get(chatId)
+        if (chatToUpdate !== undefined) {
+          chatToUpdate.location = {
             lat,
             lng
           }
+          chats = new Map(state.chats)
         }
-        chats = { ...state.chats }
       }
 
+      const messages = new Map(state.messages)
+      messages.set(chatId, [...chatMessages, action.payload])
+
       return {
+        ...state,
         chats,
-        messages: {
-          ...state.messages,
-          [chatId]: [...chatMessages, action.payload]
-        }
+        messages
       }
     }
     }

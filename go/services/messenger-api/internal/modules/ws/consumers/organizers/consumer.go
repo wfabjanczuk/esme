@@ -9,7 +9,7 @@ import (
 	"messenger-api/internal/modules/infrastructure/enriched_chats"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/connections"
-	"messenger-api/internal/modules/ws/interfaces"
+	"messenger-api/internal/modules/ws/layers"
 	"messenger-api/internal/modules/ws/protocol/in"
 )
 
@@ -18,12 +18,12 @@ type Consumer struct {
 	chatsRepository        *chats.Repository
 	messagesRepository     *messages.Repository
 	enrichedChatsService   *enriched_chats.Service
-	chatsManager           interfaces.ChatsManager
+	chatsManager           layers.ChatsManager
 	logger                 *log.Logger
 }
 
 func NewConsumer(
-	infra *infrastructure.Module, chatsManager interfaces.ChatsManager, logger *log.Logger,
+	infra *infrastructure.Module, chatsManager layers.ChatsManager, logger *log.Logger,
 ) *Consumer {
 	return &Consumer{
 		chatRequestsRepository: infra.ChatRequestsRepository,
@@ -45,6 +45,8 @@ func (c *Consumer) ConsumeMessage(msg *connections.OrganizerMessage) {
 		c.consumeSendMessage(msg)
 	case in.MsgTypeGetChatHistory:
 		c.consumeGetChatHistory(msg)
+	case in.MsgTypeCloseChat:
+		c.consumeCloseChat(msg)
 	default:
 		c.logger.Printf("invalid message type %s from organizer %d\n", msg.Message.Type, msg.Source.Organizer.Id)
 		msg.Source.SendError(common.ErrInvalidMessageType)

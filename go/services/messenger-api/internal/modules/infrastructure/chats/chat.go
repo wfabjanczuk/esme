@@ -15,8 +15,8 @@ type Chat struct {
 	OrganizerId   int32     `json:"organizerId"`
 	ParticipantId int32     `json:"participantId"`
 	Ended         int32     `json:"ended"`
-	LatStart      float64   `json:"latStart"`
-	LngStart      float64   `json:"lngStart"`
+	LatStart      *float64  `json:"latStart,omitempty"`
+	LngStart      *float64  `json:"lngStart,omitempty"`
 	TimeStart     time.Time `json:"timeStart"`
 	TimeEnd       time.Time `json:"timeEnd"`
 }
@@ -28,8 +28,8 @@ type PrimitiveChat struct {
 	OrganizerId   int32              `bson:"organizerId"`
 	ParticipantId int32              `bson:"participantId"`
 	Ended         int32              `bson:"ended"`
-	LatStart      float64            `bson:"latStart"`
-	LngStart      float64            `bson:"lngStart"`
+	LatStart      *float64           `bson:"latStart,omitempty"`
+	LngStart      *float64           `bson:"lngStart,omitempty"`
 	TimeStart     primitive.DateTime `bson:"timeStart"`
 	TimeEnd       primitive.DateTime `bson:"timeEnd"`
 }

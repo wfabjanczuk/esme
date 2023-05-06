@@ -11,13 +11,14 @@ interface MessagesProps {
 
 export const Messages = ({ activeChatId }: MessagesProps): JSX.Element => {
   const { messages } = useContext(InboxContext)
+  const chatMessages = messages.get(activeChatId)
 
-  if (activeChatId === '' || messages[activeChatId] === undefined) {
+  if (activeChatId === '' || chatMessages === undefined) {
     return <Box sx={{ flexGrow: 1 }}></Box>
   }
 
   return <Box sx={styles.messenger.messages}>
-    <ChatHistory messages={messages[activeChatId]}/>
+    <ChatHistory messages={chatMessages}/>
     <ChatInput chatId={activeChatId}/>
   </Box>
 }

@@ -7,19 +7,19 @@ import (
 	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/connections"
-	"messenger-api/internal/modules/ws/interfaces"
+	"messenger-api/internal/modules/ws/layers"
 	"messenger-api/internal/modules/ws/protocol/in"
 )
 
 type Consumer struct {
 	chatsRepository    *chats.Repository
 	messagesRepository *messages.Repository
-	chatsManager       interfaces.ChatsManager
+	chatsManager       layers.ChatsManager
 	logger             *log.Logger
 }
 
 func NewConsumer(
-	infra *infrastructure.Module, chatsManager interfaces.ChatsManager, logger *log.Logger,
+	infra *infrastructure.Module, chatsManager layers.ChatsManager, logger *log.Logger,
 ) *Consumer {
 	return &Consumer{
 		chatsRepository:    infra.ChatsRepository,

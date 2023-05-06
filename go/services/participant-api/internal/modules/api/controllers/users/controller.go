@@ -24,11 +24,7 @@ func NewController(usersRepository *users.Repository, logger *log.Logger) *Contr
 	}
 }
 
-type getUsersRequest struct {
-	Ids []int `json:"ids"`
-}
-
-func (c *Controller) GetUsers(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) GetUsersByIds(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		c.logger.Println(err)
@@ -36,7 +32,7 @@ func (c *Controller) GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload := &getUsersRequest{}
+	payload := &getUsersByIdsDto{}
 	err = json.Unmarshal(body, payload)
 	if err != nil {
 		c.logger.Println(err)

@@ -12,6 +12,7 @@ const (
 	MsgTypeInfo        = "info"
 	MsgTypeError       = "error"
 	MsgTypeNewChat     = "new_chat"
+	MsgTypeClosedChat  = "closed_chat"
 	MsgTypeChats       = "chats"
 	MsgTypeChatHistory = "chat_history"
 	MsgTypeUserMessage = "user_message"
@@ -126,6 +127,22 @@ func BuildUserMessage(message *messages.Message) (*protocol.Message, error) {
 
 	return &protocol.Message{
 		Type:    MsgTypeUserMessage,
+		Payload: outPayloadBytes,
+	}, nil
+}
+
+type closedChatPayload struct {
+	ChatId string `json:"chatId"`
+}
+
+func BuildClosedChat(chatId string) (*protocol.Message, error) {
+	outPayloadBytes, err := json.Marshal(closedChatPayload{ChatId: chatId})
+	if err != nil {
+		return nil, err
+	}
+
+	return &protocol.Message{
+		Type:    MsgTypeClosedChat,
 		Payload: outPayloadBytes,
 	}, nil
 }

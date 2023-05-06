@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { EventSelectScreen } from '../../modules/events/event-select.screen'
 import { ConversationScreen } from '../../modules/messages/conversation.screen'
-import { ThreadsScreen } from '../../modules/messages/threads.screen'
+import { ChatsScreen } from '../../modules/messages/chats.screen'
 import { SettingsScreen } from '../../modules/settings/settings.screen'
 import { getScreenOptions } from './styles'
 import { NavigationContainer, ParamListBase } from '@react-navigation/native'
@@ -45,7 +45,7 @@ const MainNavigator = (): JSX.Element => (
   <BottomTabs.Navigator
     initialRouteName='Help'
     screenOptions={getScreenOptions}>
-    <BottomTabs.Screen name='Messages' component={ThreadsScreen}/>
+    <BottomTabs.Screen name='Messages' component={ChatsScreen}/>
     <BottomTabs.Screen name='Help' component={HelpNavigator}/>
     <BottomTabs.Screen name='Settings' component={SettingsNavigator}/>
   </BottomTabs.Navigator>

@@ -19,6 +19,7 @@ var (
 
 	ErrChatNotCreated = errors.New("chat could not be created")
 	ErrChatNotFound   = errors.New("chat not found")
+	ErrChatNotClosed  = errors.New("chat could not be closed")
 
 	ErrMessagesNotFetchedFromDb       = errors.New("could not get messages")
 	ErrChatRequestNotFetchedFromQueue = errors.New("could not get chat from queue")

@@ -69,14 +69,14 @@ func (c *Controller) DoesChatRequestExist(w http.ResponseWriter, r *http.Request
 	c.responder.WriteJson(w, http.StatusOK, doesChatRequestExistResponse{Result: doesChatRequestExist})
 }
 
-func (c *Controller) RequestChat(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) CreateChatRequest(w http.ResponseWriter, r *http.Request) {
 	chatRequest, err, errStatus := c.buildChatRequest(r)
 	if err != nil {
 		c.responder.WriteError(w, err, errStatus)
 		return
 	}
 
-	err = c.chatRequestsRepository.RequestChat(chatRequest)
+	err = c.chatRequestsRepository.CreateChatRequest(chatRequest)
 	if err == api_errors.ErrChatRequestExists {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
@@ -102,18 +102,18 @@ func (c *Controller) buildChatRequest(r *http.Request) (*chat_requests.ChatReque
 		return nil, err, http.StatusBadRequest
 	}
 
-	requestChatDto := &requestChatDto{}
-	err = json.Unmarshal(body, requestChatDto)
+	createChatRequestDto := &createChatRequestDto{}
+	err = json.Unmarshal(body, createChatRequestDto)
 	if err != nil {
 		return nil, err, http.StatusBadRequest
 	}
-	if err = requestChatDto.validate(); err != nil {
+	if err = createChatRequestDto.validate(); err != nil {
 		return nil, err, http.StatusBadRequest
 	}
 
-	event, err := c.eventsRepository.GetEventById(requestChatDto.EventId)
+	event, err := c.eventsRepository.GetEventById(createChatRequestDto.EventId)
 	if err == api_errors.ErrApiResourceNotFound {
-		return nil, api_errors.NewErrEventNotFound(requestChatDto.EventId), http.StatusNotFound
+		return nil, api_errors.NewErrEventNotFound(createChatRequestDto.EventId), http.StatusNotFound
 	}
 	if err != nil {
 		c.logger.Println(err)
@@ -123,9 +123,33 @@ func (c *Controller) buildChatRequest(r *http.Request) (*chat_requests.ChatReque
 	return &chat_requests.ChatRequestMq{
 		ParticipantId: user.Id,
 		AgencyId:      event.AgencyId,
-		EventId:       requestChatDto.EventId,
-		Description:   requestChatDto.Description,
-		Lat:           requestChatDto.Lat,
-		Lng:           requestChatDto.Lng,
+		EventId:       createChatRequestDto.EventId,
+		Description:   createChatRequestDto.Description,
+		Lat:           createChatRequestDto.Lat,
+		Lng:           createChatRequestDto.Lng,
 	}, nil, 0
+}
+
+func (c *Controller) DeleteChatRequest(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		c.responder.WriteError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	deleteChatRequestDto := &deleteChatRequestDto{}
+	err = json.Unmarshal(body, deleteChatRequestDto)
+	if err != nil {
+		c.responder.WriteError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	err = c.chatRequestsRepository.DeleteChatRequest(deleteChatRequestDto.ParticipantId, deleteChatRequestDto.EventId)
+	if err != nil {
+		c.logger.Println(err)
+		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
+		return
+	}
+
+	c.responder.WriteEmptyResponse(w, http.StatusOK)
 }

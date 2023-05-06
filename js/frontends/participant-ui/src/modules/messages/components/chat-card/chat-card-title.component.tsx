@@ -1,13 +1,13 @@
 import React from 'react'
 import { StyledText } from '../../../../common/components/typography/styled-text.component'
 
-interface ThreadCardTitleProps {
+interface ChatCardTitleProps {
   eventName: string
-  unread: boolean
+  isEnded: boolean
 }
 
-export const ThreadCardTitle = ({ eventName, unread }: ThreadCardTitleProps): JSX.Element => {
-  const textVariant = unread ? 'activeBody' : 'body'
+export const ChatCardTitle = ({ eventName, isEnded }: ChatCardTitleProps): JSX.Element => {
+  const textVariant = isEnded ? 'body' : 'activeBody'
 
   return (
     <StyledText variant={textVariant} numberOfLines={1}>

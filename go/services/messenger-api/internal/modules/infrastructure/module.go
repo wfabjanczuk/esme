@@ -33,7 +33,9 @@ func NewModule(cfg *config.Config, logger *log.Logger) *Module {
 	)
 
 	return &Module{
-		ChatRequestsRepository: chat_requests.NewRepository(mqChannel),
+		ChatRequestsRepository: chat_requests.NewRepository(
+			mqChannel, cfg.ParticipantApiUrl, cfg.ParticipantApiKey, maxRequestTime,
+		),
 		ChatsRepository:        chats.NewRepository(db, maxDbQueryTime),
 		MessagesRepository:     messages.NewRepository(db, maxDbQueryTime),
 		ParticipantsRepository: participantsRepository,

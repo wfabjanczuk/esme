@@ -7,13 +7,13 @@ import { BottomTabsParamsList } from '../../app/navigation/navigation-internal'
 import { MessengerContext } from '../../common/messenger/messenger.context'
 import { StyledText } from '../../common/components/typography/styled-text.component'
 import { InboxContext } from '../../common/messenger/inbox.context'
-import { ThreadCard } from './components/thread-card/thread-card.component'
+import { ChatCard } from './components/chat-card/chat-card.component'
 import { AlertStoreContext } from '../../common/alert-bar/alert-store.context'
 import { useIsFocused } from '@react-navigation/native'
 
-type ThreadsScreenProps = NativeStackScreenProps<BottomTabsParamsList, 'Messages'>
+type ChatsScreenProps = NativeStackScreenProps<BottomTabsParamsList, 'Messages'>
 
-export const ThreadsScreen = ({ navigation }: ThreadsScreenProps): JSX.Element => {
+export const ChatsScreen = ({ navigation }: ChatsScreenProps): JSX.Element => {
   const messenger = useContext(MessengerContext)
   const alertStore = useContext(AlertStoreContext)
   const isFocused = useIsFocused()
@@ -30,13 +30,13 @@ export const ThreadsScreen = ({ navigation }: ThreadsScreenProps): JSX.Element =
   return (
     <SafeArea>
       <FlatList
-        data={chats}
+        data={Array.from(chats.values())}
         renderItem={({ item }) => (
           <Spacer position='top' size='medium'>
-            <ThreadCard chat={item} onPress={newOnPressHandler(item.id)}/>
+            <ChatCard chat={item} onPress={newOnPressHandler(item.id)}/>
           </Spacer>
         )}
-        keyExtractor={item => `chat_${item.eventId}`}
+        keyExtractor={item => `chat_${item.id}`}
         ListEmptyComponent={<NoChatsPlaceholder/>}
       />
     </SafeArea>

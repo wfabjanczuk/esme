@@ -20,7 +20,7 @@ export const useNewMessenger = (): NewMessengerHook => {
   const [isWaitingForNewChat, setIsWaitingForNewChat] = useState<boolean>(false)
   const [chatStarter, setChatStarter] = useState<ChatStarter>(new ChatStarter(isWaitingForNewChat, setIsWaitingForNewChat))
 
-  const [inbox, dispatch] = useReducer<Reducer<Inbox, Action>>(NewInboxReducer(setIsWaitingForNewChat, alertStore), emptyInbox)
+  const [inbox, dispatch] = useReducer<Reducer<Inbox, Action>>(NewInboxReducer(alertStore), emptyInbox)
   const { authorizationHeader } = useContext(AuthenticatorContext)
 
   useEffect(() => {
@@ -51,9 +51,10 @@ export const useNewMessenger = (): NewMessengerHook => {
   }, [messenger.hasState(), messenger.isInitialized()])
 
   useEffect(() => {
-    Object.entries(inbox.chats).forEach(([id]) => {
-      if (inbox.messages[id] === undefined) {
-        messenger.getChatHistory(id)
+    inbox.chats.forEach((chat, chatId) => {
+      const chatMessages = inbox.messages.get(chatId)
+      if (chatMessages === undefined) {
+        messenger.getChatHistory(chatId)
       }
     })
   }, [inbox.chats])
@@ -61,6 +62,19 @@ export const useNewMessenger = (): NewMessengerHook => {
   useEffect(() => {
     setChatStarter(new ChatStarter(isWaitingForNewChat, setIsWaitingForNewChat))
   }, [isWaitingForNewChat])
+
+  useEffect(() => {
+    if (inbox.chatsCount > 0) {
+      setIsWaitingForNewChat(false)
+    }
+  }, [inbox.chatsCount])
+
+  useEffect(() => {
+    if (inbox.callbacks.length > 0) {
+      inbox.callbacks.forEach(cb => cb())
+      inbox.callbacks = []
+    }
+  }, [inbox.callbacks])
 
   useEffect(() => {
     if (isWaitingForNewChat) {

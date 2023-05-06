@@ -9,13 +9,17 @@ import { KeyboardAvoidingView, Platform } from 'react-native'
 import { useHeaderHeight } from '@react-navigation/elements'
 import { MessengerContext } from '../../common/messenger/messenger.context'
 import { AlertStoreContext } from '../../common/alert-bar/alert-store.context'
+import { StyledText } from '../../common/components/typography/styled-text.component'
 
 type ConversationScreenProps = NativeStackScreenProps<FrontStackParamsList, 'Conversation'>
 
 export const ConversationScreen = ({ route: { params: { chatId } } }: ConversationScreenProps): JSX.Element => {
-  const messenger = useContext(MessengerContext)
   const alertStore = useContext(AlertStoreContext)
-  const { messages } = useContext(InboxContext)
+  const messenger = useContext(MessengerContext)
+  const { chats, messages } = useContext(InboxContext)
+  const chat = chats.get(chatId)
+  const chatMessages = messages.get(chatId)
+
   const headerHeight = useHeaderHeight()
   const keyboardVerticalOffset = Platform.OS === 'ios' ? headerHeight : 0
 
@@ -25,7 +29,7 @@ export const ConversationScreen = ({ route: { params: { chatId } } }: Conversati
     }
   }, [messenger.isInitialized()])
 
-  if (messages[chatId] === undefined) {
+  if (chat === undefined || chatMessages === undefined) {
     return <></>
   }
 
@@ -36,8 +40,11 @@ export const ConversationScreen = ({ route: { params: { chatId } } }: Conversati
         keyboardVerticalOffset={keyboardVerticalOffset}
         style={{ flex: 1 }}
       >
-        <ChatHistory messages={messages[chatId]}/>
-        <ChatInput chatId={chatId}/>
+        <ChatHistory messages={chatMessages}/>
+        {chat.ended === 0
+          ? <ChatInput chatId={chatId}/>
+          : <StyledText variant={'placeholder'}>Chat has ended.</StyledText>
+        }
       </KeyboardAvoidingView>
     </SafeArea>
   )

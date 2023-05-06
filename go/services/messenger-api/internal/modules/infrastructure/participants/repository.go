@@ -25,15 +25,15 @@ func NewRepository(participantApiUrl, participantApiKey string, maxRequestTime t
 	}
 }
 
+type getByIdsPayload struct {
+	Ids []int32 `json:"ids"`
+}
+
 func (r *Repository) FindByIds(participantIds []int32) (map[int32]*authentication.Participant, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxRequestTime)
 	defer cancel()
 
-	payload, err := json.Marshal(
-		struct {
-			Ids []int32 `json:"ids"`
-		}{Ids: participantIds},
-	)
+	payload, err := json.Marshal(getByIdsPayload{Ids: participantIds})
 	if err != nil {
 		return nil, fmt.Errorf("could not marshal get participants request: %w\n", err)
 	}

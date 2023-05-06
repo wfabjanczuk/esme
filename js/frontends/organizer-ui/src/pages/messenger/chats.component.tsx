@@ -22,9 +22,9 @@ export const Chats = ({
     <List disablePadding>
       <ChatStarter/>
       <Divider/>
-      {Object.entries(chats).map(([id, chat]) => (
+      {Array.from(chats.values()).map((chat) => (
         <ChatLabel
-          key={`chats_${id}`}
+          key={`chats_${chat.id}`}
           chat={chat}
           activeChatId={activeChatId}
           setActiveChatId={setActiveChatId}
