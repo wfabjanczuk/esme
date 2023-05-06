@@ -77,7 +77,7 @@ export const useNewMessenger = (): NewMessengerHook => {
   }, [inbox.callbacks])
 
   useEffect(() => {
-    if (isWaitingForNewChat) {
+    if (messenger.hasState() && messenger.isInitialized() && isWaitingForNewChat) {
       const restartInterval = setInterval(
         () => {
           messenger.startChat()

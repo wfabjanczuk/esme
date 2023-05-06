@@ -37,7 +37,7 @@ export const ChatsScreen = ({ navigation }: ChatsScreenProps): JSX.Element => {
     if (archives.hasState() && isFocused) {
       archives.fetchChats()
     }
-  }, [archives.hasState(), isFocused])
+  }, [archives.hasState(), chats, isFocused])
 
   const newOnPressHandler = (chatId: string) => () => navigation.navigate('Conversation', { chatId })
 
