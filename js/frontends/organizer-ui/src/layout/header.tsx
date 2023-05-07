@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { Box } from '@mui/material'
 import { useOutletContext } from 'react-router-dom'
-import { LayoutOutletContext } from './layout'
+import { LayoutOutletContext } from './root'
 
 export interface HeaderProps {
   title: string

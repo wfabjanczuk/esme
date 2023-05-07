@@ -11,14 +11,13 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
 import { Authenticator } from '../common/authenticator/authenticator.context'
 import { Profile } from '../pages/profile/profile.entity'
 import { VisibilityOffOutlined } from '@mui/icons-material'
-import { UserRole } from '../pages/users/user.entity'
 
 export const getUserCategories = (profile: Profile | undefined, authenticator: Authenticator, leavePreview: () => void): Category[] => {
   if (profile === undefined) {
     return getAccountCategories(authenticator)
   }
 
-  const isAdmin = [UserRole.superAdmin, UserRole.admin].includes(profile.role)
+  const { isAdmin } = authenticator
   const isAgency = profile.agencyId != null
 
   let categories = isAgency ? agencyCategories : adminCategories
