@@ -63,7 +63,7 @@ func (r *Repository) CreateChatRequest(chatRequest *ChatRequestMq) error {
 		return err
 	}
 
-	err = r.publishChatSetup(chatRequest)
+	err = r.publishChatRequest(chatRequest)
 	if err != nil {
 		dbErr := r.deleteChatRequest(chatRequest.ParticipantId, chatRequest.EventId)
 		if dbErr != nil {
@@ -102,7 +102,7 @@ func (r *Repository) deleteChatRequest(userId int, eventId int) error {
 	return err
 }
 
-func (r *Repository) publishChatSetup(chat *ChatRequestMq) error {
+func (r *Repository) publishChatRequest(chat *ChatRequestMq) error {
 	queue, err := r.mq.QueueDeclare(
 		getQueueName(chat.AgencyId),
 		true,

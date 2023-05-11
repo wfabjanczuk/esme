@@ -18,7 +18,7 @@ export const ChatStarter = (): JSX.Element => {
           setIsWaitingForNewChat(e.target.checked)
         }}
       />}
-      label={isWaitingForNewChat ? 'Waiting for new chat' : 'Not accepting new chats'}
+      label={isWaitingForNewChat ? 'Waiting for a new chat' : 'Not accepting new chats'}
     />
     {isWaitingForNewChat ? <CircularProgress size={25}/> : null}
   </ListItem>
