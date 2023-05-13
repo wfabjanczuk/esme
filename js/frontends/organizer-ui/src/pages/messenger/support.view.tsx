@@ -18,10 +18,10 @@ export const SupportView = (): JSX.Element => {
   const activeChat = chats.get(activeChatId)
 
   useEffect(() => {
-    if (!messenger.isInitialized()) {
+    if (!messenger.isConnected()) {
       alertStore.add('error', 'WebSocket connection could not be initialized')
     }
-  }, [messenger.isInitialized()])
+  }, [messenger.isConnected()])
 
   return <Fragment>
     <Header title='Live support'/>
