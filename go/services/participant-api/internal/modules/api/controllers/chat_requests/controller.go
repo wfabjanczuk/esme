@@ -30,7 +30,7 @@ func NewController(
 	}
 }
 
-func (c *Controller) DoesChatRequestExist(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) DoesChatRequestLockExist(w http.ResponseWriter, r *http.Request) {
 	user, err := requests.GetCurrentUser(r)
 	if err != nil {
 		c.logger.Println(err)
@@ -44,15 +44,17 @@ func (c *Controller) DoesChatRequestExist(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	doesChatRequestExistDto := &doesChatRequestExistDto{}
-	err = json.Unmarshal(body, doesChatRequestExistDto)
+	doesChatRequestLockExistDto := &doesChatRequestLockExistDto{}
+	err = json.Unmarshal(body, doesChatRequestLockExistDto)
 	if err != nil {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 	}
 
-	event, err := c.eventsRepository.GetEventById(doesChatRequestExistDto.EventId)
+	event, err := c.eventsRepository.GetEventById(doesChatRequestLockExistDto.EventId)
 	if err == api_errors.ErrApiResourceNotFound {
-		c.responder.WriteError(w, api_errors.NewErrEventNotFound(doesChatRequestExistDto.EventId), http.StatusNotFound)
+		c.responder.WriteError(
+			w, api_errors.NewErrEventNotFound(doesChatRequestLockExistDto.EventId), http.StatusNotFound,
+		)
 		return
 	}
 	if err != nil {
@@ -60,13 +62,13 @@ func (c *Controller) DoesChatRequestExist(w http.ResponseWriter, r *http.Request
 		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
 	}
 
-	doesChatRequestExist, err := c.chatRequestsRepository.DoesChatRequestExist(user.Id, event.Id)
+	doesChatRequestLockExist, err := c.chatRequestsRepository.DoesChatRequestLockExist(user.Id, event.Id)
 	if err != nil {
 		c.logger.Println(err)
 		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)
 	}
 
-	c.responder.WriteJson(w, http.StatusOK, doesChatRequestExistResponse{Result: doesChatRequestExist})
+	c.responder.WriteJson(w, http.StatusOK, doesChatRequestLockExistResponseDto{Result: doesChatRequestLockExist})
 }
 
 func (c *Controller) CreateChatRequest(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +92,7 @@ func (c *Controller) CreateChatRequest(w http.ResponseWriter, r *http.Request) {
 	c.responder.WriteEmptyResponse(w, http.StatusOK)
 }
 
-func (c *Controller) buildChatRequest(r *http.Request) (*chat_requests.ChatRequestMq, error, int) {
+func (c *Controller) buildChatRequest(r *http.Request) (*chat_requests.ChatRequest, error, int) {
 	user, err := requests.GetCurrentUser(r)
 	if err != nil {
 		c.logger.Println(err)
@@ -120,7 +122,7 @@ func (c *Controller) buildChatRequest(r *http.Request) (*chat_requests.ChatReque
 		return nil, api_errors.ErrDatabase, http.StatusInternalServerError
 	}
 
-	return &chat_requests.ChatRequestMq{
+	return &chat_requests.ChatRequest{
 		ParticipantId: user.Id,
 		AgencyId:      event.AgencyId,
 		EventId:       createChatRequestDto.EventId,
@@ -130,21 +132,23 @@ func (c *Controller) buildChatRequest(r *http.Request) (*chat_requests.ChatReque
 	}, nil, 0
 }
 
-func (c *Controller) DeleteChatRequest(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) DeleteChatRequestLock(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
 
-	deleteChatRequestDto := &deleteChatRequestDto{}
-	err = json.Unmarshal(body, deleteChatRequestDto)
+	deleteChatRequestLockDto := &deleteChatRequestLockDto{}
+	err = json.Unmarshal(body, deleteChatRequestLockDto)
 	if err != nil {
 		c.responder.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
 
-	err = c.chatRequestsRepository.DeleteChatRequest(deleteChatRequestDto.ParticipantId, deleteChatRequestDto.EventId)
+	err = c.chatRequestsRepository.DeleteChatRequestLock(
+		deleteChatRequestLockDto.ParticipantId, deleteChatRequestLockDto.EventId,
+	)
 	if err != nil {
 		c.logger.Println(err)
 		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)

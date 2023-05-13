@@ -12,7 +12,7 @@ create table if not exists "user"
     "timeSignOut" timestamp with time zone not null
 );
 
-create table if not exists "chatRequest"
+create table if not exists "chatRequestLock"
 (
     "eventId" integer not null,
     "userId"  integer not null
@@ -26,5 +26,5 @@ create table if not exists "chatRequest"
 alter table "user"
     owner to developer;
 
-alter table "chatRequest"
+alter table "chatRequestLock"
     owner to developer;

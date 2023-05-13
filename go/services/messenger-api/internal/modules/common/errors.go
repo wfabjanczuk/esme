@@ -13,9 +13,7 @@ var (
 	ErrMalformedMessage      = errors.New("malformed message")
 	ErrInvalidMessageType    = errors.New("invalid message type")
 	ErrInvalidMessagePayload = errors.New("invalid message payload")
-
-	ErrChatNotFoundMessageSaved = errors.New("message saved but chat not found")
-	ErrMessageNotSaved          = errors.New("message could not be saved")
+	ErrMessageNotSaved       = errors.New("message could not be saved")
 
 	ErrChatNotCreated = errors.New("chat could not be created")
 	ErrChatNotFound   = errors.New("chat not found")

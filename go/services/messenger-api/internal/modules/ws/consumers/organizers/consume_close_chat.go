@@ -36,7 +36,7 @@ func (c *Consumer) consumeCloseChat(msg *connections.OrganizerMessage) {
 		return
 	}
 
-	err = c.chatRequestsRepository.DeleteChatRequest(chatCache.ParticipantId, chatCache.EventId)
+	err = c.chatRequestsRepository.DeleteChatRequestLock(chatCache.ParticipantId, chatCache.EventId)
 	if err != nil {
 		c.logger.Printf(
 			"could not delete chat request lock of participant %d in event %d: %s\n", id, chatCache.EventId, err,
