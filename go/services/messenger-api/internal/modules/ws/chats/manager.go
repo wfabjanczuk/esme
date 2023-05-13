@@ -46,14 +46,6 @@ func NewManager(
 	return m
 }
 
-func (m *Manager) GetOrganizersManager() layers.OrganizersManager {
-	return m.organizersManager
-}
-
-func (m *Manager) GetParticipantsManager() layers.ParticipantsManager {
-	return m.participantsManager
-}
-
 func (m *Manager) AddOrganizerConnection(organizer *authentication.Organizer, wsConnection *websocket.Conn) error {
 	organizerChats, err := m.chatsRepository.FindAllByOrganizerId(organizer.Id)
 	if err != nil {
@@ -151,6 +143,7 @@ func (m *Manager) SendUserMessageToChat(chatId string, message *messages.Message
 	m.mu.RLock()
 	c, exists := m.chats[chatId]
 	m.mu.RUnlock()
+
 	if !exists {
 		return common.ErrChatNotFound
 	}
@@ -171,9 +164,17 @@ func (m *Manager) SendUserMessageToChat(chatId string, message *messages.Message
 	return nil
 }
 
-func (m *Manager) SendProtocolMessageToChat(chat *chats.Chat, protocolMessage *protocol.Message) error {
-	go m.organizersManager.Send(chat.OrganizerId, protocolMessage)
-	go m.participantsManager.Send(chat.ParticipantId, protocolMessage)
+func (m *Manager) SendProtocolMessageToChat(chatId string, protocolMessage *protocol.Message) error {
+	m.mu.RLock()
+	c, exists := m.chats[chatId]
+	m.mu.RUnlock()
+
+	if !exists {
+		return common.ErrChatNotFound
+	}
+
+	go m.organizersManager.Send(c.OrganizerId, protocolMessage)
+	go m.participantsManager.Send(c.ParticipantId, protocolMessage)
 	return nil
 }
 
