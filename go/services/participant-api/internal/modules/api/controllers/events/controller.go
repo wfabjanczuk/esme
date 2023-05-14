@@ -71,11 +71,6 @@ func (c *Controller) FindEvents(w http.ResponseWriter, r *http.Request) {
 	c.responder.WriteJson(w, http.StatusOK, eventsList)
 }
 
-type userEvent struct {
-	events.Event
-	IsChatRequested bool `json:"isChatRequested"`
-}
-
 func (c *Controller) GetEvent(w http.ResponseWriter, r *http.Request) {
 	idString := httprouter.ParamsFromContext(r.Context()).ByName("id")
 	id, err := strconv.Atoi(idString)
@@ -103,10 +98,10 @@ func (c *Controller) GetEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event := &userEvent{
+	event := &getEventResponseDto{
 		Event: *rawEvent,
 	}
-	event.IsChatRequested, err = c.chatRequestsRepository.DoesChatRequestExist(user.Id, rawEvent.Id)
+	event.IsChatRequested, err = c.chatRequestsRepository.DoesChatRequestLockExist(user.Id, rawEvent.Id)
 	if err != nil {
 		c.logger.Println(err)
 		c.responder.WriteError(w, api_errors.ErrDatabase, http.StatusInternalServerError)

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const duplicateChatRequestMessage = "duplicate key value violates unique constraint"
+const duplicateChatRequestLockMessage = "duplicate key value violates unique constraint"
 
 func getQueueName(agencyId int) string {
 	return fmt.Sprintf("chats_agency_%d", agencyId)
@@ -35,13 +35,13 @@ func NewRepository(
 	}
 }
 
-func (r *Repository) DoesChatRequestExist(userId, eventId int) (bool, error) {
+func (r *Repository) DoesChatRequestLockExist(userId, eventId int) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxDbQueryTime)
 	defer cancel()
 
-	chatRequestDb := &ChatRequestDb{}
+	chatRequestDb := &ChatRequestLock{}
 
-	query := `select cr."userId", cr."eventId" from "chatRequest" cr where cr."userId" = $1 and cr."eventId" = $2`
+	query := `select cr."userId", cr."eventId" from "chatRequestLock" cr where cr."userId" = $1 and cr."eventId" = $2`
 
 	err := r.db.QueryRowContext(ctx, query, userId, eventId).Scan(&chatRequestDb.UserId, &chatRequestDb.EventId)
 
@@ -54,55 +54,54 @@ func (r *Repository) DoesChatRequestExist(userId, eventId int) (bool, error) {
 	return true, nil
 }
 
-func (r *Repository) CreateChatRequest(chatRequest *ChatRequestMq) error {
-	err := r.insertChatRequest(chatRequest.ParticipantId, chatRequest.EventId)
+func (r *Repository) CreateChatRequest(chatRequest *ChatRequest) error {
+	err := r.insertChatRequestLock(chatRequest.ParticipantId, chatRequest.EventId)
 	if err != nil {
-		if strings.Contains(err.Error(), duplicateChatRequestMessage) {
+		if strings.Contains(err.Error(), duplicateChatRequestLockMessage) {
 			return api_errors.ErrChatRequestExists
 		}
 		return err
 	}
 
-	err = r.publishChatSetup(chatRequest)
+	err = r.publishChatRequest(chatRequest)
 	if err != nil {
-		dbErr := r.deleteChatRequest(chatRequest.ParticipantId, chatRequest.EventId)
-		if dbErr != nil {
-			err = fmt.Errorf("%w; unable to delete chat request from participant db: %s", err, dbErr)
-		}
-		return err
+		return r.DeleteChatRequestLock(chatRequest.ParticipantId, chatRequest.EventId)
 	}
 
 	return nil
 }
 
-func (r *Repository) DeleteChatRequest(userId, eventId int) error {
-	dbErr := r.deleteChatRequest(userId, eventId)
+func (r *Repository) DeleteChatRequestLock(userId, eventId int) error {
+	dbErr := r.deleteChatRequestLock(userId, eventId)
 	if dbErr != nil {
-		return fmt.Errorf("unable to delete chat request from participant db: %w", dbErr)
+		return fmt.Errorf(
+			"unable to delete chat request lock for user %d and event %d: %w",
+			userId, eventId, dbErr,
+		)
 	}
 
 	return nil
 }
 
-func (r *Repository) insertChatRequest(userId, eventId int) error {
+func (r *Repository) insertChatRequestLock(userId, eventId int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxDbQueryTime)
 	defer cancel()
 
-	stmt := `insert into "chatRequest" ("userId", "eventId") values ($1, $2)`
+	stmt := `insert into "chatRequestLock" ("userId", "eventId") values ($1, $2)`
 	_, err := r.db.ExecContext(ctx, stmt, userId, eventId)
 	return err
 }
 
-func (r *Repository) deleteChatRequest(userId int, eventId int) error {
+func (r *Repository) deleteChatRequestLock(userId int, eventId int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxDbQueryTime)
 	defer cancel()
 
-	stmt := `delete from "chatRequest" where "userId" = $1 and "eventId" = $2`
+	stmt := `delete from "chatRequestLock" where "userId" = $1 and "eventId" = $2`
 	_, err := r.db.ExecContext(ctx, stmt, userId, eventId)
 	return err
 }
 
-func (r *Repository) publishChatSetup(chat *ChatRequestMq) error {
+func (r *Repository) publishChatRequest(chat *ChatRequest) error {
 	queue, err := r.mq.QueueDeclare(
 		getQueueName(chat.AgencyId),
 		true,

@@ -1,7 +1,7 @@
 import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import { ErrorView } from './error.view'
-import { Layout } from '../layout/layout'
+import { Root } from '../layout/root'
 import { EditAgencyView } from '../pages/agency/edit-agency.view'
 import { SupportView } from '../pages/messenger/support.view'
 import { EventsView } from '../pages/events/events.view'
@@ -32,7 +32,7 @@ import { ArchivesView } from '../pages/messenger/archives/archives.view'
 export const RouterInternal = createBrowserRouter([
   {
     path: '/',
-    element: <Layout/>,
+    element: <Root/>,
     errorElement: <ErrorView/>,
     children: [
       {

@@ -4,11 +4,11 @@ import (
 	"participant-api/internal/modules/api/common/api_errors"
 )
 
-type doesChatRequestExistDto struct {
+type doesChatRequestLockExistDto struct {
 	EventId int `json:"eventId"`
 }
 
-type doesChatRequestExistResponse struct {
+type doesChatRequestLockExistResponseDto struct {
 	Result bool `json:"result"`
 }
 
@@ -26,7 +26,7 @@ func (d *createChatRequestDto) validate() error {
 	return nil
 }
 
-type deleteChatRequestDto struct {
+type deleteChatRequestLockDto struct {
 	ParticipantId int `json:"participantId"`
 	EventId       int `json:"eventId"`
 }

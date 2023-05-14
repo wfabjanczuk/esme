@@ -1,7 +1,6 @@
 package layers
 
 import (
-	"messenger-api/internal/modules/infrastructure/chats"
 	"messenger-api/internal/modules/infrastructure/messages"
 	"messenger-api/internal/modules/ws/protocol"
 )
@@ -13,16 +12,13 @@ type ChatCache struct {
 }
 
 type ChatsManager interface {
-	GetOrganizersManager() OrganizersManager
-	GetParticipantsManager() ParticipantsManager
-
 	SetChatCache(chatId string, organizerId, participantId, eventId int32)
 	RemoveChatCache(chatId string)
 	GetChatCache(chatId string) (ChatCache, error)
 	IsOrganizerInChat(organizerId int32, chatId string) bool
 	IsParticipantInChat(organizerId int32, chatId string) bool
 	SendUserMessageToChat(chatId string, message *messages.Message) error
-	SendProtocolMessageToChat(chat *chats.Chat, protocolMessage *protocol.Message) error
+	SendProtocolMessageToChat(chatId string, protocolMessage *protocol.Message) error
 }
 
 type OrganizersManager interface {

@@ -3,6 +3,8 @@ import Cookies from 'js-cookie'
 import axios, { AxiosError } from 'axios'
 import { config } from '../../app/config'
 import { parseErrorMessage } from '../utils'
+import { Profile } from '../../pages/profile/profile.entity'
+import { UserRole } from '../../pages/users/user.entity'
 
 const authCookieName = 'esme_authorization'
 const signInUrl = `${config.organizerApiUrl}/auth/sign-in`
@@ -12,12 +14,14 @@ const emptySetState = (): void => {
 
 interface SignInResponse {
   token: string
+  user: Profile
 }
 
 export class Authenticator {
   constructor (
     private readonly setState: Dispatch<SetStateAction<Authenticator>> = emptySetState,
-    public readonly authorizationHeader: string = ''
+    public readonly authorizationHeader: string = '',
+    public readonly isAdmin: boolean = false
   ) {
   }
 
@@ -39,8 +43,8 @@ export class Authenticator {
       return
     }
 
-    const { token } = JSON.parse(authCookie) as SignInResponse
-    this.refreshState(`Bearer ${token}`)
+    const { token, user } = JSON.parse(authCookie) as SignInResponse
+    this.refreshState(`Bearer ${token}`, isUserAdmin(user))
   }
 
   async signIn (email: string, password: string): Promise<string[]> {
@@ -48,15 +52,15 @@ export class Authenticator {
       email,
       password
     })
-      .then(({ data: { token } }) => {
+      .then(({ data: { token, user } }) => {
         // TODO: use Secure, HttpOnly and SameSite attributes in cookie
-        Cookies.set(authCookieName, JSON.stringify({ token }), { expires: 1 })
-        this.refreshState(`Bearer ${token}`)
+        Cookies.set(authCookieName, JSON.stringify({ token, user }), { expires: 1 })
+        this.refreshState(`Bearer ${token}`, isUserAdmin(user))
         return [] as string[]
       })
       .catch(e => {
         Cookies.remove(authCookieName)
-        this.refreshState('')
+        this.refreshState('', false)
         return parseErrorMessage(e?.response?.data?.message)
       })
   }
@@ -87,9 +91,13 @@ export class Authenticator {
       : []
   }
 
-  private refreshState (authorizationHeader: string): void {
-    this.setState(new Authenticator(this.setState, authorizationHeader))
+  private refreshState (authorizationHeader: string, isAdmin: boolean): void {
+    this.setState(new Authenticator(this.setState, authorizationHeader, isAdmin))
   }
+}
+
+const isUserAdmin = (user: Profile): boolean => {
+  return [UserRole.superAdmin, UserRole.admin].includes(user?.role)
 }
 
 export const AuthenticatorContext = React.createContext<Authenticator>(new Authenticator())

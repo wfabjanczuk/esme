@@ -28,10 +28,10 @@ export const ChatsScreen = ({ navigation }: ChatsScreenProps): JSX.Element => {
   })
 
   useEffect(() => {
-    if (!messenger.isInitialized() && isFocused) {
+    if (!messenger.isConnected() && isFocused) {
       alertStore.add('error', 'WebSocket connection could not be initialized')
     }
-  }, [messenger.isInitialized(), isFocused])
+  }, [messenger.isConnected(), isFocused])
 
   useEffect(() => {
     if (archives.hasState() && isFocused) {

@@ -29,26 +29,26 @@ export const useNewMessenger = (): NewMessengerHook => {
 
   useEffect(() => {
     if (messenger.hasState()) {
-      messenger.initialize(authorizationHeader, dispatch, alertStore)
+      messenger.connect(authorizationHeader, dispatch, alertStore)
     }
   }, [messenger.hasState()])
 
   useEffect(() => {
-    if (messenger.isInitialized()) {
+    if (messenger.isConnected()) {
       alertStore.add('success', 'WebSocket connection successfully initialized')
       messenger.getChats()
     }
-  }, [messenger.isInitialized()])
+  }, [messenger.isConnected()])
 
   useEffect(() => {
-    if (messenger.hasState() && !messenger.isInitialized()) {
+    if (messenger.hasState() && !messenger.isConnected()) {
       const restartInterval = setInterval(
-        () => messenger.initialize(authorizationHeader, dispatch, alertStore),
+        () => messenger.connect(authorizationHeader, dispatch, alertStore),
         restartIntervalTime
       )
       return () => clearTimeout(restartInterval)
     }
-  }, [messenger.hasState(), messenger.isInitialized()])
+  }, [messenger.hasState(), messenger.isConnected()])
 
   useEffect(() => {
     inbox.chats.forEach((chat, chatId) => {
@@ -77,7 +77,7 @@ export const useNewMessenger = (): NewMessengerHook => {
   }, [inbox.callbacks])
 
   useEffect(() => {
-    if (messenger.hasState() && messenger.isInitialized() && isWaitingForNewChat) {
+    if (messenger.hasState() && messenger.isConnected() && isWaitingForNewChat) {
       const restartInterval = setInterval(
         () => {
           messenger.startChat()
@@ -86,7 +86,7 @@ export const useNewMessenger = (): NewMessengerHook => {
       )
       return () => clearTimeout(restartInterval)
     }
-  }, [messenger.hasState(), messenger.isInitialized(), isWaitingForNewChat])
+  }, [messenger.hasState(), messenger.isConnected(), isWaitingForNewChat])
 
   return {
     messenger,

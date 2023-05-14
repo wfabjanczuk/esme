@@ -62,29 +62,29 @@ func (r *Repository) GetChatRequest(agencyId int32) (*ChatRequest, bool, error) 
 	return chatRequest, true, nil
 }
 
-type deleteChatRequestPayload struct {
+type deleteChatRequestLockPayload struct {
 	ParticipantId int32 `json:"participantId"`
 	EventId       int32 `json:"eventId"`
 }
 
-func (r *Repository) DeleteChatRequest(participantId, eventId int32) error {
+func (r *Repository) DeleteChatRequestLock(participantId, eventId int32) error {
 	ctx, cancel := context.WithTimeout(context.Background(), r.maxRequestTime)
 	defer cancel()
 
 	payload, err := json.Marshal(
-		deleteChatRequestPayload{
+		deleteChatRequestLockPayload{
 			ParticipantId: participantId,
 			EventId:       eventId,
 		},
 	)
 	if err != nil {
-		return fmt.Errorf("could not marshal delete chat request: %w\n", err)
+		return fmt.Errorf("could not marshal delete chat request lock: %w\n", err)
 	}
 
 	url := fmt.Sprintf("%s/chat-requests", r.participantApiUrl)
 	request, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, bytes.NewBuffer(payload))
 	if err != nil {
-		return fmt.Errorf("could not prepare delete chat request: %w\n", err)
+		return fmt.Errorf("could not prepare delete chat request lock: %w\n", err)
 	}
 	request.Header = map[string][]string{
 		"Authorization": {"Bearer " + r.participantApiKey},
@@ -93,12 +93,12 @@ func (r *Repository) DeleteChatRequest(participantId, eventId int32) error {
 
 	response, err := http.DefaultClient.Do(request)
 	if err != nil {
-		return fmt.Errorf("could not send delete chat request: %w", err)
+		return fmt.Errorf("could not send delete chat request lock: %w", err)
 	}
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("delete chat request response returned with status %d", response.StatusCode)
+		return fmt.Errorf("delete chat request lock response returned with status %d", response.StatusCode)
 	}
 
 	return nil

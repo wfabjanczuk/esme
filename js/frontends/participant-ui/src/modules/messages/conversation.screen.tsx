@@ -31,10 +31,10 @@ export const ConversationScreen = ({ navigation, route: { params: { chatId } } }
   const keyboardVerticalOffset = Platform.OS === 'ios' ? headerHeight : 0
 
   useEffect(() => {
-    if (!messenger.isInitialized()) {
+    if (!messenger.isConnected()) {
       alertStore.add('error', 'WebSocket connection could not be initialized')
     }
-  }, [messenger.isInitialized()])
+  }, [messenger.isConnected()])
 
   useEffect(() => {
     if (chat === undefined || chatMessages === undefined) {

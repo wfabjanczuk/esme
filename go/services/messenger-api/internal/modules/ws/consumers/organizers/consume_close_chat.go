@@ -36,6 +36,15 @@ func (c *Consumer) consumeCloseChat(msg *connections.OrganizerMessage) {
 		return
 	}
 
+	err = c.chatRequestsRepository.DeleteChatRequestLock(chatCache.ParticipantId, chatCache.EventId)
+	if err != nil {
+		c.logger.Printf(
+			"could not delete chat request lock of participant %d in event %d: %s\n", id, chatCache.EventId, err,
+		)
+		msg.Source.SendError(common.ErrInternal)
+		return
+	}
+
 	closedChatMessage, err := out.BuildClosedChat(inPayload.ChatId)
 	if err != nil {
 		c.logger.Printf("could not send %s to organizer %d: %s\n", out.MsgTypeClosedChat, id, err)
@@ -43,18 +52,12 @@ func (c *Consumer) consumeCloseChat(msg *connections.OrganizerMessage) {
 		return
 	}
 
-	c.chatsManager.RemoveChatCache(inPayload.ChatId)
-	go c.chatsManager.GetOrganizersManager().Send(msg.Source.Organizer.Id, closedChatMessage)
-	go func() {
-		id := chatCache.ParticipantId
-		err := c.chatRequestsRepository.DeleteChatRequest(id, chatCache.EventId)
-		if err != nil {
-			c.logger.Printf(
-				"could not delete chat request of participant %d in event %d: %s\n", id, chatCache.EventId, err,
-			)
-			return
-		}
+	err = c.chatsManager.SendProtocolMessageToChat(inPayload.ChatId, closedChatMessage)
+	if err != nil {
+		c.logger.Printf("could not send %s to chat %s: %s\n", out.MsgTypeClosedChat, inPayload.ChatId, err)
+		msg.Source.SendError(common.ErrInternal)
+		return
+	}
 
-		c.chatsManager.GetParticipantsManager().Send(id, closedChatMessage)
-	}()
+	c.chatsManager.RemoveChatCache(inPayload.ChatId)
 }

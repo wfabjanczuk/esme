@@ -52,7 +52,7 @@ func (c *Consumer) consumeStartChat(msg *connections.OrganizerMessage) {
 		return
 	}
 
-	err = c.chatsManager.SendProtocolMessageToChat(chat, newEnrichedChatMsg)
+	err = c.chatsManager.SendProtocolMessageToChat(chat.Id, newEnrichedChatMsg)
 	if err != nil {
 		c.logger.Printf("could not send %s to chat %d: %s\n", out.MsgTypeNewChat, chat.Id, err)
 		msg.Source.SendError(common.ErrInternal)

@@ -17,11 +17,11 @@ export class Messenger {
     return this.setState !== emptySetState
   }
 
-  isInitialized (): boolean {
+  isConnected (): boolean {
     return this.webSocket?.readyState === WebSocket.OPEN
   }
 
-  initialize (authorizationHeader: string, dispatch: React.Dispatch<Action>, alertStore: AlertStore): void {
+  connect (authorizationHeader: string, dispatch: React.Dispatch<Action>, alertStore: AlertStore): void {
     if (this.webSocket !== undefined && this.webSocket.readyState !== WebSocket.CLOSED) {
       return
     }
