@@ -3,6 +3,13 @@ import { Action } from './structures'
 import { newWebSocket } from './websocket'
 import { AlertStore } from '../alert-bar/alert-store.context'
 
+interface SendMessageDto {
+  chatId: string
+  message: string
+  lat?: number
+  lng?: number
+}
+
 const emptySetState = (): void => {
 }
 
@@ -51,17 +58,7 @@ export class Messenger {
     }))
   }
 
-  sendMessage (chatId: string, message: string, lat?: number, lng?: number): void {
-    const payload: any = {
-      chatId,
-      message
-    }
-
-    if (lat !== undefined && lng !== undefined) {
-      payload.lat = lat
-      payload.lng = lng
-    }
-
+  sendMessage (payload: SendMessageDto): void {
     this.webSocket.send(JSON.stringify({
       type: 'send_message',
       payload
