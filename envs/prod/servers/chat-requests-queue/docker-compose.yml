@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  esme_chat_requests_queue:
+    image: rabbitmq:3-management
+    hostname: esme_chat_requests_queue
+    container_name: esme_chat_requests_queue
+    environment:
+      RABBITMQ_DEFAULT_USER: ${QUEUE_USER}
+      RABBITMQ_DEFAULT_PASS: ${QUEUE_PASSWORD}
+    ports:
+      - "8200:15672"
+      - "56721:5672"

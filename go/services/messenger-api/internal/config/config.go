@@ -1,6 +1,7 @@
 package config
 
 import (
+	"flag"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -18,9 +19,12 @@ type Config struct {
 }
 
 func GetConfigFromEnv(logger *log.Logger) *Config {
+	configPath := flag.String("config", ".env", "load specific config")
+	flag.Parse()
+
 	cfg := &Config{}
 
-	err := godotenv.Load(".env.dev")
+	err := godotenv.Load(*configPath)
 	if err != nil {
 		logger.Fatal("Error loading .env file")
 	}

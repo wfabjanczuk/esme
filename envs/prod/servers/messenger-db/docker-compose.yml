@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  esme_messenger_db:
+    image: mongo:5-focal
+    hostname: esme_messenger_db
+    container_name: esme_messenger_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MESSENGER_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MESSENGER_DB_PASSWORD}
+    ports:
+      - "8301:27017"
+
+  esme_messenger_db_admin:
+    image: mongo-express:0.54
+    hostname: esme_messenger_db_admin
+    container_name: esme_messenger_db_admin
+    ports:
+      - "8302:8081"
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: ${MESSENGER_DB_USER}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MESSENGER_DB_PASSWORD}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MESSENGER_DB_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MESSENGER_DB_PASSWORD}
+      ME_CONFIG_MONGODB_SERVER: esme_messenger_db
+      ME_CONFIG_MONGODB_PORT: 27017
+    depends_on:
+      - esme_messenger_db

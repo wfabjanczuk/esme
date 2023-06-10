@@ -1,6 +1,7 @@
 package config
 
 import (
+	"flag"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -19,9 +20,12 @@ type Config struct {
 }
 
 func GetConfigFromEnv(logger *log.Logger) *Config {
+	configPath := flag.String("config", ".env", "load specific config")
+	flag.Parse()
+
 	cfg := &Config{}
 
-	err := godotenv.Load(".env.dev")
+	err := godotenv.Load(*configPath)
 	if err != nil {
 		logger.Fatal("Error loading .env file")
 	}
@@ -51,6 +55,11 @@ func GetConfigFromEnv(logger *log.Logger) *Config {
 		logger.Fatal("Error loading PARTICIPANT_API_KEY from .env file")
 	}
 
+	cfg.JwtSecret = os.Getenv("JWT_SECRET")
+	if cfg.JwtSecret == "" {
+		logger.Fatal("Error loading JWT_SECRET from .env file")
+	}
+
 	cfg.Port, _ = strconv.Atoi(os.Getenv("PORT"))
 	if cfg.Port == 0 {
 		cfg.Port = 8080
@@ -59,11 +68,6 @@ func GetConfigFromEnv(logger *log.Logger) *Config {
 	cfg.Env = os.Getenv("ENV")
 	if cfg.Env == "" {
 		cfg.Env = "development"
-	}
-
-	cfg.JwtSecret = os.Getenv("JWT_SECRET")
-	if cfg.JwtSecret == "" {
-		logger.Fatal("Error loading JWT_SECRET from .env file")
 	}
 
 	return cfg

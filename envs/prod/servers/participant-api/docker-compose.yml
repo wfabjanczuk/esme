@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  esme_participant_api:
+    image: golang:1.18
+    hostname: esme_participant_api
+    container_name: esme_participant_api
+    working_dir: /usr/local/go/src/app
+    entrypoint: [ "bash", "-c" ]
+    command:
+      - go run main.go
+    volumes:
+      - ../../../go/services/participant-api:/usr/local/go/src/app:rw
+      - ./.env:/usr/local/go/src/app/.env
+    ports:
+      - "8100:8080"

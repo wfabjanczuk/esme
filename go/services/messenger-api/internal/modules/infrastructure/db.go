@@ -11,17 +11,17 @@ import (
 
 func setupDbConnection(dsn string, logger *log.Logger) *mongo.Client {
 	var err error
-	maxDevRetries := 10
+	maxRetries := 10
 	retryInterval := 10 * time.Second
 
-	logger.Printf("trying to open dev db connection (max retries: %d)\n", maxDevRetries)
+	logger.Printf("trying to open db connection (max retries: %d)\n", maxRetries)
 
-	for i := 1; i <= maxDevRetries; i++ {
-		logger.Printf("opening dev db connection attempt %d\n", i)
+	for i := 1; i <= maxRetries; i++ {
+		logger.Printf("opening db connection attempt %d\n", i)
 
 		client, err := openDbConnection(dsn)
 		if err == nil {
-			logger.Println("dev db connection successfully opened")
+			logger.Println("db connection successfully opened")
 			return client
 		}
 
@@ -29,7 +29,7 @@ func setupDbConnection(dsn string, logger *log.Logger) *mongo.Client {
 		time.Sleep(retryInterval)
 	}
 
-	logger.Panicf("could not open dev db connection: %s\n", err)
+	logger.Panicf("could not open db connection: %s\n", err)
 	return nil
 }
 

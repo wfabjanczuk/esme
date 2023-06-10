@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  esme_organizer_api:
+    image: node:18
+    hostname: esme_organizer_api
+    container_name: esme_organizer_api
+    working_dir: /usr/src/app
+    entrypoint: [ "bash", "-c" ]
+    command:
+      - |
+        npm ci
+        npm run start:prod
+    volumes:
+      - ../../../js/backends/organizer-api:/usr/src/app:rw
+      - ./.env:/usr/local/go/src/app/.env.prod
+    ports:
+      - "8000:8080"

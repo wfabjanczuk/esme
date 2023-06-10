@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  esme_messenger_api:
+    image: golang:1.18
+    hostname: esme_messenger_api
+    container_name: esme_messenger_api
+    working_dir: /usr/local/go/src/app
+    entrypoint: [ "bash", "-c" ]
+    command:
+      - go run main.go
+    volumes:
+      - ../../../go/services/messenger-api:/usr/local/go/src/app
+      - ./.env:/usr/local/go/src/app/.env
+    ports:
+      - "8300:8080"
