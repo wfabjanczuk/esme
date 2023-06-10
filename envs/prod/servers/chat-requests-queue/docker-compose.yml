@@ -10,4 +10,4 @@ services:
       RABBITMQ_DEFAULT_PASS: ${QUEUE_PASSWORD}
     ports:
       - "8200:15672"
-      - "56721:5672"
+      - "8201:5672"

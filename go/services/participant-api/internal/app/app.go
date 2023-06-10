@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -34,12 +33,12 @@ func (a *Application) Bootstrap() {
 	apiModule := api.NewModule(a.config, infrastructureModule, a.logger)
 
 	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", a.config.Port),
+		Addr:         ":8080",
 		Handler:      apiModule.Router,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
-	a.logger.Printf("starting %s server on port %d\n", a.config.Env, a.config.Port)
+	a.logger.Println("starting server on port 8080")
 	a.logger.Panicln(srv.ListenAndServe())
 }
