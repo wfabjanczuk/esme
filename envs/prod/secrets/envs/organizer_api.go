@@ -18,5 +18,5 @@ func generateOrganizerApiEnv(vault vault.Vault) {
 		"ORGANIZER_API_KEY":    vault.OrganizerApi.ApiKey,
 	}
 
-	saveEnv(vars, "../servers/organizer-api/.env")
+	saveEnv(vars, serversEnvDir+"/organizer-api/.env")
 }

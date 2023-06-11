@@ -8,5 +8,5 @@ func generateOrganizerDbEnv(vault vault.Vault) {
 		"ORGANIZER_DB_PASSWORD": vault.OrganizerDb.Password,
 	}
 
-	saveEnv(vars, "../servers/organizer-db/.env")
+	saveEnv(vars, serversEnvDir+"/organizer-db/.env")
 }

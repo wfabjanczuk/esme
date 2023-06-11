@@ -32,6 +32,14 @@ func (m MessengerApi) GetUrl() string {
 	)
 }
 
+func (m MessengerApi) GetWs() string {
+	return fmt.Sprintf(
+		"ws://%s:%d",
+		m.Host,
+		m.Port,
+	)
+}
+
 type MessengerDb struct {
 	Host     string `json:"host"`
 	Port     int    `json:"port"`

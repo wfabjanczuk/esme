@@ -10,5 +10,5 @@ func generateParticipantDbEnv(vault vault.Vault) {
 		"PARTICIPANT_DB_PASSWORD": vault.ParticipantDb.Password,
 	}
 
-	saveEnv(vars, "../servers/participant-db/.env")
+	saveEnv(vars, serversEnvDir+"/participant-db/.env")
 }

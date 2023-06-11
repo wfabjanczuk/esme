@@ -8,5 +8,5 @@ func generateChatRequestsQueueEnv(vault vault.Vault) {
 		"QUEUE_PASSWORD": vault.Queue.Password,
 	}
 
-	saveEnv(vars, "../servers/chat-requests-queue/.env")
+	saveEnv(vars, serversEnvDir+"/chat-requests-queue/.env")
 }

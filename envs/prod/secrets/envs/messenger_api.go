@@ -11,5 +11,5 @@ func generateMessengerApiEnv(vault vault.Vault) {
 		"PARTICIPANT_API_KEY": vault.ParticipantApi.ApiKey,
 	}
 
-	saveEnv(vars, "../servers/messenger-api/.env")
+	saveEnv(vars, serversEnvDir+"/messenger-api/.env")
 }

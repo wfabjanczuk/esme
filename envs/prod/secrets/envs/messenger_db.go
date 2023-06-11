@@ -8,5 +8,5 @@ func generateMessengerDbEnv(vault vault.Vault) {
 		"MESSENGER_DB_PASSWORD": vault.MessengerDb.Password,
 	}
 
-	saveEnv(vars, "../servers/messenger-db/.env")
+	saveEnv(vars, serversEnvDir+"/messenger-db/.env")
 }
