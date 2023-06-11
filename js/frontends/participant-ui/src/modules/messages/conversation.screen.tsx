@@ -11,13 +11,20 @@ import { MessengerContext } from '../../common/messenger/messenger.context'
 import { AlertStoreContext } from '../../common/alert-bar/alert-store.context'
 import { StyledText } from '../../common/components/typography/styled-text.component'
 import { ArchivesContext } from './archives/archives.context'
+import { Spacer } from '../../common/components/spacer/spacer.component'
 
 type ConversationScreenProps = NativeStackScreenProps<FrontStackParamsList, 'Conversation'>
 
-export const ConversationScreen = ({ navigation, route: { params: { chatId } } }: ConversationScreenProps): JSX.Element => {
+export const ConversationScreen = ({
+  navigation,
+  route: { params: { chatId } }
+}: ConversationScreenProps): JSX.Element => {
   const alertStore = useContext(AlertStoreContext)
   const messenger = useContext(MessengerContext)
-  const { chats, messages } = useContext(InboxContext)
+  const {
+    chats,
+    messages
+  } = useContext(InboxContext)
   const archives = useContext(ArchivesContext)
 
   let chat = chats.get(chatId)
@@ -56,7 +63,9 @@ export const ConversationScreen = ({ navigation, route: { params: { chatId } } }
         <ChatHistory messages={chatMessages}/>
         {chat.ended === 0
           ? <ChatInput chatId={chatId}/>
-          : <StyledText variant={'placeholder'}>Chat has ended.</StyledText>
+          : <Spacer position='bottom' size='large'>
+            <StyledText variant='placeholder'>Chat has ended.</StyledText>
+          </Spacer>
         }
       </KeyboardAvoidingView>
     </SafeArea>
