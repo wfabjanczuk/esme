@@ -10,7 +10,7 @@ services:
     command:
       - go run main.go
     volumes:
-      - ../../../go/services/participant-api:/usr/local/go/src/app:rw
+      - ../../../../go/services/participant-api:/usr/local/go/src/app:rw
       - ./.env:/usr/local/go/src/app/.env
     ports:
       - "8100:8080"

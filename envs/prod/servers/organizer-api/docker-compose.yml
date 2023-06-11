@@ -12,7 +12,7 @@ services:
         npm ci
         npm run start:prod
     volumes:
-      - ../../../js/backends/organizer-api:/usr/src/app:rw
-      - ./.env:/usr/local/go/src/app/.env.prod
+      - ../../../../js/backends/organizer-api:/usr/src/app:rw
+      - ./.env:/usr/src/app/.env.prod
     ports:
       - "8000:8080"
