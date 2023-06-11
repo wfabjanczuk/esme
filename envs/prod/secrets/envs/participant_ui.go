@@ -3,7 +3,7 @@ package envs
 import "secrets/vault"
 
 type participantUiEnv struct {
-	ParticipantApiUrl string `json:"organizer_api_url"`
+	ParticipantApiUrl string `json:"participant_api_url"`
 	MessengerApiUrl   string `json:"messenger_api_url"`
 	MessengerWsUrl    string `json:"messenger_ws_url"`
 }
