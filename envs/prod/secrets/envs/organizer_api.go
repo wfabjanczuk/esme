@@ -11,7 +11,7 @@ func generateOrganizerApiEnv(vault vault.Vault) {
 		"DB_PORT":              strconv.Itoa(vault.OrganizerDb.Port),
 		"DB_NAME":              vault.OrganizerDb.DbName,
 		"DB_USER":              vault.OrganizerDb.User,
-		"DB_PASS":              vault.OrganizerDb.Password,
+		"DB_PASSWORD":          vault.OrganizerDb.Password,
 		"SUPER_ADMIN_EMAIL":    vault.OrganizerApi.SuperAdminEmail,
 		"SUPER_ADMIN_PASSWORD": vault.OrganizerApi.SuperAdminPassword,
 		"JWT_SECRET":           vault.OrganizerApi.JwtSecret,
