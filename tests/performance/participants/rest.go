@@ -30,6 +30,7 @@ func (m *Manager) newParticipantToken(n int) (string, error) {
 	if err != nil {
 		log.Panicf("%s: error creating request: %s", url, err)
 	}
+	req.Header.Set("Content-Type", "application/json")
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -76,6 +77,7 @@ func (m *Manager) newChatRequest(token string) error {
 	if err != nil {
 		log.Panicf("%s error creating request: %s", url, err)
 	}
+	req.Header.Set("Content-Type", "application/json")
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 	res, err := http.DefaultClient.Do(req)

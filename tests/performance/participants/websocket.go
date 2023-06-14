@@ -21,12 +21,12 @@ func (m *Manager) getWsAuthorizationDto(token string) wsAuthorizationDto {
 func (m *Manager) startConnection(token string) {
 	url := fmt.Sprintf("%s/connect", m.config.MessengerWsUrl)
 
-	c, _, err := websocket.DefaultDialer.Dial(url, nil)
+	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {
 		m.errChan <- fmt.Errorf("%s: could not connect to websocket: %s", url, err)
 		return
 	}
-	defer c.Close()
+	defer conn.Close()
 
 	authorizationPayload, err := json.Marshal(m.getWsAuthorizationDto(token))
 	if err != nil {
@@ -34,13 +34,13 @@ func (m *Manager) startConnection(token string) {
 		return
 	}
 
-	err = c.WriteMessage(websocket.TextMessage, authorizationPayload)
+	err = conn.WriteMessage(websocket.TextMessage, authorizationPayload)
 	if err != nil {
 		m.errChan <- fmt.Errorf("%s: error sending authorization message: %s", url, err)
 		return
 	}
 
-	chatId, err := m.getChatId(c)
+	chatId, err := m.getChatId(conn)
 	if err != nil {
 		m.errChan <- fmt.Errorf("%s: error getting chat id: %s", url, err)
 		return
