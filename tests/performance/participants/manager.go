@@ -1,23 +1,40 @@
 package participants
 
 import (
+	"log"
 	"performance/config"
+	"sync"
 	"time"
 )
 
 type Manager struct {
 	config            config.Config
-	errChan           chan error
+	logWs             bool
 	timeStarted       time.Time
 	participantsCount int
+	chatsCount        int
+	errChan           chan error
+	doneChan          chan struct{}
+	mu                sync.RWMutex
 }
 
-func NewManager(config config.Config) *Manager {
+func NewManager(config config.Config, logWs bool) *Manager {
 	return &Manager{
-		config:            config,
-		errChan:           make(chan error),
-		timeStarted:       time.Now(),
-		participantsCount: 0,
+		config:      config,
+		logWs:       logWs,
+		timeStarted: time.Now(),
+		errChan:     make(chan error),
+		doneChan:    make(chan struct{}),
+	}
+}
+
+func (m *Manager) Stop() {
+	log.Println("stopping participants")
+	select {
+	case <-m.doneChan:
+		return
+	default:
+		close(m.doneChan)
 	}
 }
 
@@ -25,18 +42,55 @@ func (m *Manager) GetErrChan() chan error {
 	return m.errChan
 }
 
-func (m *Manager) AddParticipant() error {
-	token, err := m.newParticipantToken(m.participantsCount)
-	if err != nil {
-		return err
-	}
+func (m *Manager) GetParticipantsCount() int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
 
-	err = m.newChatRequest(token)
-	if err != nil {
-		return err
-	}
+	return m.participantsCount
+}
 
-	go m.startConnection(token)
+func (m *Manager) IncrementParticipantsCount() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	m.participantsCount++
-	return nil
+}
+
+func (m *Manager) GetChatsCount() int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	return m.chatsCount
+}
+
+func (m *Manager) IncrementChatsCount() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	m.chatsCount++
+}
+
+func (m *Manager) StartAddingParticipants(createParticipantInterval, sendMessageInterval time.Duration) {
+	for {
+		select {
+		case <-m.doneChan:
+			log.Println("stopping adding participants")
+			return
+		case <-time.After(createParticipantInterval):
+			token, err := m.newParticipantToken(m.participantsCount)
+			if err != nil {
+				m.errChan <- err
+				return
+			}
+
+			err = m.newChatRequest(token)
+			if err != nil {
+				m.errChan <- err
+				return
+			}
+
+			go m.startConnection(token, sendMessageInterval)
+			m.IncrementParticipantsCount()
+		}
+	}
 }

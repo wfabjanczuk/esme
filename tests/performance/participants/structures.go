@@ -61,8 +61,3 @@ type wsChatsResponsePayload struct {
 type chat struct {
 	Id string `json:"id"`
 }
-
-type wsUserMessageResponsePayload struct {
-	FromOrganizer int32  `json:"fromOrganizer"`
-	Content       string `json:"content"`
-}

@@ -3,10 +3,9 @@ package organizer
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
+	"log"
 	"time"
 )
-
-const startChatInterval = 1 * time.Second
 
 func (m *Manager) getWsAuthorizationDto(token string) wsAuthorizationDto {
 	return wsAuthorizationDto{
@@ -21,7 +20,14 @@ func (m *Manager) getWsStartChatDto() wsStartChatDto {
 	}
 }
 
-func (m *Manager) startConnection(token string) {
+func (m *Manager) startConnection(token string, startChatInterval time.Duration) {
+	var conn *websocket.Conn
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("organizer connection %s: recovered from panic: %s", conn.LocalAddr(), r)
+		}
+	}()
+
 	url := fmt.Sprintf("%s/connect", m.config.MessengerWsUrl)
 
 	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
@@ -37,11 +43,22 @@ func (m *Manager) startConnection(token string) {
 		return
 	}
 
-	for range time.Tick(startChatInterval) {
-		err = conn.WriteJSON(m.getWsStartChatDto())
-		if err != nil {
-			m.errChan <- fmt.Errorf("%s: error sending authorization message: %s", url, err)
+	for {
+		select {
+		case <-m.doneChan:
+			log.Println("stopping starting chats")
 			return
+		case <-time.After(startChatInterval):
+			dto := m.getWsStartChatDto()
+			if m.logWs {
+				log.Printf("organizer connection %s: sending start chat message", conn.LocalAddr())
+			}
+
+			err = conn.WriteJSON(dto)
+			if err != nil {
+				m.errChan <- fmt.Errorf("%s: error sending authorization message: %s", url, err)
+				return
+			}
 		}
 	}
 }
