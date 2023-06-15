@@ -47,7 +47,7 @@ func (m *Manager) startConnection(token string, sendMessageInterval time.Duratio
 		return
 	}
 
-	m.IncrementChatsCount()
+	m.incrementChatsCount()
 	go m.startReadingMessages(conn)
 	go m.startSendingMessages(conn, chatId, sendMessageInterval)
 }
@@ -139,6 +139,7 @@ func (m *Manager) startSendingMessages(conn *websocket.Conn, chatId string, send
 				m.errChan <- fmt.Errorf("connection %s: error sending message: %s", conn.LocalAddr(), err)
 				return
 			}
+			m.registerMessageSent(time.Now().Unix())
 		}
 	}
 }
