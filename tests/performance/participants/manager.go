@@ -11,6 +11,7 @@ type Manager struct {
 	config            config.Config
 	logWs             bool
 	timeStarted       time.Time
+	timeEnded         time.Time
 	participantsCount int
 	chatsCount        int
 	errChan           chan error
@@ -20,11 +21,10 @@ type Manager struct {
 
 func NewManager(config config.Config, logWs bool) *Manager {
 	return &Manager{
-		config:      config,
-		logWs:       logWs,
-		timeStarted: time.Now(),
-		errChan:     make(chan error),
-		doneChan:    make(chan struct{}),
+		config:   config,
+		logWs:    logWs,
+		errChan:  make(chan error),
+		doneChan: make(chan struct{}),
 	}
 }
 
@@ -34,12 +34,21 @@ func (m *Manager) Stop() {
 	case <-m.doneChan:
 		return
 	default:
+		m.timeEnded = time.Now()
 		close(m.doneChan)
 	}
 }
 
 func (m *Manager) GetErrChan() chan error {
 	return m.errChan
+}
+
+func (m *Manager) GetTimeStarted() time.Time {
+	return m.timeStarted
+}
+
+func (m *Manager) GetDuration() time.Duration {
+	return m.timeEnded.Sub(m.timeStarted)
 }
 
 func (m *Manager) GetParticipantsCount() int {
@@ -71,6 +80,7 @@ func (m *Manager) IncrementChatsCount() {
 }
 
 func (m *Manager) StartAddingParticipants(createParticipantInterval, sendMessageInterval time.Duration) {
+	m.timeStarted = time.Now()
 	for {
 		select {
 		case <-m.doneChan:

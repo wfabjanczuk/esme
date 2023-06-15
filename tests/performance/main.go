@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"log"
 	"os"
 	"os/signal"
@@ -12,19 +14,14 @@ import (
 	"time"
 )
 
-const (
-	startChatInterval         = 1 * time.Second
-	createParticipantInterval = 1 * time.Second
-	sendMessageInterval       = 1 * time.Second
-	logWs                     = true
-)
-
 func main() {
+	c := parseConstants()
+
 	var om *organizer.Manager
 	var pm *participants.Manager
 	defer func() {
 		if r := recover(); r != nil {
-			gracefulShutdown(om, pm)
+			gracefulShutdown(om, pm, c)
 		}
 	}()
 
@@ -33,15 +30,15 @@ func main() {
 		log.Panicf("error loading config: %v", err)
 	}
 
-	om = organizer.NewManager(cfg, logWs)
-	err = om.StartAcceptingChats(startChatInterval)
+	om = organizer.NewManager(cfg, c.LogWs)
+	err = om.StartAcceptingChats(c.StartChatInterval)
 	if err != nil {
 		log.Panicf("error initializing organizer: %v", err)
 	}
 	log.Println("organizer initialized")
 
-	pm = participants.NewManager(cfg, logWs)
-	go pm.StartAddingParticipants(createParticipantInterval, sendMessageInterval)
+	pm = participants.NewManager(cfg, c.LogWs)
+	go pm.StartAddingParticipants(c.CreateParticipantInterval, c.SendMessageInterval)
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
@@ -56,14 +53,74 @@ func main() {
 	}
 }
 
-func gracefulShutdown(om *organizer.Manager, pm *participants.Manager) {
+type constants struct {
+	StartChatInterval               time.Duration `json:"-"`
+	CreateParticipantInterval       time.Duration `json:"-"`
+	SendMessageInterval             time.Duration `json:"-"`
+	StartChatIntervalString         string        `json:"start_chat_interval"`
+	CreateParticipantIntervalString string        `json:"create_participant_interval"`
+	SendMessageIntervalString       string        `json:"send_message_interval"`
+	LogWs                           bool          `json:"log_ws"`
+}
+
+func parseConstants() *constants {
+	sci := flag.Int("sci", 1000, "start chat interval in ms")
+	cpi := flag.Int("cpi", 1000, "create participant interval in ms")
+	smi := flag.Int("smi", 1000, "send message interval in ms")
+	logWs := flag.Bool("logWs", false, "log websocket messages")
+	flag.Parse()
+
+	log.Printf("start chat interval: %d ms", *sci)
+	log.Printf("create participant interval: %d ms", *cpi)
+	log.Printf("send message interval: %d ms", *smi)
+	log.Println("log websocket messages:", *logWs)
+	log.Println(strings.Repeat("-", 80))
+
+	c := &constants{
+		StartChatInterval:         time.Duration(*sci) * time.Millisecond,
+		CreateParticipantInterval: time.Duration(*cpi) * time.Millisecond,
+		SendMessageInterval:       time.Duration(*smi) * time.Millisecond,
+		LogWs:                     *logWs,
+	}
+
+	c.StartChatIntervalString = c.StartChatInterval.String()
+	c.CreateParticipantIntervalString = c.CreateParticipantInterval.String()
+	c.SendMessageIntervalString = c.SendMessageInterval.String()
+
+	return c
+}
+
+type summary struct {
+	Constants                *constants `json:"constants"`
+	Description              string     `json:"description"`
+	OrganizerTimeStarted     time.Time  `json:"organizer_time_started"`
+	OrganizerDuration        string     `json:"organizer_duration"`
+	ParticipantsTimeStarted  time.Time  `json:"participants_time_started"`
+	ParticipantsDuration     string     `json:"participants_duration"`
+	ChatsCount               int        `json:"chats_count"`
+	CreatedParticipantsCount int        `json:"created_participants_count"`
+}
+
+func gracefulShutdown(om *organizer.Manager, pm *participants.Manager, c *constants) {
 	log.Println("starting graceful shutdown")
 	om.Stop()
 	pm.Stop()
 
+	s := summary{
+		Constants:                c,
+		Description:              "performance test summary",
+		OrganizerTimeStarted:     om.GetTimeStarted(),
+		OrganizerDuration:        om.GetDuration().String(),
+		ParticipantsTimeStarted:  pm.GetTimeStarted(),
+		ParticipantsDuration:     pm.GetDuration().String(),
+		ChatsCount:               pm.GetChatsCount(),
+		CreatedParticipantsCount: pm.GetParticipantsCount(),
+	}
+
+	summaryJson, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		log.Panicf("error marshaling summary: %v", err)
+	}
 	log.Println(strings.Repeat("-", 80))
-	log.Println("performance test summary")
-	log.Printf("chats count: %d", pm.GetChatsCount())
-	log.Printf("created participants count: %d", pm.GetParticipantsCount())
-	log.Printf("created participants count: %d", pm.GetParticipantsCount())
+	log.Println(string(summaryJson))
 }

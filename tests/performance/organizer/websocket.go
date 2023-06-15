@@ -21,6 +21,7 @@ func (m *Manager) getWsStartChatDto() wsStartChatDto {
 }
 
 func (m *Manager) startConnection(token string, startChatInterval time.Duration) {
+	m.timeStarted = time.Now()
 	var conn *websocket.Conn
 	defer func() {
 		if r := recover(); r != nil {
@@ -29,7 +30,6 @@ func (m *Manager) startConnection(token string, startChatInterval time.Duration)
 	}()
 
 	url := fmt.Sprintf("%s/connect", m.config.MessengerWsUrl)
-
 	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {
 		m.errChan <- fmt.Errorf("%s: could not connect to websocket: %s", url, err)
