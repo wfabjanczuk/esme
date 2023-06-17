@@ -1,6 +1,5 @@
 {
   "event_id": 1,
-  "messenger_api_url": "http://localhost:8300",
   "messenger_ws_url": "ws://localhost:8300",
   "organizer_api_url": "http://localhost:8100",
   "organizer_email": "jan@kowalski.com",

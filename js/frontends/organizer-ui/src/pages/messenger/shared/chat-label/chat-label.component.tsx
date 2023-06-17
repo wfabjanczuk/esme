@@ -3,6 +3,7 @@ import { Chat } from '../../../../common/messenger/structures'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import { Typography } from '@mui/material'
+import { styles } from '../../../../layout/styles'
 
 interface ChatLabelProps {
   chat: Chat
@@ -24,9 +25,11 @@ export const ChatLabel = ({
       className={'light'}
       selected={activeChatId === chat.id}
       onClick={() => setActiveChatId(chat.id)}
-      sx={{ fontSize: '0.9rem' }}
+      sx={styles.messenger.chatsLabelButton}
     >
-      <Typography variant='subtitle2'>{label}</Typography>
+      <Typography variant='subtitle2' sx={styles.messenger.chatsLabelText}>
+        {label}
+      </Typography>
     </ListItemButton>
   </ListItem>
 }

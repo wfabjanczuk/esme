@@ -7,7 +7,6 @@ import (
 
 type Config struct {
 	EventId           int    `json:"event_id"`
-	MessengerApiUrl   string `json:"messenger_api_url"`
 	MessengerWsUrl    string `json:"messenger_ws_url"`
 	OrganizerApiUrl   string `json:"organizer_api_url"`
 	OrganizerEmail    string `json:"organizer_email"`

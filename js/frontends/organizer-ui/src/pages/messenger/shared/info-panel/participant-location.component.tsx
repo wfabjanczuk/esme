@@ -17,7 +17,7 @@ export const ParticipantLocation = ({ location }: ParticipantLocationProps): JSX
 
   return <iframe
     key={coords}
-    width='300'
+    width='100%'
     height='300'
     style={{ border: 0 }}
     loading='lazy'
