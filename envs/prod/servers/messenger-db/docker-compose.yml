@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  esme_messenger_db:
+    image: mongo:5-focal
+    hostname: esme_messenger_db
+    container_name: esme_messenger_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MESSENGER_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MESSENGER_DB_PASSWORD}
+    ports:
+      - "8301:27017"

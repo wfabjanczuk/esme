@@ -112,9 +112,14 @@ func (ocp *OrganizerConnectionPool) removeConnection(conn *connections.Organizer
 			defer ocp.mu.Unlock()
 
 			if len(ocp.connections) == 0 {
-				ocp.logger.Printf("starting to close connection pool for %s\n", ocp.GetInfo())
-				close(ocp.doneChan)
-				ocp.shutdowns <- ocp.organizer.Id
+				select {
+				case <-ocp.doneChan:
+					return
+				default:
+					ocp.logger.Printf("starting to close connection pool for %s\n", ocp.GetInfo())
+					close(ocp.doneChan)
+					ocp.shutdowns <- ocp.organizer.Id
+				}
 			}
 		},
 	)

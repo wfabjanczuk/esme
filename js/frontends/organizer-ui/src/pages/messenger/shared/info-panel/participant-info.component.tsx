@@ -3,6 +3,7 @@ import React from 'react'
 import { Chat } from '../../../../common/messenger/structures'
 import { ParticipantLocation } from './participant-location.component'
 import { styles } from '../../../../layout/styles'
+import { InfoText } from './info-text.component'
 
 interface ParticipantInfoProps {
   activeChat: Chat
@@ -13,12 +14,14 @@ export const ParticipantInfo = ({ activeChat }: ParticipantInfoProps): JSX.Eleme
 
   return <Box>
     <Box sx={styles.messenger.infoPanelSection}>
-      <Typography variant='h6' fontWeight='bold' sx={{ mb: 2 }}>Participant {activeChat.participantId}</Typography>
+      <Typography variant='h6' fontWeight='bold' sx={styles.messenger.infoPanelSectionHeader}>
+        Participant {activeChat.participantId}
+      </Typography>
       {participant !== undefined && <React.Fragment>
-        <Typography variant='subtitle2' fontWeight='bold'>Email:</Typography>
-        <Typography variant='subtitle2'>{participant.email}</Typography>
-        <Typography variant='subtitle2' fontWeight='bold'>Phone:</Typography>
-        <Typography variant='subtitle2'>{participant.phoneNumber}</Typography>
+        <InfoText text='Email:' bold/>
+        <InfoText text={participant.email}/>
+        <InfoText text='Phone:' bold/>
+        <InfoText text={participant.phoneNumber}/>
       </React.Fragment>
       }
     </Box>

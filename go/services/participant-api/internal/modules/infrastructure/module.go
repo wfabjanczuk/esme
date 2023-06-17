@@ -23,7 +23,7 @@ type Module struct {
 }
 
 func NewModule(cfg *config.Config, logger *log.Logger) *Module {
-	participantDb := setupDbConnection(cfg.ParticipantDbDsn, logger)
+	participantDb := setupDbConnection(cfg.DatabaseDsn, logger)
 	mqConnection, mqChannel := setupMqConnection(cfg.QueueDsn, logger)
 
 	return &Module{

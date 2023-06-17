@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"messenger-api/internal/config"
@@ -43,12 +42,12 @@ func (a *Application) Bootstrap() {
 	rest.NewModule(mw, infrastructureModule, router, a.logger)
 
 	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", a.config.Port),
+		Addr:         ":8080",
 		Handler:      mw.EnableCors.Handler(router),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
-	a.logger.Printf("starting %s server on port %d\n", a.config.Env, a.config.Port)
+	a.logger.Println("starting server on port 8080")
 	a.logger.Panicln(srv.ListenAndServe())
 }

@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  esme_participant_db:
+    image: postgres:15
+    hostname: esme_participant_db
+    container_name: esme_participant_db
+    environment:
+      POSTGRES_DB: esme
+      POSTGRES_USER: ${PARTICIPANT_DB_USER}
+      POSTGRES_PASSWORD: ${PARTICIPANT_DB_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+    ports:
+      - "8101:5432"

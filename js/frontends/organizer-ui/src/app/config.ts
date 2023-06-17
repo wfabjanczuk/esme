@@ -1,5 +1,7 @@
+import cfg from '../config.json'
+
 export const config = {
-  organizerApiUrl: 'http://localhost:8000',
-  messengerApiUrl: 'http://localhost:8300',
-  messengerWsUrl: 'ws://localhost:8300'
+  organizerApiUrl: cfg.organizer_api_url,
+  messengerApiUrl: cfg.messenger_api_url,
+  messengerWsUrl: cfg.messenger_ws_url
 }

@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material'
 import CardMedia from '@mui/material/CardMedia'
 import { parseDateTimeLabel } from '../../../../common/utils'
 import { styles } from '../../../../layout/styles'
+import { InfoText } from './info-text.component'
 
 const placeholderImage = 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
 
@@ -19,17 +20,19 @@ export const EventInfo = ({ eventId }: EventInfoProps): JSX.Element => {
 
   return <Box>
     <Box sx={styles.messenger.infoPanelSection}>
-      <Typography variant='h6' fontWeight='bold' sx={{ mb: 2 }}>Event {event.id}</Typography>
-      <Typography variant='subtitle2' fontWeight='bold'>Name:</Typography>
-      <Typography variant='subtitle2'>{event.name}</Typography>
-      <Typography variant='subtitle2' fontWeight='bold'>Description:</Typography>
-      <Typography variant='subtitle2'>{event.description}</Typography>
-      <Typography variant='subtitle2' fontWeight='bold'>Address:</Typography>
-      <Typography variant='subtitle2'>{event.address}</Typography>
-      <Typography variant='subtitle2' fontWeight='bold'>Start:</Typography>
-      <Typography variant='subtitle2'>{parseDateTimeLabel(event.timeStart)}</Typography>
-      <Typography variant='subtitle2' fontWeight='bold'>End:</Typography>
-      <Typography variant='subtitle2'>{parseDateTimeLabel(event.timeEnd)}</Typography>
+      <Typography variant='h6' fontWeight='bold' sx={styles.messenger.infoPanelSectionHeader}>
+        Event {event.id}
+      </Typography>
+      <InfoText text='Name:' bold/>
+      <InfoText text={event.name}/>
+      <InfoText text='Description:' bold/>
+      <InfoText text={event.description}/>
+      <InfoText text='Address:' bold/>
+      <InfoText text={event.address}/>
+      <InfoText text='Start:' bold/>
+      <InfoText text={parseDateTimeLabel(event.timeStart)}/>
+      <InfoText text='End:' bold/>
+      <InfoText text={parseDateTimeLabel(event.timeEnd)}/>
     </Box>
     <CardMedia
       image={placeholderImage}

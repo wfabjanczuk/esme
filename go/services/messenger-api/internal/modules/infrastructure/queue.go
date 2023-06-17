@@ -10,17 +10,17 @@ func setupQueueConnection(dsn string, logger *log.Logger) (*amqp.Connection, *am
 	var connection *amqp.Connection
 	var channel *amqp.Channel
 	var err error
-	maxDevRetries := 10
+	maxRetries := 10
 	retryInterval := 10 * time.Second
 
-	logger.Printf("trying to open dev queue connection (max retries: %d)\n", maxDevRetries)
+	logger.Printf("trying to open queue connection (max retries: %d)\n", maxRetries)
 
-	for i := 1; i <= maxDevRetries; i++ {
-		logger.Printf("opening dev queue connection attempt %d\n", i)
+	for i := 1; i <= maxRetries; i++ {
+		logger.Printf("opening queue connection attempt %d\n", i)
 
 		connection, channel, err = openQueueConnection(dsn)
 		if err == nil {
-			logger.Println("dev queue connection successfully opened")
+			logger.Println("queue connection successfully opened")
 			return connection, channel
 		}
 
@@ -28,7 +28,7 @@ func setupQueueConnection(dsn string, logger *log.Logger) (*amqp.Connection, *am
 		time.Sleep(retryInterval)
 	}
 
-	logger.Panicf("could not open dev queue connection: %s\n", err)
+	logger.Panicf("could not open queue connection: %s\n", err)
 	return connection, channel
 }
 

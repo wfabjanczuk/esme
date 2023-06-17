@@ -112,9 +112,14 @@ func (pcp *ParticipantConnectionPool) removeConnection(conn *connections.Partici
 			defer pcp.mu.Unlock()
 
 			if len(pcp.connections) == 0 {
-				pcp.logger.Printf("starting to close connection pool for %s\n", pcp.GetInfo())
-				close(pcp.doneChan)
-				pcp.shutdowns <- pcp.participant.Id
+				select {
+				case <-pcp.doneChan:
+					return
+				default:
+					pcp.logger.Printf("starting to close connection pool for %s\n", pcp.GetInfo())
+					close(pcp.doneChan)
+					pcp.shutdowns <- pcp.participant.Id
+				}
 			}
 		},
 	)

@@ -51,8 +51,19 @@ const title: textStyleProvider = theme => `
   margin: ${theme.spaces[3]} 0;
 `
 
+const subtitle: textStyleProvider = theme => `
+  text-align: center;
+  font-size: ${theme.fontSizes.subtitle};
+  font-weight: bold;
+  margin: ${theme.spaces[3]} 0;
+`
+
 const error: textStyleProvider = theme => `
   color: ${theme.colors.text.error};
+`
+
+const selected: textStyleProvider = theme => `
+  color: ${theme.colors.brand.primary};
 `
 
 type variantKey = keyof typeof variants
@@ -66,6 +77,8 @@ const variants = {
   placeholder,
   checkboxLabel,
   title,
+  subtitle,
+  selected,
   error
 }
 
@@ -76,5 +89,8 @@ interface StyledTextProps {
 
 export const StyledText = styled.Text<StyledTextProps>`
   ${({ theme }) => getDefaultTextStyle(theme)}
-  ${({ variant, theme }) => variants[variant !== undefined ? variant : 'body'](theme)}
+  ${({
+    variant,
+    theme
+  }) => variants[variant !== undefined ? variant : 'body'](theme)}
 `

@@ -3,6 +3,7 @@ export const fontSizes = {
   button: '14px',
   body: '16px',
   title: '24px',
+  subtitle: '20px',
   h5: '24px',
   h4: '34px',
   h3: '45px',

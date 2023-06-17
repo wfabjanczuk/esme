@@ -204,13 +204,21 @@ const messenger = {
   chats: {
     backgroundColor: '#eaeff1',
     minWidth: '300px',
-    maxWidth: '300px'
+    maxWidth: '300px',
+    overflowY: 'auto'
   },
   chatsHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     backgroundColor: '#eaeff1',
     overflow: 'auto'
+  },
+  chatsLabelButton: {
+    fontSize: '0.9rem'
+  },
+  chatsLabelText: {
+    maxWidth: '100%',
+    overflowWrap: 'break-word'
   },
   messages: {
     flexGrow: 1,
@@ -223,16 +231,25 @@ const messenger = {
     flexDirection: 'column',
     minWidth: '300px',
     height: '100%',
-    overflow: 'auto',
+    overflowY: 'auto',
     backgroundColor: '#eaeff1'
   },
   infoPanelSection: {
     p: 2,
     maxWidth: '300px'
   },
+  infoPanelSectionHeader: {
+    mb: 2,
+    maxWidth: '100%',
+    overflowWrap: 'break-word'
+  },
+  infoText: {
+    maxWidth: '100%',
+    overflowWrap: 'break-word'
+  },
   eventImage: {
     height: '150px',
-    width: '300px'
+    width: '100%'
   }
 }
 

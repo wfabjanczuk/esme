@@ -1,5 +1,5 @@
 import { SafeArea } from '../../common/components/containers/safe-area.component'
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment } from 'react'
 import { StyledText } from '../../common/components/typography/styled-text.component'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { EventStackParamsList } from '../../app/navigation/navigation-internal'
@@ -7,13 +7,11 @@ import { useEvent } from './event.hook'
 import { parseDateTimeChatLabel } from '../../common/utils'
 import { Spacer } from '../../common/components/spacer/spacer.component'
 import { Card } from 'react-native-paper'
-import { PrimaryButton, SuccessButton } from '../../common/components/button.component'
-import { PaperTextInput } from '../../common/components/overrides'
+import { PrimaryButton } from '../../common/components/button.component'
 import { FullScreenScrollView } from '../../common/components/containers/scroll-view.component'
 import { View } from 'react-native'
-import { LocationObject } from 'expo-location/src/Location.types'
-import * as Location from 'expo-location'
-import { FormErrors } from '../../common/components/form.component'
+import { EventHelpForm } from './event-help.form'
+import { useCoordinates } from '../../common/hooks/coordinates.hook'
 
 const placeholderImage = 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
 
@@ -23,9 +21,8 @@ export const EventDetailsScreen = ({
   navigation,
   route: { params: { id } }
 }: EventDetailsScreenProps): JSX.Element => {
+  const coordinates = useCoordinates()
   const navigateToChats = (): void => navigation.navigate('Chats')
-  const [location, setLocation] = useState<LocationObject | undefined>(undefined)
-  const [description, setDescription] = useState('')
   const {
     errorMessages,
     event,
@@ -33,29 +30,13 @@ export const EventDetailsScreen = ({
   } = useEvent(id)
   const isError = errorMessages.length > 0
 
-  useEffect(() => {
-    void (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync()
-      if (status !== 'granted') {
-        return
-      }
-
-      const location = await Location.getCurrentPositionAsync({})
-      setLocation(location)
-    })()
-  }, [])
-
   if (event === undefined) {
     return <SafeArea><StyledText>Loading...</StyledText></SafeArea>
   }
 
-  const coords = location !== undefined
-    ? { lat: location.coords.latitude, lng: location.coords.longitude }
-    : {}
-
-  const requestHelp = (): void => requestChat({
+  const requestHelp = (description: string): void => requestChat({
+    ...coordinates,
     description,
-    ...coords,
     eventId: id
   }, navigateToChats)
 
@@ -63,7 +44,7 @@ export const EventDetailsScreen = ({
     <SafeArea>
       <FullScreenScrollView>
         <View>
-          <Spacer size='large' position='all'>
+          <Spacer size='large' position='horizontal'>
             <Card.Cover source={{ uri: placeholderImage }}/>
           </Spacer>
           <StyledText variant='title'>{event.name}</StyledText>
@@ -86,16 +67,11 @@ export const EventDetailsScreen = ({
                 Go to Messages
               </PrimaryButton>
             </Fragment>
-            : <Fragment>
-              <Spacer size='large' position='all'>
-                <PaperTextInput label='problem description' mode='outlined' error={isError} multiline
-                  onChangeText={setDescription}/>
-              </Spacer>
-              <FormErrors errorMessages={errorMessages}/>
-              <SuccessButton icon='medical-services' onPress={requestHelp}>
-                Request help
-              </SuccessButton>
-            </Fragment>
+            : <EventHelpForm
+              requestHelp={requestHelp}
+              errorMessages={errorMessages}
+              isError={isError}
+            />
           }
         </View>
       </FullScreenScrollView>
