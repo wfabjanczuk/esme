@@ -17,7 +17,7 @@ const typeOrmModuleFactory = (
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         entities: ['**/*.entity.js'],
-        synchronize: true,
+        synchronize: true, // TODO: set to false and replace with migrations
       };
     case 'dev':
       return {
