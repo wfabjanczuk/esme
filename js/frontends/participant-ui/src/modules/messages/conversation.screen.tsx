@@ -63,7 +63,7 @@ export const ConversationScreen = ({
         <ChatHistory messages={chatMessages}/>
         {chat.ended === 0
           ? <ChatInput chatId={chatId}/>
-          : <Spacer position='bottom' size='large'>
+          : <Spacer position='vertical' size='large'>
             <StyledText variant='placeholder'>Chat has ended.</StyledText>
           </Spacer>
         }
