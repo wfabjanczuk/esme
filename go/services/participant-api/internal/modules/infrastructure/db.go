@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"database/sql"
 	"log"
+	"os"
 	"time"
 
 	_ "github.com/jackc/pgconn"
@@ -53,4 +54,14 @@ func openDbConnection(dsn string) (*sql.DB, error) {
 		return nil, err
 	}
 	return db, nil
+}
+
+func runDbMigration(db *sql.DB) error {
+	sqlScript, err := os.ReadFile("./scripts/db.sql")
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(string(sqlScript))
+	return err
 }

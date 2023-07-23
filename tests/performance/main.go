@@ -131,9 +131,9 @@ func gracefulShutdown(om *organizer.Manager, pm *participants.Manager, c *consta
 	log.Println(strings.Repeat("-", 80))
 	log.Println(string(summaryJson))
 
-	timePrefix := time.Now().Format(time.RFC3339)
+	timePrefix := time.Now().Unix()
 
-	summaryFilename := fmt.Sprintf("%s_performance_test_summary.json", timePrefix)
+	summaryFilename := fmt.Sprintf("%d_performance_test_summary.json", timePrefix)
 	summaryFile, err := os.Create(summaryFilename)
 	if err != nil {
 		log.Panicf("could not create %s: %s", summaryFilename, err)
@@ -150,7 +150,7 @@ func gracefulShutdown(om *organizer.Manager, pm *participants.Manager, c *consta
 		log.Panicf("error marshaling message rates: %v", err)
 	}
 
-	messageRatesFilename := fmt.Sprintf("%s_performance_test_message_rates.json", time.Now().Format(time.RFC3339))
+	messageRatesFilename := fmt.Sprintf("%d_performance_test_message_rates.json", timePrefix)
 	messageRatesFile, err := os.Create(messageRatesFilename)
 	if err != nil {
 		log.Panicf("could not create %s: %s", messageRatesFilename, err)

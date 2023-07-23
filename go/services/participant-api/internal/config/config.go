@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	RunDbMigration    bool
 	QueueDsn          string
 	DatabaseDsn       string
 	ParticipantApiKey string
@@ -25,6 +26,11 @@ func GetConfigFromEnv(logger *log.Logger) *Config {
 	err := godotenv.Load(*configPath)
 	if err != nil {
 		logger.Fatal("Error loading env file")
+	}
+
+	runDbMigration := os.Getenv("RUN_DB_MIGRATION")
+	if runDbMigration == "true" {
+		cfg.RunDbMigration = true
 	}
 
 	cfg.QueueDsn = os.Getenv("QUEUE_DSN")

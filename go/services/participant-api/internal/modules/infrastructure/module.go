@@ -24,6 +24,13 @@ type Module struct {
 
 func NewModule(cfg *config.Config, logger *log.Logger) *Module {
 	participantDb := setupDbConnection(cfg.DatabaseDsn, logger)
+	if cfg.RunDbMigration {
+		err := runDbMigration(participantDb)
+		if err != nil {
+			logger.Fatalf("db migration failed: %s", err)
+		}
+	}
+
 	mqConnection, mqChannel := setupMqConnection(cfg.QueueDsn, logger)
 
 	return &Module{
