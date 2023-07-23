@@ -45,6 +45,25 @@ const config = {
         },
       }),
     ],
+    [
+      'redocusaurus',
+      /** @type {import('redocusaurus').PresetOptions} */
+      {
+        specs: [
+          {
+            spec: 'openapi/organizer-api.yml',
+            route: '/organizer-api/',
+            url: 'https://github.com/wfabjanczuk/esme/blob/main/js/frontends/system-docs/openapi/organizer-api.yml'
+          },
+        ],
+        theme: {
+          primaryColor: '#006db3',
+          options: {
+            sortTagsAlphabetically: true,
+          },
+        },
+      },
+    ]
   ],
 
   themeConfig:
@@ -58,6 +77,11 @@ const config = {
             sidebarId: 'docSidebar',
             position: 'left',
             label: 'Documentation',
+          },
+          {
+            to: 'organizer-api',
+            label: 'Organizer API',
+            activeBasePath: 'organizer-api'
           },
           {
             href: 'https://github.com/wfabjanczuk/esme',

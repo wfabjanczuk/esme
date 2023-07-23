@@ -1,0 +1,1936 @@
+openapi: 3.0.0
+paths:
+  /auth/sign-in:
+    post:
+      operationId: AuthenticationController signIn
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticatedUserDto'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 400
+                  message: invalid email or password
+                  error: Bad Request
+      tags: &ref_0
+        - 0. Authentication
+  /auth/sign-out:
+    post:
+      operationId: AuthenticationController signOut
+      parameters: [ ]
+      responses:
+        '200':
+          description: User successfully signed out.
+      tags: *ref_0
+  /profile:
+    get:
+      operationId: ProfileController getProfile
+      parameters: [ ]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      tags: &ref_1
+        - 0. Profile
+    patch:
+      operationId: ProfileController updateProfile
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      tags: *ref_1
+  /profile/change-password:
+    patch:
+      operationId: ProfileController changePassword
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      tags: *ref_1
+  /profile/set-agency:
+    patch:
+      operationId: ProfileController setAgency
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetAgencyDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      tags: *ref_1
+  /admin/users/roles:
+    get:
+      operationId: AdminUsersController getAdminRoles
+      parameters: [ ]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example: [ { "key": 1,"value": "Admin" },{ "key": 2,"value": "Agency owner" },{ "key": 3,"value": "Agency manager" },{ "key": 4,"value": "Agency support" } ]
+      tags: &ref_2
+        - '1. Admin: users'
+  /admin/users/{id}:
+    get:
+      operationId: AdminUsersController findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: User with id 1 not found
+                  error: Not Found
+      tags: *ref_2
+    patch:
+      operationId: AdminUsersController update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAdminUserDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: User with id 1 not found
+                  error: Not Found
+      tags: *ref_2
+    delete:
+      operationId: AdminUsersController remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: User with id 1 not found
+                  error: Not Found
+      tags: *ref_2
+  /admin/users:
+    get:
+      operationId: AdminUsersController findAll
+      parameters: [ ]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+      tags: *ref_2
+    post:
+      operationId: AdminUsersController create
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 400
+                  message: Email is already taken
+                  error: Bad Request
+      tags: *ref_2
+  /admin/agencies:
+    get:
+      operationId: AdminAgenciesController findAll
+      parameters: [ ]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Agency'
+      tags: &ref_3
+        - '1. Admin: agencies'
+  /admin/agencies/{id}:
+    get:
+      operationId: AdminAgenciesController findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agency'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Agency with id 1 not found
+                  error: Not Found
+      tags: *ref_3
+  /admin/agencies/{id}/verify:
+    patch:
+      operationId: AdminAgenciesController verify
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyAgencyDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agency'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Agency with id 1 not found
+                  error: Not Found
+      tags: *ref_3
+  /admin/changelogs:
+    get:
+      operationId: AdminChangelogsController findAll
+      parameters:
+        - name: userId
+          required: false
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Changelog'
+      tags: &ref_4
+        - '1. Admin: changelogs'
+  /admin/changelogs/{id}:
+    get:
+      operationId: AdminChangelogsController findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Changelog'
+      tags: *ref_4
+  /agency/users/roles:
+    get:
+      operationId: UsersController getAgencyRoles
+      parameters: [ ]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example: [ { "key": 2,"value": "Agency owner" },{ "key": 3,"value": "Agency manager" },{ "key": 4,"value": "Agency support" } ]
+      tags: &ref_5
+        - '2. Organizer: users'
+  /agency/users/{id}:
+    get:
+      operationId: UsersController findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: User with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_5
+    patch:
+      operationId: UsersController update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: User with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_5
+    delete:
+      operationId: UsersController remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: User with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_5
+  /agency/users:
+    get:
+      operationId: UsersController findAll
+      parameters: [ ]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+      tags: *ref_5
+    post:
+      operationId: UsersController create
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 400
+                  message: Email is already taken
+                  error: Bad Request
+      tags: *ref_5
+  /agency/changelogs:
+    get:
+      operationId: ChangelogsController findAll
+      parameters:
+        - name: userId
+          required: false
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Changelog'
+      tags: &ref_6
+        - '2. Organizer: changelogs'
+  /agency/changelogs/{id}:
+    get:
+      operationId: ChangelogsController findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Changelog'
+      tags: *ref_6
+  /agency:
+    post:
+      operationId: AgencyController register
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterAgencyDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agency'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 400
+                  message: Owner email is already taken
+                  error: Bad Request
+      tags: &ref_7
+        - '2. Organizer: agency'
+    get:
+      operationId: AgencyController get
+      parameters: [ ]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agency'
+      tags: *ref_7
+    patch:
+      operationId: AgencyController update
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAgencyDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agency'
+      tags: *ref_7
+    delete:
+      operationId: AgencyController remove
+      parameters: [ ]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agency'
+      tags: *ref_7
+  /agency/events:
+    post:
+      operationId: EventsController create
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 400
+                  message: Name is already taken
+                  error: Bad Request
+      tags: &ref_8
+        - '2. Organizer: events'
+    get:
+      operationId: EventsController findAll
+      parameters: [ ]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+      tags: *ref_8
+  /agency/events/{id}:
+    get:
+      operationId: EventsController findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Event with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_8
+    patch:
+      operationId: EventsController update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEventDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Event with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_8
+    delete:
+      operationId: EventsController remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Event with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_8
+  /agency/contacts:
+    post:
+      operationId: ContactsController create
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContactDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Event with id 1 not found in agency 1
+                  error: Not Found
+      tags: &ref_9
+        - '2. Organizer: contacts'
+    get:
+      operationId: ContactsController findAll
+      parameters:
+        - name: eventId
+          required: false
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+      tags: *ref_9
+  /agency/contacts/{id}:
+    get:
+      operationId: ContactsController findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Contact with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_9
+    patch:
+      operationId: ContactsController update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContactDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Contact with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_9
+    delete:
+      operationId: ContactsController remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Contact with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_9
+  /agency/issues:
+    post:
+      operationId: IssuesController create
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIssueDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Event with id 1 not found in agency 1
+                  error: Not Found
+      tags: &ref_20
+        - '2. Organizer: issues'
+    get:
+      operationId: IssuesController findAll
+      parameters:
+        - name: eventId
+          required: false
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Issue'
+      tags: *ref_20
+  /agency/issues/{id}:
+    get:
+      operationId: IssuesController findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Issue with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_20
+    patch:
+      operationId: IssuesController update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateIssueDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Issue with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_20
+    delete:
+      operationId: IssuesController remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Issue with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_20
+  /agency/comments:
+    post:
+      operationId: CommentsController create
+      parameters: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Issue with id 1 not found in agency 1
+                  error: Not Found
+      tags: &ref_21
+        - '2. Organizer: comments'
+    get:
+      operationId: CommentsController findAll
+      parameters:
+        - name: issueId
+          required: false
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+      tags: *ref_21
+  /agency/comments/{id}:
+    get:
+      operationId: CommentsController findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Comment with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_21
+    patch:
+      operationId: CommentsController update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCommentDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Comment with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_21
+    delete:
+      operationId: CommentsController remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Comment with id 1 not found in agency 1
+                  error: Not Found
+      tags: *ref_21
+  /api/events:
+    get:
+      operationId: ApiEventsController findAll
+      parameters:
+        - name: query
+          required: false
+          in: query
+          example: Rap Concert
+          schema:
+            type: string
+        - name: from
+          required: false
+          in: query
+          example: '2022-11-26T18:47:02.541Z'
+          schema:
+            type: string
+        - name: to
+          required: false
+          in: query
+          example: '2022-11-27T18:47:02.541Z'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+      tags: &ref_22
+        - '3. Internal: events'
+  /api/events/{id}:
+    get:
+      operationId: ApiEventsController findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 404
+                  message: Event with id 1 not found
+                  error: Not Found
+      tags: *ref_22
+info:
+  title: Organizer API
+  description: ''
+  version: '1.0'
+  contact: { }
+tags: [ ]
+servers: [ ]
+components:
+  schemas:
+    SignInDto:
+      type: object
+      properties:
+        email:
+          type: string
+          maxLength: 320
+          example: jan@kowalski.com
+        password:
+          type: string
+          minLength: 16
+          maxLength: 128
+          example: '&Y+sFaS{&d>8ycO)FLhF41qiQk{IYEb?'
+      required:
+        - email
+        - password
+    PublicUserDto:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        email:
+          type: string
+          example: jan@kowalski.com
+        firstName:
+          type: string
+          example: Jan
+        lastName:
+          type: string
+          example: Kowalski
+        phoneNumber:
+          type: string
+          example: '+48123456789'
+        timeCreated:
+          format: date-time
+          type: string
+          example: '2022-11-26T18:47:02.541Z'
+        timeSignOut:
+          format: date-time
+          type: string
+          example: '2022-11-26T18:47:02.541Z'
+        role:
+          enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+          type: number
+          example: 2
+        agencyId:
+          type: number
+          example: 1
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - phoneNumber
+        - timeCreated
+        - timeSignOut
+        - role
+    AuthenticatedUserDto:
+      type: object
+      properties:
+        token:
+          type: string
+          example: >-
+            organizer:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImlhdCI6MTY3MzEyMDcwNCwibmJmIjoxNjczMTIwNzA0LCJleHAiOjE2NzMyMDcxMDQsImF1ZCI6WyJlc21lLmNvbSJdLCJpc3MiOiJlc21lLmNvbSJ9.o1UpdD7RUtI5nUPlIg9db4SK8CJwTrHpL8fKpvVhbGM
+        user:
+          $ref: '#/components/schemas/PublicUserDto'
+      required:
+        - token
+        - user
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        email:
+          type: string
+          example: jan@kowalski.com
+        firstName:
+          type: string
+          example: Jan
+        lastName:
+          type: string
+          example: Kowalski
+        phoneNumber:
+          type: string
+          example: '+48123456789'
+        timeCreated:
+          format: date-time
+          type: string
+          example: '2022-11-26T18:47:02.541Z'
+        timeSignOut:
+          format: date-time
+          type: string
+          example: '2022-11-26T18:47:02.541Z'
+        role:
+          enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+          type: number
+          example: 2
+        agencyId:
+          type: number
+          example: 1
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - phoneNumber
+        - timeCreated
+        - timeSignOut
+        - role
+    CreateUserDto:
+      type: object
+      properties:
+        email:
+          type: string
+          maxLength: 320
+          example: jan@kowalski.com
+        password:
+          type: string
+          minLength: 16
+          maxLength: 128
+          example: '&Y+sFaS{&d>8ycO)FLhF41qiQk{IYEb?'
+        confirmPassword:
+          type: string
+          example: '&Y+sFaS{&d>8ycO)FLhF41qiQk{IYEb?'
+        firstName:
+          type: string
+          maxLength: 100
+          example: Jan
+        lastName:
+          type: string
+          maxLength: 100
+          example: Kowalski
+        phoneNumber:
+          type: string
+          maxLength: 30
+          example: '+48123456789'
+        role:
+          enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+          type: number
+          example: 2
+      required:
+        - email
+        - password
+        - confirmPassword
+        - firstName
+        - lastName
+        - phoneNumber
+        - role
+    UpdateAdminUserDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 100
+          example: Jan
+        lastName:
+          type: string
+          maxLength: 100
+          example: Kowalski
+        phoneNumber:
+          type: string
+          maxLength: 30
+          example: '+48123456789'
+    Agency:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: Live Concert Agency
+        address:
+          type: string
+          example: Concert Street 1, Warsaw 01-234, Poland
+        website:
+          type: string
+          example: https://live-concert-agency.com
+        approved:
+          type: boolean
+          example: false
+      required:
+        - id
+        - name
+        - address
+        - website
+        - approved
+    VerifyAgencyDto:
+      type: object
+      properties:
+        approved:
+          type: boolean
+          example: false
+      required:
+        - approved
+    Changelog:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        entityId:
+          type: number
+          example: 1
+        entityClass:
+          type: string
+          example: agency
+        type:
+          enum:
+            - insert
+            - update
+            - delete
+          type: string
+          example: update
+        changedAt:
+          format: date-time
+          type: string
+          example: '2022-11-26T18:47:02.541Z'
+        valueAfter:
+          type: string
+          example: >-
+            {"id":1,"name":"Live Concert Agency","address":"Concert Street 1,
+            Warsaw 01-234,
+            Poland","website":"https://live-concert-agency.com","approved":true}
+        userId:
+          type: number
+          example: 1
+        agencyId:
+          type: number
+          example: null
+      required:
+        - id
+        - entityId
+        - entityClass
+        - type
+        - changedAt
+    UpdateProfileDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 100
+          example: Jan
+        lastName:
+          type: string
+          maxLength: 100
+          example: Kowalski
+        phoneNumber:
+          type: string
+          maxLength: 30
+          example: '+48123456789'
+    ChangePasswordDto:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+          minLength: 16
+          maxLength: 128
+          example: '&Y+sFaS{&d>8ycO)FLhF41qiQk{IYEb?'
+        newPassword:
+          type: string
+          minLength: 16
+          maxLength: 128
+          example: ZY[UPU,NBC<y2f8COStQr*b#@GwhnwGH
+        confirmNewPassword:
+          type: string
+          example: ZY[UPU,NBC<y2f8COStQr*b#@GwhnwGH
+      required:
+        - oldPassword
+        - newPassword
+        - confirmNewPassword
+    SetAgencyDto:
+      type: object
+      properties:
+        agencyId:
+          type: number
+          example: 1
+    UpdateUserDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 100
+          example: Jan
+        lastName:
+          type: string
+          maxLength: 100
+          example: Kowalski
+        phoneNumber:
+          type: string
+          maxLength: 30
+          example: '+48123456789'
+        role:
+          enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+          type: number
+          example: 2
+    CreateAgencyDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+          example: Live Concert Agency
+        address:
+          type: string
+          maxLength: 400
+          example: Concert Street 1, Warsaw 01-234, Poland
+        website:
+          type: string
+          maxLength: 400
+          example: https://live-concert-agency.com
+      required:
+        - name
+        - address
+        - website
+    CreateOwnerDto:
+      type: object
+      properties:
+        email:
+          type: string
+          maxLength: 320
+          example: jan@kowalski.com
+        password:
+          type: string
+          minLength: 16
+          maxLength: 128
+          example: '&Y+sFaS{&d>8ycO)FLhF41qiQk{IYEb?'
+        confirmPassword:
+          type: string
+          example: '&Y+sFaS{&d>8ycO)FLhF41qiQk{IYEb?'
+        firstName:
+          type: string
+          maxLength: 100
+          example: Jan
+        lastName:
+          type: string
+          maxLength: 100
+          example: Kowalski
+        phoneNumber:
+          type: string
+          maxLength: 30
+          example: '+48123456789'
+      required:
+        - email
+        - password
+        - confirmPassword
+        - firstName
+        - lastName
+        - phoneNumber
+    RegisterAgencyDto:
+      type: object
+      properties:
+        agency:
+          $ref: '#/components/schemas/CreateAgencyDto'
+        owner:
+          $ref: '#/components/schemas/CreateOwnerDto'
+      required:
+        - agency
+        - owner
+    UpdateAgencyDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+          example: Live Concert Agency
+        address:
+          type: string
+          maxLength: 400
+          example: Concert Street 1, Warsaw 01-234, Poland
+        website:
+          type: string
+          maxLength: 400
+          example: https://live-concert-agency.com
+      required:
+        - name
+        - address
+        - website
+    CreateEventDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+          example: Rap Concert
+        description:
+          type: string
+          maxLength: 2000
+          example: Annual music event
+        address:
+          type: string
+          maxLength: 400
+          example: Concert Street 1, Warsaw 01-234, Poland
+        lat:
+          type: number
+          example: 52.2348373
+        lng:
+          type: number
+          example: 20.9840948
+        timeStart:
+          type: string
+          example: '2022-11-26T18:47:02.541Z'
+        timeEnd:
+          type: string
+          example: '2022-11-27T18:47:02.541Z'
+      required:
+        - name
+        - description
+        - address
+        - lat
+        - lng
+        - timeStart
+        - timeEnd
+    Event:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: Rap Concert
+        description:
+          type: string
+          example: Annual music event
+        address:
+          type: string
+          example: Concert Street 1, Warsaw 01-234, Poland
+        lat:
+          type: number
+          example: 52.2348373
+        lng:
+          type: number
+          example: 20.9840948
+        timeStart:
+          format: date-time
+          type: string
+          example: '2022-11-26T18:47:02.541Z'
+        timeEnd:
+          format: date-time
+          type: string
+          example: '2022-11-27T18:47:02.541Z'
+        agencyId:
+          type: number
+          example: 1
+      required:
+        - id
+        - name
+        - description
+        - address
+        - lat
+        - lng
+        - timeStart
+        - timeEnd
+        - agencyId
+    UpdateEventDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+          example: Rap Concert
+        description:
+          type: string
+          maxLength: 2000
+          example: Annual music event
+        address:
+          type: string
+          maxLength: 400
+          example: Concert Street 1, Warsaw 01-234, Poland
+        lat:
+          type: number
+          example: 52.2348373
+        lng:
+          type: number
+          example: 20.9840948
+        timeStart:
+          type: string
+          example: '2022-11-26T18:47:02.541Z'
+        timeEnd:
+          type: string
+          example: '2022-11-27T18:47:02.541Z'
+      required:
+        - name
+        - description
+        - address
+        - lat
+        - lng
+        - timeStart
+        - timeEnd
+    CreateContactDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 100
+          example: Jan
+        lastName:
+          type: string
+          maxLength: 100
+          example: Kowalski
+        email:
+          type: string
+          maxLength: 320
+          example: jan@kowalski.com
+        phoneNumber:
+          type: string
+          maxLength: 30
+          example: '+48123456789'
+        additionalNotes:
+          type: string
+          maxLength: 2000
+          example: Available 24/7
+        eventId:
+          type: number
+          example: 1
+      required:
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - additionalNotes
+        - eventId
+    Contact:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        firstName:
+          type: string
+          example: Jan
+        lastName:
+          type: string
+          example: Kowalski
+        email:
+          type: string
+          example: jan@kowalski.com
+        phoneNumber:
+          type: string
+          example: '+48123456789'
+        additionalNotes:
+          type: string
+          example: Available 24/7
+        eventId:
+          type: number
+          example: 1
+        agencyId:
+          type: number
+          example: 1
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - additionalNotes
+        - eventId
+        - agencyId
+    UpdateContactDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 100
+          example: Jan
+        lastName:
+          type: string
+          maxLength: 100
+          example: Kowalski
+        email:
+          type: string
+          maxLength: 320
+          example: jan@kowalski.com
+        phoneNumber:
+          type: string
+          maxLength: 30
+          example: '+48123456789'
+        additionalNotes:
+          type: string
+          maxLength: 2000
+          example: Available 24/7
+      required:
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - additionalNotes
+    CreateIssueDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+          example: Broken leg
+        description:
+          type: string
+          maxLength: 20000
+          example: Somebody has broken his leg.
+        priority:
+          enum:
+            - low
+            - medium
+            - high
+          type: string
+          example: medium
+        eventId:
+          type: number
+          example: 1
+      required:
+        - name
+        - description
+        - priority
+        - eventId
+    Issue:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: Broken leg
+        description:
+          type: string
+          example: Somebody has broken his leg.
+        status:
+          enum:
+            - to_do
+            - in_progress
+            - resolved
+            - cancelled
+          type: string
+          example: to_do
+        priority:
+          enum:
+            - low
+            - medium
+            - high
+          type: string
+          example: medium
+        timeCreated:
+          format: date-time
+          type: string
+          example: '2022-11-26T18:47:02.541Z'
+        timeClosed:
+          format: date-time
+          type: string
+          example: '2022-11-26T18:47:02.541Z'
+        authorId:
+          type: number
+          example: 1
+        eventId:
+          type: number
+          example: 1
+        agencyId:
+          type: number
+          example: 1
+      required:
+        - id
+        - name
+        - description
+        - status
+        - priority
+        - timeCreated
+        - timeClosed
+        - authorId
+        - eventId
+        - agencyId
+    UpdateIssueDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+          example: Broken leg
+        description:
+          type: string
+          maxLength: 20000
+          example: Somebody has broken his leg.
+        status:
+          enum:
+            - to_do
+            - in_progress
+            - resolved
+            - cancelled
+          type: string
+          example: to_do
+        priority:
+          enum:
+            - low
+            - medium
+            - high
+          type: string
+          example: medium
+      required:
+        - name
+        - description
+        - status
+        - priority
+    CreateCommentDto:
+      type: object
+      properties:
+        content:
+          type: string
+          maxLength: 2000
+          example: The ambulance is on the way.
+        issueId:
+          type: number
+          example: 1
+      required:
+        - content
+        - issueId
+    Comment:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        content:
+          type: string
+          example: The ambulance is on the way.
+        timeCreated:
+          format: date-time
+          type: string
+          example: '2022-11-26T18:47:02.541Z'
+        authorId:
+          type: number
+          example: 1
+        issueId:
+          type: number
+          example: 1
+        agencyId:
+          type: number
+          example: 1
+      required:
+        - id
+        - content
+        - timeCreated
+        - authorId
+        - issueId
+        - agencyId
+    UpdateCommentDto:
+      type: object
+      properties:
+        content:
+          type: string
+          maxLength: 2000
+          example: The ambulance is on the way.
+      required:
+        - content

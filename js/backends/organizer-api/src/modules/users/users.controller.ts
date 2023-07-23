@@ -44,7 +44,7 @@ export class UsersController {
       example: JSON.stringify(AgencyRoles),
     },
   })
-  getAdminRoles() {
+  getAgencyRoles() {
     return JSON.stringify(AgencyRoles);
   }
 
